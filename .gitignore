@@ -12,3 +12,6 @@ dist/
 # Betriebssystem
 Thumbs.db
 desktop.ini
+
+# Zusammengestellte Release-Dateien
+release/
