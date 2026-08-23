@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
     <AssemblyName>AudioMirror</AssemblyName>
+    <ApplicationIcon>AudioMirror.ico</ApplicationIcon>
     <RootNamespace>AudioMirror</RootNamespace>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
 
@@ -22,6 +23,10 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 
     <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Company>Yusuf Esad Mumcu</Company>
+    <Copyright>Copyright (c) 2026 Yusuf Esad Mumcu</Copyright>
     <Product>Audio Mirror</Product>
     <AssemblyTitle>Audio Mirror</AssemblyTitle>
   </PropertyGroup>

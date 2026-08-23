@@ -5,18 +5,21 @@ Bluetooth-Kopfhörer **und** USB-Headset zur selben Zeit. Kein Treiber, keine In
 
 ## Herunterladen und starten
 
-Die fertige Datei gibt es unter [Releases](../../releases). Herunterladen, Doppelklick, fertig –
-eine einzelne, eigenständige Datei. Auf dem Zielrechner muss **kein** .NET installiert sein, sie
-lässt sich beliebig verschieben, z. B. auf den Desktop.
+Alles unter [Releases](../../releases).
 
-| Datei | Für |
-|---|---|
-| `AudioMirror.exe` | Normale PCs (x64) – in aller Regel die richtige |
-| `AudioMirror-arm64.exe` | Windows-on-ARM (Snapdragon-/Surface-Notebooks) |
+**Mit Setup** (empfohlen): `AudioMirror-Setup.exe` herunterladen und ausführen. Legt Einträge im
+Startmenü an, auf Wunsch eine Desktop-Verknüpfung, und erscheint ganz normal unter *Apps und
+Features* zum Deinstallieren. Standardmäßig wird nur für den angemeldeten Benutzer installiert -
+dafür fragt Windows nicht nach Administratorrechten; auf der ersten Seite lässt sich auf *alle
+Benutzer* umstellen. Das Setup erkennt selbst, ob dein Rechner x64 oder ARM64 ist.
+
+**Ohne Installation**: `AudioMirror.exe` (bzw. `AudioMirror-arm64.exe`) herunterladen und
+doppelklicken. Eine einzelne, eigenständige Datei; auf dem Zielrechner muss **kein** .NET
+installiert sein.
 
 Beim ersten Start meldet Windows „Der Computer wurde durch Windows geschützt“, weil die Datei nicht
 kostenpflichtig signiert ist. Über *Weitere Informationen → Trotzdem ausführen* geht es weiter. Wer
-das vermeiden möchte, baut sie sich mit zwei Befehlen selbst (siehe *Selbst bauen*).
+das vermeiden möchte, baut sie sich selbst (siehe *Selbst bauen*).
 
 ## Voraussetzungen
 
@@ -339,6 +342,13 @@ ARM64-Fassung:
 
 ```bash
 dotnet publish AudioMirror.csproj -c Release -r win-arm64 --self-contained true -o dist/arm64
+```
+
+Das Setup entsteht daraus mit [Inno Setup](https://jrsoftware.org/isinfo.php); es erwartet beide
+Fassungen unter `dist\` und `distrm64\`:
+
+```bash
+ISCC.exe setup/AudioMirror.iss
 ```
 
 ## Technischer Aufbau
