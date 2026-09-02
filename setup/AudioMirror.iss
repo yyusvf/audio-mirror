@@ -7,7 +7,7 @@
 ; Erwartet die veröffentlichten Dateien unter dist\ und dist\arm64\.
 
 #define AppName        "Audio Mirror"
-#define AppVersion     "1.3.0"
+#define AppVersion     "1.3.1"
 #define AppPublisher   "Yusuf Esad Mumcu"
 #define AppUrl         "https://github.com/yyusvf/audio-mirror"
 #define AppExe         "AudioMirror.exe"
@@ -204,6 +204,10 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Explorer\StartupA
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags: nowait postinstall skipifsilent
+; Nach einer automatischen Aktualisierung startet Audio Mirror von selbst wieder - und
+; zwar so, wie es vorher lief. Die Befehlszeile dafuer setzt das Programm, bevor es sich
+; fuer die Installation beendet.
+Filename: "{app}\{#AppExe}"; Parameters: "{code:RelaunchArgs}"; Flags: nowait; Check: RelaunchRequested
 
 [UninstallDelete]
 ; Der Merker aus StartupState.cs; die Einstellungen bleiben absichtlich erhalten, falls später
@@ -338,6 +342,22 @@ begin
     NeedsRestart := True
   else if (ResultCode <> RuntimeOk) and (ResultCode <> RuntimeAlreadyThere) then
     Result := ExpandConstant('{cm:RuntimeFailed}');
+end;
+
+// Wurde das Setup von der automatischen Aktualisierung gestartet? Dann soll Audio Mirror
+// hinterher wieder laufen, ohne dass jemand darauf klicken muss.
+function RelaunchRequested: Boolean;
+begin
+  Result := CompareText(ExpandConstant('{param:relaunch|no}'), 'yes') = 0;
+end;
+
+// Lief es zuvor still im Infobereich, startet es auch wieder still.
+function RelaunchArgs(Value: String): String;
+begin
+  if CompareText(ExpandConstant('{param:relaunchmin|no}'), 'yes') = 0 then
+    Result := '--minimized'
+  else
+    Result := '';
 end;
 
 // Beim Deinstallieren anbieten, auch die gespeicherten Einstellungen zu entfernen.

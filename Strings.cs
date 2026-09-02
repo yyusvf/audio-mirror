@@ -1080,6 +1080,21 @@ internal static class Strings
         cs: "Stahování selhalo. Místo toho se otevře stránka vydání.",
         sv: "Hämtningen misslyckades. Släppsidan öppnas i stället.");
 
+    public static string UpdatedTo(string version) => T(
+        $"Updated to version {version}.",
+        de: $"Auf Fassung {version} aktualisiert.",
+        fr: $"Mis à jour vers la version {version}.",
+        es: $"Actualizado a la versión {version}.",
+        it: $"Aggiornato alla versione {version}.",
+        pt: $"Atualizado para a versão {version}.",
+        nl: $"Bijgewerkt naar versie {version}.",
+        pl: $"Zaktualizowano do wersji {version}.",
+        ru: $"Обновлено до версии {version}.",
+        uk: $"Оновлено до версії {version}.",
+        tr: $"Sürüm {version} sürümüne güncellendi.",
+        cs: $"Aktualizováno na verzi {version}.",
+        sv: $"Uppdaterad till version {version}.");
+
     public static string CurrentVersion(string version) => T(
         $"Installed version: {version}",
         de: $"Installierte Fassung: {version}",

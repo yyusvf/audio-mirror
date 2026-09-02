@@ -95,6 +95,18 @@ internal sealed class AppSettings
     public DateTime LastUpdateCheckUtc { get; set; } = DateTime.MinValue;
 
     /// <summary>
+    /// Fassung, die der Nutzer bei der Rückfrage abgelehnt hat. Für sie wird nicht erneut
+    /// gefragt - sonst käme bei jedem Start dieselbe Frage.
+    /// </summary>
+    public string? SkippedVersion { get; set; }
+
+    /// <summary>
+    /// Fassung, die zuletzt gelaufen ist. Weicht sie ab, hat gerade eine Aktualisierung
+    /// stattgefunden und das Programm sagt einmal Bescheid.
+    /// </summary>
+    public string? LastRunVersion { get; set; }
+
+    /// <summary>
     /// Der Zustand, der beim Ausschalten per Hotkey galt - je Gerät die Auswahl und die
     /// Anwendungsmischung. Wird beim Wiedereinschalten zurückgespielt und überdauert bewusst
     /// auch einen Programmneustart.

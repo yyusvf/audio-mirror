@@ -30,8 +30,12 @@ internal static class UpdateChecker
 {
     private const string LatestUrl = "https://api.github.com/repos/yyusvf/audio-mirror/releases?per_page=10";
 
-    /// <summary>Höchstens einmal am Tag nachsehen - öfter bringt nichts.</summary>
-    private static readonly TimeSpan MinimumInterval = TimeSpan.FromDays(1);
+    /// <summary>
+    /// Untergrenze zwischen zwei Anfragen. Kurz genug, dass praktisch jeder Programmstart
+    /// nachsieht - so war es gemeint, und mit einem Tag Abstand kam bei normaler Nutzung nie
+    /// eine Meldung an. Lang genug, dass wiederholtes Starten GitHub nicht zusetzt.
+    /// </summary>
+    private static readonly TimeSpan MinimumInterval = TimeSpan.FromMinutes(15);
 
     public static Version CurrentVersion { get; } = ParseVersion(
         System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "1.0.0");
@@ -105,8 +109,15 @@ internal static class UpdateChecker
         }
     }
 
-    /// <summary>Lädt das Setup herunter und startet es. Gibt bei Misserfolg false zurück.</summary>
-    public static async Task<bool> DownloadAndRunAsync(UpdateInfo update, CancellationToken token = default)
+    /// <summary>
+    /// Lädt das Setup herunter und startet es. Gibt bei Misserfolg false zurück.
+    ///
+    /// <paramref name="silent"/> installiert ohne jede Rückfrage und startet Audio Mirror danach
+    /// wieder - das ist der Weg für "Aktualisierungen automatisch installieren".
+    /// <paramref name="minimized"/> merkt sich dabei, dass das Fenster ausgeblendet war.
+    /// </summary>
+    public static async Task<bool> DownloadAndRunAsync(
+        UpdateInfo update, bool silent = false, bool minimized = false, CancellationToken token = default)
     {
         if (string.IsNullOrEmpty(update.SetupUrl))
         {
@@ -125,14 +136,43 @@ internal static class UpdateChecker
                 await source.CopyToAsync(file, token).ConfigureAwait(false);
             }
 
-            // Sichtbar starten, nicht still: eine Installation soll niemanden überraschen.
-            Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+            if (silent)
+            {
+                StartSilently(target, minimized);
+            }
+            else
+            {
+                // Sichtbar starten: wer die Installation selbst bejaht hat, soll sie auch sehen.
+                Process.Start(new ProcessStartInfo(target) { UseShellExecute = true });
+            }
             return true;
         }
         catch
         {
             return false;
         }
+    }
+
+    /// <summary>
+    /// Startet das Setup ohne Oberfläche - mit zwei Sekunden Vorlauf.
+    ///
+    /// Der Vorlauf ist der Punkt: das Setup prüft gleich beim Start, ob Audio Mirror noch läuft,
+    /// und bräche im stillen Betrieb ohne Rückfrage ab. Diese Sekunden reichen, damit sich das
+    /// Programm vorher beendet hat. Deshalb der Umweg über cmd - ein eigener Prozess, der weiter
+    /// wartet, während dieser hier verschwindet.
+    /// </summary>
+    private static void StartSilently(string setup, bool minimized)
+    {
+        string relaunch = minimized ? " /RELAUNCH=yes /RELAUNCHMIN=yes" : " /RELAUNCH=yes";
+        string arguments =
+            $"/c ping -n 3 127.0.0.1 > nul & start \"\" \"{setup}\" "
+            + "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART" + relaunch;
+
+        Process.Start(new ProcessStartInfo("cmd.exe", arguments)
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        });
     }
 
     public static void OpenPage(string url)

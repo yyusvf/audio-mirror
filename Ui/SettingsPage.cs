@@ -8,6 +8,11 @@ namespace AudioMirror.Ui;
 /// Der Aufbau leitet alle Größen aus der Schrifthöhe ab und nutzt keine festen Pixelpositionen,
 /// damit auch Anzeigeskalierungen über 100 % sauber aussehen.
 /// </summary>
+/// <summary>Fund einer neueren Fassung. <paramref name="Manual"/> unterscheidet die Suche
+/// auf Knopfdruck von der beim Start - nur bei ersterer wird auch dann gefragt, wenn die
+/// Fassung schon einmal abgelehnt wurde.</summary>
+internal sealed record UpdateFinding(UpdateInfo Update, bool Manual);
+
 internal sealed class SettingsPage : TableLayoutPanel
 {
     private readonly AppSettings settings;
@@ -346,10 +351,10 @@ internal sealed class SettingsPage : TableLayoutPanel
         // Was mit dem Fund geschieht, entscheidet das Hauptfenster - es hat das Fenster für
         // die Rückfrage und kann sich für die Installation beenden.
         updateStatus.Text = Strings.UpdateAvailable(update.Version);
-        UpdateFound?.Invoke(this, update);
+        UpdateFound?.Invoke(this, new UpdateFinding(update, manual));
         checkNow.Enabled = settings.Updates != UpdateMode.Never;
     }
 
     /// <summary>Eine neuere Fassung wurde gefunden. Das Hauptfenster entscheidet, was folgt.</summary>
-    public event EventHandler<UpdateInfo>? UpdateFound;
+    public event EventHandler<UpdateFinding>? UpdateFound;
 }

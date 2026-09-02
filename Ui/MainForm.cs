@@ -98,7 +98,9 @@ internal sealed class MainForm : Form
             tabs.SelectedIndex = 0;
             ActiveControl = sourceSelect;
 
-            // Höchstens einmal am Tag, im Hintergrund und nur wenn gewünscht.
+            AnnounceUpdate();
+
+            // Bei jedem Start, im Hintergrund und nur wenn gewünscht.
             if (UpdateChecker.ShouldCheck(settings.Updates, settings.LastUpdateCheckUtc))
             {
                 _ = settingsPage.CheckAsync(manual: false);
@@ -179,7 +181,7 @@ internal sealed class MainForm : Form
             RefreshStatus();
         };
         settingsPage.StatusMessage += (_, message) => SetStatus(message, false);
-        settingsPage.UpdateFound += (_, update) => OnUpdateFound(update);
+        settingsPage.UpdateFound += (_, finding) => OnUpdateFound(finding.Update, finding.Manual);
 
         var settingsTab = new TabPage(Strings.TabSettings) { Padding = new Padding(4) };
         settingsTab.Controls.Add(settingsPage);
@@ -933,18 +935,50 @@ internal sealed class MainForm : Form
     }
 
     /// <summary>
-    /// Eine neuere Fassung liegt vor. Bei "automatisch installieren" wird sie ohne Rückfrage
-    /// eingespielt - das ist es, was die Einstellung zusagt. Sonst wird gefragt.
+    /// Sagt einmal Bescheid, wenn seit dem letzten Lauf eine andere Fassung installiert wurde.
+    /// Ohne das tauscht sich das Programm bei der automatischen Aktualisierung unbemerkt aus.
+    /// </summary>
+    private void AnnounceUpdate()
+    {
+        string current = UpdateChecker.CurrentVersion.ToString(3);
+        if (settings.LastRunVersion == current)
+        {
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(settings.LastRunVersion))
+        {
+            tray.ShowHint(Strings.AppTitle, Strings.UpdatedTo(current));
+        }
+
+        settings.LastRunVersion = current;
+
+        // Eine übersprungene Fassung ist mit dem Wechsel erledigt.
+        settings.SkippedVersion = null;
+        settings.Save();
+    }
+
+    /// <summary>
+    /// Eine neuere Fassung liegt vor. Bei "automatisch installieren" wird sie ohne jede
+    /// Rückfrage eingespielt und das Programm danach neu gestartet - das ist es, was die
+    /// Einstellung zusagt. Sonst wird gefragt.
     ///
     /// Ist das Fenster ausgeblendet, gibt es zunächst nur einen Hinweis im Infobereich: ein
     /// Dialog, der unaufgefordert aus dem Nichts aufspringt, wäre zudringlich. Die Frage kommt
     /// dann, sobald das Fenster geöffnet wird.
     /// </summary>
-    private void OnUpdateFound(UpdateInfo update)
+    private void OnUpdateFound(UpdateInfo update, bool manual)
     {
         if (settings.Updates == UpdateMode.Automatic)
         {
-            _ = InstallAsync(update);
+            _ = InstallAsync(update, silent: true);
+            return;
+        }
+
+        // Eine einmal abgelehnte Fassung wird nicht bei jedem Start erneut vorgelegt. Wer von
+        // Hand sucht, bekommt sie trotzdem wieder angeboten.
+        if (!manual && update.Version == settings.SkippedVersion)
+        {
             return;
         }
 
@@ -971,15 +1005,20 @@ internal sealed class MainForm : Form
 
         if (answer == DialogResult.Yes)
         {
-            _ = InstallAsync(update);
+            _ = InstallAsync(update, silent: false);
+            return;
         }
+
+        settings.SkippedVersion = update.Version;
+        settings.Save();
     }
 
     /// <summary>
     /// Lädt das Setup und startet es. Danach beendet sich das Programm: das Setup wartet sonst
-    /// darauf, dass die laufende Fassung geschlossen wird.
+    /// darauf, dass die laufende Fassung geschlossen wird. Bei <paramref name="silent"/> läuft
+    /// die Installation ohne Oberfläche durch und startet Audio Mirror anschließend wieder.
     /// </summary>
-    private async Task InstallAsync(UpdateInfo update)
+    private async Task InstallAsync(UpdateInfo update, bool silent)
     {
         if (update.SetupUrl == null)
         {
@@ -992,7 +1031,7 @@ internal sealed class MainForm : Form
 
         SetUpdateStatus(Strings.UpdateDownloading(update.Version));
 
-        if (!await UpdateChecker.DownloadAndRunAsync(update))
+        if (!await UpdateChecker.DownloadAndRunAsync(update, silent, minimized: !Visible))
         {
             SetUpdateStatus(Strings.UpdateDownloadFailed);
             UpdateChecker.OpenPage(update.PageUrl);
