@@ -7,10 +7,10 @@ Play Windows audio on **several output devices at once** — speakers *and* Blue
 
 **[Get the latest release →](../../releases/latest)**
 
-| File | |
-|---|---|
-| `AudioMirror-Setup.exe` | Installer. Start menu entry, optional desktop shortcut, normal uninstall. Detects x64 / ARM64 by itself. |
-| `AudioMirror-Portable.zip` | No installation — unpack and run. Holds the x64 and the ARM64 build. |
+| File | | |
+|---|---|---|
+| `AudioMirror-Setup.exe` | 2 MB | Installer. Start menu entry, optional desktop shortcut, normal uninstall. Detects x64 / ARM64 by itself, and downloads the .NET 8 Desktop Runtime (~56 MB) if it is missing. |
+| `AudioMirror-Portable.zip` | 112 MB | Unpack and run — no installation, no runtime, no internet. Holds the x64 and the ARM64 build. |
 
 Windows shows "Windows protected your PC" on first launch because the files are not
 code-signed — click *More info → Run anyway*.
@@ -64,8 +64,14 @@ apps (Discord, TeamSpeak) for the mirrored device.
 Needs the .NET 8 SDK.
 
 ```bash
+# self-contained, for the portable archive
 dotnet publish AudioMirror.csproj -c Release -o dist
 dotnet publish AudioMirror.csproj -c Release -r win-arm64 --self-contained true -o dist/arm64
+
+# framework-dependent, for the installer
+dotnet publish AudioMirror.csproj -c Release -r win-x64   -p:SelfContained=false -p:EnableCompressionInSingleFile=false -o dist/fdd/x64
+dotnet publish AudioMirror.csproj -c Release -r win-arm64 -p:SelfContained=false -p:EnableCompressionInSingleFile=false -o dist/fdd/arm64
+
 ISCC.exe setup/AudioMirror.iss     # installer, needs Inno Setup
 ```
 

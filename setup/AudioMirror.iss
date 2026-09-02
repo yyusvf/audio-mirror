@@ -7,7 +7,7 @@
 ; Erwartet die veröffentlichten Dateien unter dist\ und dist\arm64\.
 
 #define AppName        "Audio Mirror"
-#define AppVersion     "1.2.0"
+#define AppVersion     "1.2.1"
 #define AppPublisher   "Yusuf Esad Mumcu"
 #define AppUrl         "https://github.com/yyusvf/audio-mirror"
 #define AppExe         "AudioMirror.exe"
@@ -68,14 +68,21 @@ english.AutostartGroup=At sign-in:
 german.AutostartTask=Audio Mirror mit Windows starten (im Infobereich)
 german.AutostartGroup=Beim Anmelden:
 
+english.RuntimeTitle=Microsoft .NET 8 Desktop Runtime
+english.RuntimeSubtitle=Audio Mirror needs it and it is not installed yet. Setup downloads it now - about 56 MB. Windows will ask for permission to install it.
+english.RuntimeFailed=The .NET 8 Desktop Runtime was not installed, and Audio Mirror cannot start without it.%n%nInstall it from https://dotnet.microsoft.com/download/dotnet/8.0 and run this setup again.
+german.RuntimeTitle=Microsoft .NET 8 Desktop Runtime
+german.RuntimeSubtitle=Audio Mirror benötigt sie, und sie ist noch nicht installiert. Das Setup lädt sie jetzt herunter - etwa 56 MB. Windows fragt anschließend nach der Erlaubnis, sie zu installieren.
+german.RuntimeFailed=Die .NET 8 Desktop Runtime wurde nicht installiert, und ohne sie startet Audio Mirror nicht.%n%nInstallieren Sie sie von https://dotnet.microsoft.com/download/dotnet/8.0 und starten Sie dieses Setup erneut.
+
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "autostart"; Description: "{cm:AutostartTask}"; GroupDescription: "{cm:AutostartGroup}"; Flags: unchecked
 
 [Files]
 ; Je nach Prozessor nur die passende Fassung ablegen.
-Source: "..\dist\{#AppExe}";       DestDir: "{app}"; DestName: "{#AppExe}"; Flags: ignoreversion; Check: not IsArm64
-Source: "..\dist\arm64\{#AppExe}"; DestDir: "{app}"; DestName: "{#AppExe}"; Flags: ignoreversion; Check: IsArm64
+Source: "..\dist\fdd\x64\{#AppExe}";   DestDir: "{app}"; DestName: "{#AppExe}"; Flags: ignoreversion; Check: not IsArm64
+Source: "..\dist\fdd\arm64\{#AppExe}"; DestDir: "{app}"; DestName: "{#AppExe}"; Flags: ignoreversion; Check: IsArm64
 Source: "..\README.md";            DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE";              DestDir: "{app}"; Flags: ignoreversion
 
@@ -104,6 +111,117 @@ Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags
 Type: files; Name: "{userappdata}\AudioMirror\restored.flag"
 
 [Code]
+const
+  RuntimeUrlX64   = 'https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe';
+  RuntimeUrlArm64 = 'https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-arm64.exe';
+
+  // Rückgabewerte des Laufzeit-Installers, die keinen Fehler bedeuten.
+  RuntimeOk            = 0;
+  RuntimeRestartNeeded = 3010;
+  RuntimeAlreadyThere  = 1638;
+
+var
+  DownloadPage: TDownloadWizardPage;
+  RuntimeFile: String;
+
+// "C:\Program Files", auch wenn das Setup selbst 32-bittig läuft. Genau dafür setzt Windows
+// ProgramW6432; nur falls es fehlt, wird auf ProgramFiles zurückgegriffen.
+function ProgramFilesNative: String;
+begin
+  Result := GetEnv('ProgramW6432');
+  if Result = '' then
+    Result := GetEnv('ProgramFiles');
+end;
+
+// Gesucht wird ein Ordner der Desktop-Laufzeit 8.x. Neuere Hauptfassungen zählen bewusst nicht:
+// die Anwendung ist gegen .NET 8 gebaut und rollt von sich aus nur innerhalb davon weiter.
+function DesktopRuntimeInstalled: Boolean;
+var
+  Rec: TFindRec;
+begin
+  Result := False;
+  if FindFirst(ProgramFilesNative + '\dotnet\shared\Microsoft.WindowsDesktop.App\8.*', Rec) then
+  begin
+    try
+      repeat
+        if (Rec.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+        begin
+          Result := True;
+          Exit;
+        end;
+      until not FindNext(Rec);
+    finally
+      FindClose(Rec);
+    end;
+  end;
+end;
+
+function RuntimeUrl: String;
+begin
+  if IsArm64 then
+    Result := RuntimeUrlArm64
+  else
+    Result := RuntimeUrlX64;
+end;
+
+function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+begin
+  Result := True;
+end;
+
+procedure InitializeWizard;
+begin
+  DownloadPage := CreateDownloadPage(
+    ExpandConstant('{cm:RuntimeTitle}'), ExpandConstant('{cm:RuntimeSubtitle}'), @OnDownloadProgress);
+end;
+
+// Heruntergeladen wird erst nach der letzten Seite: bis dahin kann der Nutzer noch abbrechen,
+// ohne dass 56 MB durch die Leitung gegangen sind.
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  if (CurPageID <> wpReady) or DesktopRuntimeInstalled then
+    Exit;
+
+  DownloadPage.Clear;
+  DownloadPage.Add(RuntimeUrl, 'windowsdesktop-runtime.exe', '');
+  DownloadPage.Show;
+  try
+    try
+      DownloadPage.Download;
+      RuntimeFile := ExpandConstant('{tmp}\windowsdesktop-runtime.exe');
+    except
+      SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
+      Result := False;
+    end;
+  finally
+    DownloadPage.Hide;
+  end;
+end;
+
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+begin
+  Result := '';
+  if RuntimeFile = '' then
+    Exit;
+
+  // Die Laufzeit installiert maschinenweit und verlangt Administratorrechte - "runas" löst die
+  // Nachfrage von Windows aus. "/passive" zeigt einen Fortschritt, fragt aber nichts.
+  if not ShellExec('runas', RuntimeFile, '/install /passive /norestart', '', SW_SHOW,
+                   ewWaitUntilTerminated, ResultCode) then
+  begin
+    Result := ExpandConstant('{cm:RuntimeFailed}');
+    Exit;
+  end;
+
+  if ResultCode = RuntimeRestartNeeded then
+    NeedsRestart := True
+  else if (ResultCode <> RuntimeOk) and (ResultCode <> RuntimeAlreadyThere) then
+    Result := ExpandConstant('{cm:RuntimeFailed}');
+end;
+
 // Beim Deinstallieren anbieten, auch die gespeicherten Einstellungen zu entfernen.
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
