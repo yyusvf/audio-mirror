@@ -20,11 +20,8 @@ internal sealed class MainForm : Form
     private readonly Panel devicePanel = new();
     private readonly Label statusLabel = new();
     private readonly Button closeButton = new();
-    private readonly ToolTip bufferTips = new() { AutoPopDelay = 12000, InitialDelay = 300 };
-    private readonly NumericUpDown bufferInput = new();
-    private readonly CheckBox autoStartWindowsCheck = new();
-    private readonly CheckBox hotkeyEnabledCheck = new();
-    private readonly HotkeyRecorder hotkeyRecorder = new();
+    private readonly TabControl tabs = new();
+    private SettingsPage settingsPage = null!;
     private GlobalHotkey? toggleAllHotkey;
 
     private readonly System.Windows.Forms.Timer debounceTimer = new() { Interval = 400 };
@@ -35,7 +32,6 @@ internal sealed class MainForm : Form
 
     private bool needsDeviceRefresh;
     private bool closing;
-    private bool suppressAutostartEvent;
     private bool allowExit;
     private bool allowVisible;
     private bool trayHintShown;
@@ -68,6 +64,8 @@ internal sealed class MainForm : Form
             .ToList();
         tray.DeviceToggled += (deviceId, enabled) => ApplySelection(deviceId, enabled);
         tray.ShowWindowRequested += ShowFromTray;
+        tray.DoubleClickActionProvider = () => settings.DoubleClickAction;
+        tray.ToggleRequested += ToggleEverything;
         tray.ExitRequested += () =>
         {
             allowExit = true;
@@ -112,6 +110,17 @@ internal sealed class MainForm : Form
             RefreshDevices();
             RefreshAppLists();
             SyncTargets();
+
+            // Geöffnet wird immer bei den Geräten. Ohne das landet die Auswahl beim ersten
+            // Element, das den Fokus bekommt - und das liegt auf dem Einstellungen-Reiter.
+            tabs.SelectedIndex = 0;
+            ActiveControl = sourceSelect;
+
+            // Höchstens einmal am Tag, im Hintergrund und nur wenn gewünscht.
+            if (UpdateChecker.ShouldCheck(settings.Updates, settings.LastUpdateCheckUtc))
+            {
+                _ = settingsPage.CheckAsync(manual: false);
+            }
         };
         FormClosing += OnFormClosing;
     }
@@ -127,17 +136,15 @@ internal sealed class MainForm : Form
 
         root.Dock = DockStyle.Fill;
         root.ColumnCount = 1;
-        root.RowCount = 3;
         root.Padding = new Padding(10, 8, 10, 8);
-        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        // Der Gerätebereich bekommt allen freien Platz - zieht man das Fenster größer, wächst
-        // die Liste mit, statt eine Lücke zu lassen.
+        root.RowCount = 2;
+        // Die Reiter bekommen allen freien Platz - zieht man das Fenster größer, wächst die
+        // Geräteliste mit, statt eine Lücke zu lassen.
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-        root.Controls.Add(BuildHeader(), 0, 0);
-        root.Controls.Add(BuildDeviceArea(), 0, 1);
-        root.Controls.Add(BuildFooter(), 0, 2);
+        root.Controls.Add(BuildTabs(), 0, 0);
+        root.Controls.Add(BuildFooter(), 0, 1);
 
         Controls.Add(root);
         ApplyMetrics();
@@ -156,6 +163,52 @@ internal sealed class MainForm : Form
         Anchor = AnchorStyles.Left | AnchorStyles.Right,
         TextAlign = ContentAlignment.MiddleLeft,
     };
+
+    private Control BuildTabs()
+    {
+        tabs.Dock = DockStyle.Fill;
+        tabs.Margin = new Padding(0, 0, 0, 6);
+
+        var devices = new TabPage(Strings.TabDevices) { Padding = new Padding(8, 6, 8, 6) };
+        var deviceLayout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 2,
+            Margin = new Padding(0),
+        };
+        deviceLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        deviceLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        deviceLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        deviceLayout.Controls.Add(BuildHeader(), 0, 0);
+        deviceLayout.Controls.Add(BuildDeviceArea(), 0, 1);
+        devices.Controls.Add(deviceLayout);
+
+        settingsPage = new SettingsPage(settings);
+        settingsPage.BufferChanged += (_, _) =>
+        {
+            debounceTimer.Stop();
+            debounceTimer.Start();
+        };
+        settingsPage.HotkeyChanged += (_, _) => OnHotkeyChanged();
+        settingsPage.AutostartFailed += (_, _) =>
+        {
+            lastError = settingsPage.LastAutostartError;
+            RefreshStatus();
+        };
+        settingsPage.StatusMessage += (_, message) => SetStatus(message, false);
+        settingsPage.UpdateFound += (_, update) =>
+            tray.ShowHint(Strings.AppTitle, Strings.UpdateAvailable(update.Version));
+
+        var settingsTab = new TabPage(Strings.TabSettings) { Padding = new Padding(4) };
+        settingsTab.Controls.Add(settingsPage);
+
+        tabs.TabPages.Add(devices);
+        tabs.TabPages.Add(settingsTab);
+        // Nur auf dem Geräte-Reiter folgt die Fenstergröße dem Inhalt.
+        tabs.SelectedIndexChanged += (_, _) => ScheduleFit();
+        return tabs;
+    }
 
     private Control BuildHeader()
     {
@@ -213,127 +266,34 @@ internal sealed class MainForm : Form
 
     private Control BuildFooter()
     {
-        var footer = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            ColumnCount = 1,
-            RowCount = 4,
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            Margin = new Padding(0, 8, 0, 0),
-        };
-        footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-
-        var bufferRow = new FlowLayoutPanel
-        {
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            FlowDirection = FlowDirection.LeftToRight,
-            WrapContents = false,
-            Margin = new Padding(0),
-        };
-
-        var bufferLabel = new Label
-        {
-            Text = Strings.BufferLabel,
-            AutoSize = true,
-            Margin = new Padding(3, 6, 6, 3),
-        };
-
-        bufferInput.Minimum = 10;
-        bufferInput.Maximum = 250;
-        bufferInput.Increment = 5;
-        bufferInput.Value = Math.Clamp(settings.BufferMs, 10, 250);
-        bufferInput.Width = 64;
-        bufferInput.Margin = new Padding(0, 3, 6, 3);
-        bufferInput.ValueChanged += (_, _) =>
-        {
-            settings.BufferMs = (int)bufferInput.Value;
-            // Die Puffergröße steckt in der ganzen Kette - kurz sammeln, dann neu aufbauen.
-            debounceTimer.Stop();
-            debounceTimer.Start();
-        };
-
-        var bufferUnit = new Label
-        {
-            Text = Strings.Milliseconds,
-            AutoSize = true,
-            Margin = new Padding(0, 6, 3, 3),
-        };
-
-        bufferRow.Controls.AddRange([bufferLabel, bufferInput, bufferUnit]);
-
-        // Die Erklärung steht als Kurzinfo an der Beschriftung, statt dauerhaft Platz zu belegen.
-        string bufferTip = Strings.BufferTip;
-        bufferTips.SetToolTip(bufferLabel, bufferTip);
-        bufferTips.SetToolTip(bufferInput, bufferTip);
-        bufferTips.SetToolTip(bufferUnit, bufferTip);
-
-        autoStartWindowsCheck.Text = Strings.StartWithWindows;
-        autoStartWindowsCheck.AutoSize = true;
-        autoStartWindowsCheck.Enabled = Autostart.IsSupported;
-        suppressAutostartEvent = true;
-        autoStartWindowsCheck.Checked = Autostart.IsEnabled();
-        suppressAutostartEvent = false;
-        autoStartWindowsCheck.CheckedChanged += OnAutostartWindowsChanged;
-
         statusLabel.AutoSize = false;
         statusLabel.AutoEllipsis = true;
         statusLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         statusLabel.TextAlign = ContentAlignment.MiddleLeft;
         statusLabel.Text = Strings.Ready;
 
-        var hotkeyRow = new FlowLayoutPanel
-        {
-            AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            FlowDirection = FlowDirection.LeftToRight,
-            WrapContents = false,
-            Margin = new Padding(0),
-        };
-
-        var hotkeyLabel = new Label
-        {
-            Text = Strings.ToggleAllLabel,
-            AutoSize = true,
-            Margin = new Padding(3, 7, 6, 3),
-        };
-
-        hotkeyRecorder.Width = 150;
-        hotkeyRecorder.Margin = new Padding(0, 4, 6, 3);
-        hotkeyRecorder.Hotkey = (Keys)settings.HotkeyToggleAll;
-        hotkeyRecorder.HotkeyChanged += OnHotkeyChanged;
-
-        hotkeyEnabledCheck.Text = Strings.HotkeyEnabled;
-        hotkeyEnabledCheck.AutoSize = true;
-        hotkeyEnabledCheck.Checked = settings.HotkeyToggleAllEnabled;
-        hotkeyEnabledCheck.Margin = new Padding(0, 7, 3, 3);
-        hotkeyEnabledCheck.CheckedChanged += (_, _) =>
-        {
-            settings.HotkeyToggleAllEnabled = hotkeyEnabledCheck.Checked;
-            settings.Save();
-            ApplyHotkey();
-        };
-
-        hotkeyRow.Controls.AddRange([hotkeyLabel, hotkeyRecorder, hotkeyEnabledCheck]);
-
         closeButton.Text = Strings.Close;
         closeButton.AutoSize = true;
         closeButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         closeButton.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
         closeButton.Padding = new Padding(12, 4, 12, 4);
-        closeButton.Margin = new Padding(3, 6, 3, 0);
+        closeButton.Margin = new Padding(3, 4, 3, 0);
         // Nur ausblenden - das Programm läuft im Infobereich weiter.
         closeButton.Click += (_, _) => HideToTray(showHint: true);
 
-        footer.ColumnCount = 2;
+        var footer = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 1,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Margin = new Padding(0, 4, 0, 0),
+        };
+        footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        footer.RowCount = 4;
-        footer.Controls.Add(bufferRow, 0, 0);
-        footer.Controls.Add(hotkeyRow, 0, 1);
-        footer.Controls.Add(autoStartWindowsCheck, 0, 2);
-        footer.Controls.Add(statusLabel, 0, 3);
-        footer.Controls.Add(closeButton, 1, 3);
+        footer.Controls.Add(statusLabel, 0, 0);
+        footer.Controls.Add(closeButton, 1, 0);
         return footer;
     }
 
@@ -356,10 +316,39 @@ internal sealed class MainForm : Form
     /// Nach oben begrenzt auf gut die halbe Bildschirmhöhe - bei vielen Geräten oder vielen
     /// aufgeklappten Anwendungen scrollt die Liste dann, statt über den Bildschirm zu wachsen.
     /// </summary>
+    /// <summary>
+    /// Sorgt dafür, dass die Einstellungen vollständig sichtbar sind. Hier wird nur vergrößert:
+    /// wechselt man zurück zu den Geräten, soll das Fenster nicht plötzlich springen.
+    /// </summary>
+    private void FitToSettings()
+    {
+        Size preferred = settingsPage.GetPreferredSize(new Size(settingsPage.Width, 0));
+        Rectangle work = Screen.FromControl(this).WorkingArea;
+
+        int height = Math.Min(
+            ClientSize.Height + Math.Max(0, preferred.Height - settingsPage.Height),
+            work.Height * 80 / 100);
+        int width = Math.Min(
+            ClientSize.Width + Math.Max(0, preferred.Width - settingsPage.Width),
+            work.Width * 80 / 100);
+
+        if (height - ClientSize.Height > 2 || width - ClientSize.Width > 2)
+        {
+            ClientSize = new Size(Math.Max(width, ClientSize.Width), Math.Max(height, ClientSize.Height));
+        }
+    }
+
     private void FitToContent()
     {
         if (closing || !IsHandleCreated)
         {
+            return;
+        }
+
+        // Auf dem Einstellungen-Reiter richtet sich die Größe nach dessen Inhalt.
+        if (tabs.SelectedIndex != 0)
+        {
+            FitToSettings();
             return;
         }
 
@@ -427,24 +416,6 @@ internal sealed class MainForm : Form
         }
 
         FitToContent();
-    }
-
-    private void OnAutostartWindowsChanged(object? sender, EventArgs e)
-    {
-        if (suppressAutostartEvent)
-        {
-            return;
-        }
-
-        string? error = Autostart.TrySetEnabled(autoStartWindowsCheck.Checked);
-        if (error != null)
-        {
-            suppressAutostartEvent = true;
-            autoStartWindowsCheck.Checked = Autostart.IsEnabled();
-            suppressAutostartEvent = false;
-            lastError = error;
-        }
-        RefreshStatus();
     }
 
     private void ScheduleRefresh()
@@ -725,7 +696,7 @@ internal sealed class MainForm : Form
         }
         else
         {
-            engine.SetTargets(BuildTargets(), (int)bufferInput.Value);
+            engine.SetTargets(BuildTargets(), settingsPage.BufferMs);
         }
     }
 
@@ -757,7 +728,7 @@ internal sealed class MainForm : Form
 
         try
         {
-            engine.SetTargets(BuildTargets(), (int)bufferInput.Value);
+            engine.SetTargets(BuildTargets(), settingsPage.BufferMs);
             lastError = null;
         }
         catch (Exception ex)
@@ -895,16 +866,16 @@ internal sealed class MainForm : Form
     /// </summary>
     private IEnumerable<(Keys Key, string Owner)> OtherHotkeys() => [];
 
-    private void OnHotkeyChanged(object? sender, EventArgs e)
+    private void OnHotkeyChanged()
     {
-        Keys wanted = hotkeyRecorder.Hotkey;
+        Keys wanted = settingsPage.Hotkey;
 
         // Keine stille Übernahme, wenn die Kombination schon anderweitig vergeben ist.
         foreach ((Keys key, string owner) in OtherHotkeys())
         {
             if (key == wanted && wanted != Keys.None)
             {
-                hotkeyRecorder.Hotkey = (Keys)settings.HotkeyToggleAll;
+                settingsPage.Hotkey = (Keys)settings.HotkeyToggleAll;
                 SetStatus(Strings.HotkeyAssignedTo(GlobalHotkey.Describe(wanted), owner), true);
                 return;
             }
@@ -1122,7 +1093,6 @@ internal sealed class MainForm : Form
         debounceTimer.Stop();
         fitTimer.Stop();
 
-        settings.BufferMs = (int)bufferInput.Value;
         foreach (DeviceRow row in rows)
         {
             DeviceSetting setting = settings.For(row.DeviceId);

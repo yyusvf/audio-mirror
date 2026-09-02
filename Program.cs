@@ -23,6 +23,10 @@ internal static class Program
             return;
         }
 
+        // Die Sprache steht vor dem ersten Text fest: Windows-Sprache, sofern nichts anderes
+        // eingestellt ist.
+        Strings.Configure(AppSettings.Load().Language);
+
         // Spec 4.5: kein Absturz bei unerwarteten Fehlern - stattdessen verständliche Meldung.
         Application.ThreadException += (_, e) => ShowFatal(e.Exception);
         AppDomain.CurrentDomain.UnhandledException += (_, e) => ShowFatal(e.ExceptionObject as Exception);

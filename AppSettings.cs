@@ -12,6 +12,14 @@ internal sealed class AppMixSetting
     public float Volume { get; set; } = 1f;
 }
 
+/// <summary>Was ein Doppelklick auf das Tray-Symbol tut.</summary>
+internal enum TrayAction
+{
+    OpenWindow = 0,
+    ToggleMirroring = 1,
+    Nothing = 2,
+}
+
 internal sealed class DeviceSetting
 {
     public bool Enabled { get; set; }
@@ -70,6 +78,24 @@ internal sealed class AppSettings
     public int HotkeyToggleAll { get; set; }
 
     public bool HotkeyToggleAllEnabled { get; set; } = true;
+
+    /// <summary>
+    /// Sprache der Oberfläche: leer bzw. "auto" folgt der Windows-Anzeigesprache,
+    /// sonst "en" oder "de".
+    /// </summary>
+    public string? Language { get; set; }
+
+    /// <summary>Was ein Doppelklick auf das Symbol im Infobereich auslöst.</summary>
+    public TrayAction DoubleClickAction { get; set; } = TrayAction.OpenWindow;
+
+    /// <summary>Wie mit neuen Fassungen verfahren wird.</summary>
+    public UpdateMode Updates { get; set; } = UpdateMode.Notify;
+
+    /// <summary>Ob auch Vorabfassungen berücksichtigt werden.</summary>
+    public bool IncludeBeta { get; set; }
+
+    /// <summary>Wann zuletzt nach einer neuen Fassung gesehen wurde.</summary>
+    public DateTime LastUpdateCheckUtc { get; set; } = DateTime.MinValue;
 
     /// <summary>
     /// Der Zustand, der beim Ausschalten per Hotkey galt - je Gerät die Auswahl und die

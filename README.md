@@ -32,6 +32,9 @@ Device volume and app volume multiply: 50 % × 50 % = 25 %.
 The window closes to the notification area; **Exit** in the tray menu quits for real. Your
 selection is remembered per device and restored automatically, also after replugging.
 
+**Settings** tab: start with Windows, what a double-click on the tray icon does, language,
+buffer size, the global toggle hotkey, and update checks (automatic, notify only, or off).
+
 ## Latency
 
 Measured on a USB DAC → HDMI monitor, 20 s per setting, no dropouts:

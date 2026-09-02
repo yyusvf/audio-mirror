@@ -11,8 +11,24 @@ namespace AudioMirror;
 /// </summary>
 internal static class Strings
 {
-    /// <summary>Wahr, wenn Windows auf Deutsch läuft.</summary>
-    public static bool German { get; } = DetectGerman();
+    private static bool? forced;
+
+    /// <summary>Wahr, wenn die Oberfläche auf Deutsch erscheint.</summary>
+    public static bool German => forced ?? DetectGerman();
+
+    /// <summary>
+    /// Legt die Sprache fest: "de" oder "en" erzwingen, alles andere folgt Windows.
+    /// Muss vor dem ersten Textzugriff aufgerufen werden.
+    /// </summary>
+    public static void Configure(string? language)
+    {
+        forced = language?.ToLowerInvariant() switch
+        {
+            "de" => true,
+            "en" => false,
+            _ => null,
+        };
+    }
 
     private static bool DetectGerman()
     {
@@ -219,6 +235,43 @@ internal static class Strings
     public static string AutostartFailed(string message) =>
         T("Could not change the startup entry: " + message,
           "Autostart konnte nicht geändert werden: " + message);
+
+    // Einstellungen
+    public static string TabDevices => T("Devices", "Geräte");
+    public static string TabSettings => T("Settings", "Einstellungen");
+    public static string BasicSettings => T("Basic settings", "Allgemein");
+    public static string AudioSettings => T("Audio", "Ton");
+    public static string UpdateSettings => T("Updates", "Aktualisierungen");
+    public static string LanguageLabel => T("Language", "Sprache");
+    public static string LanguageAutomatic => T("Automatic (Windows)", "Automatisch (Windows)");
+    public static string DoubleClickLabel => T("Double-click action", "Doppelklick");
+    public static string ActionOpenWindow => T("Open window", "Fenster öffnen");
+    public static string ActionToggle => T("Toggle mirroring", "Spiegelung umschalten");
+    public static string ActionNothing => T("Do nothing", "Nichts tun");
+    public static string RestartForLanguage =>
+        T("The language changes after restarting the program.",
+          "Die Sprache wird nach einem Neustart des Programms übernommen.");
+
+    public static string UpdateAutomatic => T("Install updates automatically", "Aktualisierungen automatisch installieren");
+    public static string UpdateNotify => T("Notify me when updates are available", "Nur benachrichtigen");
+    public static string UpdateNever => T("Never check for updates", "Nie nach Aktualisierungen suchen");
+    public static string IncludeBeta => T("Include beta versions", "Vorabfassungen einbeziehen");
+    public static string CheckNow => T("Check now", "Jetzt suchen");
+    public static string CheckingUpdates => T("Checking …", "Suche läuft …");
+    public static string UpToDate => T("Audio Mirror is up to date.", "Audio Mirror ist aktuell.");
+
+    public static string UpdateAvailable(string version) =>
+        T($"Version {version} is available.", $"Fassung {version} ist verfügbar.");
+
+    public static string UpdateDownloading(string version) =>
+        T($"Downloading version {version} …", $"Fassung {version} wird geladen …");
+
+    public static string UpdateDownloadFailed =>
+        T("The download failed. Opening the release page instead.",
+          "Der Download ist fehlgeschlagen. Stattdessen wird die Release-Seite geöffnet.");
+
+    public static string CurrentVersion(string version) =>
+        T($"Installed version: {version}", $"Installierte Fassung: {version}");
 
     // Tastennamen für die Hotkey-Anzeige
     public static string KeyControl => T("Ctrl", "Strg");

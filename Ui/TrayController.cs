@@ -40,22 +40,34 @@ internal sealed class TrayController : IDisposable
             ContextMenuStrip = menu,
         };
 
-        // Linksklick und Doppelklick holen das Fenster zurück; das Kontextmenü übernimmt
-        // NotifyIcon selbst für die rechte Maustaste.
-        notifyIcon.MouseClick += (_, e) =>
+        // Der Doppelklick tut, was in den Einstellungen dafür hinterlegt ist. Der einfache
+        // Klick bleibt bewusst folgenlos - sonst käme ihm der erste Klick eines Doppelklicks
+        // stets zuvor und die Einstellung wäre wirkungslos. Für die rechte Maustaste zeigt
+        // NotifyIcon von sich aus das Kontextmenü.
+        notifyIcon.DoubleClick += (_, _) =>
         {
-            if (e.Button == MouseButtons.Left)
+            switch (DoubleClickActionProvider?.Invoke() ?? TrayAction.OpenWindow)
             {
-                ShowWindowRequested?.Invoke();
+                case TrayAction.OpenWindow:
+                    ShowWindowRequested?.Invoke();
+                    break;
+                case TrayAction.ToggleMirroring:
+                    ToggleRequested?.Invoke();
+                    break;
             }
         };
-        notifyIcon.DoubleClick += (_, _) => ShowWindowRequested?.Invoke();
     }
 
     /// <summary>Liefert die aktuell anzuzeigenden Geräte. Wird beim Öffnen des Menüs aufgerufen.</summary>
     public Func<IReadOnlyList<TrayDeviceEntry>>? DeviceProvider { get; set; }
 
+    /// <summary>Was ein Doppelklick auf das Symbol auslösen soll.</summary>
+    public Func<TrayAction>? DoubleClickActionProvider { get; set; }
+
     public event Action? ShowWindowRequested;
+
+    /// <summary>Gesamte Spiegelung an- bzw. ausschalten.</summary>
+    public event Action? ToggleRequested;
 
     public event Action? ExitRequested;
 
