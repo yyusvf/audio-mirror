@@ -7,7 +7,7 @@
 ; Erwartet die veröffentlichten Dateien unter dist\ und dist\arm64\.
 
 #define AppName        "Audio Mirror"
-#define AppVersion     "1.1.1"
+#define AppVersion     "1.2.0"
 #define AppPublisher   "Yusuf Esad Mumcu"
 #define AppUrl         "https://github.com/yyusvf/audio-mirror"
 #define AppExe         "AudioMirror.exe"
