@@ -80,8 +80,8 @@ internal sealed class AppSettings
     public bool HotkeyToggleAllEnabled { get; set; } = true;
 
     /// <summary>
-    /// Sprache der Oberfläche: leer bzw. "auto" folgt der Windows-Anzeigesprache,
-    /// sonst "en" oder "de".
+    /// Sprache der Oberfläche: leer folgt der Windows-Anzeigesprache, sonst eines der
+    /// Kürzel aus Strings.Supported.
     /// </summary>
     public string? Language { get; set; }
 

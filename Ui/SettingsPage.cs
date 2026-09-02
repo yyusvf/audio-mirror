@@ -150,11 +150,11 @@ internal sealed class SettingsPage : TableLayoutPanel
         language.DropDownStyle = ComboBoxStyle.DropDownList;
         language.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         language.Margin = new Padding(0, 3, 3, 3);
-        language.Items.AddRange(["English", "Deutsch"]);
+        language.Items.AddRange(Strings.SupportedNames);
         language.SelectedIndexChanged += (_, _) =>
         {
             if (loading) { return; }
-            settings.Language = language.SelectedIndex == 1 ? "de" : "en";
+            settings.Language = Strings.Supported[language.SelectedIndex];
             settings.Save();
             StatusMessage?.Invoke(this, Strings.RestartForLanguage);
         };
@@ -307,7 +307,8 @@ internal sealed class SettingsPage : TableLayoutPanel
         doubleClick.SelectedIndex = (int)settings.DoubleClickAction;
         // Ohne eigene Wahl steht hier, was die Anwendung ohnehin verwendet: die erkannte
         // Windows-Sprache. Gespeichert wird erst, wenn der Nutzer selbst etwas auswählt.
-        language.SelectedIndex = (settings.Language?.ToLowerInvariant() ?? (Strings.German ? "de" : "en")) == "de" ? 1 : 0;
+        language.SelectedIndex = Math.Max(0,
+            Array.IndexOf(Strings.Supported, settings.Language?.Trim().ToLowerInvariant() ?? Strings.Language));
         buffer.Value = Math.Clamp(settings.BufferMs, 10, 250);
         hotkey.Hotkey = (Keys)settings.HotkeyToggleAll;
         hotkeyEnabled.Checked = settings.HotkeyToggleAllEnabled;

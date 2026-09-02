@@ -288,9 +288,11 @@ internal sealed class MainForm : Form
     /// sondern scrollt; so springt das Fenster nicht, wenn ein Gerät dazukommt oder aufgeklappt
     /// wird. Größer ziehen bleibt möglich, kleiner nicht - sonst würde etwas abgeschnitten.
     /// </summary>
+    /// Etwas breiter als der englische Text bräuchte: Französisch, Polnisch und Russisch fallen
+    /// im Schnitt ein Fünftel länger aus, und abgeschnittene Beschriftungen wären das Ergebnis.
     private Size FixedClientSize => new(
-        Math.Max(600, Font.Height * 40),
-        Math.Max(380, Font.Height * 25));
+        Math.Max(680, Font.Height * 45),
+        Math.Max(400, Font.Height * 26));
 
     private void ApplyMetrics()
     {

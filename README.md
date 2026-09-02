@@ -15,8 +15,11 @@ Play Windows audio on **several output devices at once** — speakers *and* Blue
 Windows shows "Windows protected your PC" on first launch because the files are not
 code-signed — click *More info → Run anyway*.
 
-Needs **Windows 11** (or Windows 10 build 20348+). The interface is English, and German when
-Windows is set to German.
+Needs **Windows 11** (or Windows 10 build 20348+).
+
+The interface speaks **English, German, French, Spanish, Italian, Portuguese (Brazil), Dutch,
+Polish, Russian, Ukrainian, Turkish, Czech and Swedish** — it follows the Windows display
+language, and you can pick one yourself in the Settings tab.
 
 ## How it works
 

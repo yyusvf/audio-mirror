@@ -1,4 +1,4 @@
-; Setup für Audio Mirror - erzeugt mit Inno Setup.
+﻿; Setup für Audio Mirror - erzeugt mit Inno Setup.
 ;
 ; Bewusst ein einziges Setup für x64 und ARM64: es legt jeweils nur die passende Datei ab,
 ; damit Nutzer nicht zwischen Varianten wählen müssen.
@@ -7,7 +7,7 @@
 ; Erwartet die veröffentlichten Dateien unter dist\ und dist\arm64\.
 
 #define AppName        "Audio Mirror"
-#define AppVersion     "1.2.2"
+#define AppVersion     "1.3.0"
 #define AppPublisher   "Yusuf Esad Mumcu"
 #define AppUrl         "https://github.com/yyusvf/audio-mirror"
 #define AppExe         "AudioMirror.exe"
@@ -64,23 +64,113 @@ RestartApplications=no
 
 [Languages]
 ; Englisch zuerst: Inno waehlt die Sprache automatisch passend zur Windows-Anzeigesprache und
-; faellt sonst auf den ersten Eintrag zurueck. Deutsches Windows bekommt Deutsch, alles andere
-; Englisch - ohne Sprachabfrage beim Start.
+; faellt sonst auf den ersten Eintrag zurueck - ohne Sprachabfrage beim Start. Dieselben
+; dreizehn Sprachen beherrscht auch die Anwendung selbst.
 Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "german";  MessagesFile: "compiler:Languages\German.isl"
+Name: "french";  MessagesFile: "compiler:Languages\French.isl"
+Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "italian"; MessagesFile: "compiler:Languages\Italian.isl"
+Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
+Name: "dutch";   MessagesFile: "compiler:Languages\Dutch.isl"
+Name: "polish";  MessagesFile: "compiler:Languages\Polish.isl"
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
+Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
+Name: "czech";   MessagesFile: "compiler:Languages\Czech.isl"
+Name: "swedish"; MessagesFile: "compiler:Languages\Swedish.isl"
 
 [CustomMessages]
 english.AutostartTask=Start Audio Mirror with Windows (in the notification area)
 english.AutostartGroup=At sign-in:
-german.AutostartTask=Audio Mirror mit Windows starten (im Infobereich)
-german.AutostartGroup=Beim Anmelden:
-
 english.RuntimeDownloading=Downloading the Microsoft .NET 8 Desktop Runtime (about 56 MB):
 english.RuntimeInstalling=Installing the Microsoft .NET 8 Desktop Runtime. Windows will ask for permission.
 english.RuntimeFailed=The .NET 8 Desktop Runtime was not installed, and Audio Mirror cannot start without it.%n%nInstall it from https://dotnet.microsoft.com/download/dotnet/8.0 and run this setup again.
+english.RemoveSettings=Also remove the saved settings (device selection, volumes)?
+
+german.AutostartTask=Audio Mirror mit Windows starten (im Infobereich)
+german.AutostartGroup=Beim Anmelden:
 german.RuntimeDownloading=Microsoft .NET 8 Desktop Runtime wird geladen (etwa 56 MB):
 german.RuntimeInstalling=Microsoft .NET 8 Desktop Runtime wird installiert. Windows fragt gleich nach der Erlaubnis.
 german.RuntimeFailed=Die .NET 8 Desktop Runtime wurde nicht installiert, und ohne sie startet Audio Mirror nicht.%n%nInstallieren Sie sie von https://dotnet.microsoft.com/download/dotnet/8.0 und starten Sie dieses Setup erneut.
+german.RemoveSettings=Sollen die gespeicherten Einstellungen (Geräteauswahl, Lautstärken) ebenfalls entfernt werden?
+
+french.AutostartTask=Démarrer Audio Mirror avec Windows (dans la zone de notification)
+french.AutostartGroup=À la connexion :
+french.RuntimeDownloading=Téléchargement de Microsoft .NET 8 Desktop Runtime (environ 56 Mo) :
+french.RuntimeInstalling=Installation de Microsoft .NET 8 Desktop Runtime. Windows va demander l’autorisation.
+french.RuntimeFailed=Le .NET 8 Desktop Runtime n’a pas été installé, et Audio Mirror ne peut pas démarrer sans lui.%n%nInstallez-le depuis https://dotnet.microsoft.com/download/dotnet/8.0 puis relancez ce programme d’installation.
+french.RemoveSettings=Supprimer aussi les réglages enregistrés (choix des périphériques, volumes) ?
+
+spanish.AutostartTask=Iniciar Audio Mirror con Windows (en el área de notificación)
+spanish.AutostartGroup=Al iniciar sesión:
+spanish.RuntimeDownloading=Descargando Microsoft .NET 8 Desktop Runtime (unos 56 MB):
+spanish.RuntimeInstalling=Instalando Microsoft .NET 8 Desktop Runtime. Windows pedirá permiso.
+spanish.RuntimeFailed=No se ha instalado .NET 8 Desktop Runtime y Audio Mirror no puede arrancar sin él.%n%nInstálalo desde https://dotnet.microsoft.com/download/dotnet/8.0 y vuelve a ejecutar este instalador.
+spanish.RemoveSettings=¿Eliminar también los ajustes guardados (selección de dispositivos, volúmenes)?
+
+italian.AutostartTask=Avvia Audio Mirror con Windows (nell’area di notifica)
+italian.AutostartGroup=All’accesso:
+italian.RuntimeDownloading=Download di Microsoft .NET 8 Desktop Runtime (circa 56 MB):
+italian.RuntimeInstalling=Installazione di Microsoft .NET 8 Desktop Runtime. Windows chiederà l’autorizzazione.
+italian.RuntimeFailed=Il .NET 8 Desktop Runtime non è stato installato e Audio Mirror non può avviarsi senza di esso.%n%nInstallalo da https://dotnet.microsoft.com/download/dotnet/8.0 ed esegui di nuovo questo programma di installazione.
+italian.RemoveSettings=Rimuovere anche le impostazioni salvate (scelta dei dispositivi, volumi)?
+
+brazilianportuguese.AutostartTask=Iniciar o Audio Mirror com o Windows (na área de notificação)
+brazilianportuguese.AutostartGroup=Ao entrar:
+brazilianportuguese.RuntimeDownloading=Baixando o Microsoft .NET 8 Desktop Runtime (cerca de 56 MB):
+brazilianportuguese.RuntimeInstalling=Instalando o Microsoft .NET 8 Desktop Runtime. O Windows vai pedir permissão.
+brazilianportuguese.RuntimeFailed=O .NET 8 Desktop Runtime não foi instalado e o Audio Mirror não inicia sem ele.%n%nInstale-o em https://dotnet.microsoft.com/download/dotnet/8.0 e execute este instalador novamente.
+brazilianportuguese.RemoveSettings=Remover também as configurações salvas (seleção de dispositivos, volumes)?
+
+dutch.AutostartTask=Audio Mirror met Windows starten (in het systeemvak)
+dutch.AutostartGroup=Bij aanmelden:
+dutch.RuntimeDownloading=Microsoft .NET 8 Desktop Runtime wordt gedownload (ongeveer 56 MB):
+dutch.RuntimeInstalling=Microsoft .NET 8 Desktop Runtime wordt geïnstalleerd. Windows vraagt zo om toestemming.
+dutch.RuntimeFailed=De .NET 8 Desktop Runtime is niet geïnstalleerd en Audio Mirror kan zonder deze niet starten.%n%nInstalleer deze via https://dotnet.microsoft.com/download/dotnet/8.0 en voer dit installatieprogramma opnieuw uit.
+dutch.RemoveSettings=Ook de opgeslagen instellingen verwijderen (apparaatkeuze, volumes)?
+
+polish.AutostartTask=Uruchamiaj Audio Mirror z systemem Windows (w obszarze powiadomień)
+polish.AutostartGroup=Przy logowaniu:
+polish.RuntimeDownloading=Pobieranie Microsoft .NET 8 Desktop Runtime (około 56 MB):
+polish.RuntimeInstalling=Instalowanie Microsoft .NET 8 Desktop Runtime. Windows poprosi o zgodę.
+polish.RuntimeFailed=Środowisko .NET 8 Desktop Runtime nie zostało zainstalowane, a bez niego Audio Mirror się nie uruchomi.%n%nZainstaluj je ze strony https://dotnet.microsoft.com/download/dotnet/8.0 i uruchom ten instalator ponownie.
+polish.RemoveSettings=Usunąć także zapisane ustawienia (wybór urządzeń, głośności)?
+
+russian.AutostartTask=Запускать Audio Mirror вместе с Windows (в области уведомлений)
+russian.AutostartGroup=При входе в систему:
+russian.RuntimeDownloading=Загрузка Microsoft .NET 8 Desktop Runtime (около 56 МБ):
+russian.RuntimeInstalling=Установка Microsoft .NET 8 Desktop Runtime. Windows запросит разрешение.
+russian.RuntimeFailed=.NET 8 Desktop Runtime не установлен, без него Audio Mirror не запустится.%n%nУстановите его с https://dotnet.microsoft.com/download/dotnet/8.0 и запустите эту программу установки снова.
+russian.RemoveSettings=Удалить также сохранённые настройки (выбор устройств, громкость)?
+
+ukrainian.AutostartTask=Запускати Audio Mirror разом із Windows (в області сповіщень)
+ukrainian.AutostartGroup=Під час входу:
+ukrainian.RuntimeDownloading=Завантаження Microsoft .NET 8 Desktop Runtime (близько 56 МБ):
+ukrainian.RuntimeInstalling=Встановлення Microsoft .NET 8 Desktop Runtime. Windows запитає дозвіл.
+ukrainian.RuntimeFailed=.NET 8 Desktop Runtime не встановлено, без нього Audio Mirror не запуститься.%n%nВстановіть його з https://dotnet.microsoft.com/download/dotnet/8.0 і запустіть цю програму встановлення ще раз.
+ukrainian.RemoveSettings=Видалити також збережені налаштування (вибір пристроїв, гучність)?
+
+turkish.AutostartTask=Audio Mirror’ı Windows ile başlat (bildirim alanında)
+turkish.AutostartGroup=Oturum açıldığında:
+turkish.RuntimeDownloading=Microsoft .NET 8 Desktop Runtime indiriliyor (yaklaşık 56 MB):
+turkish.RuntimeInstalling=Microsoft .NET 8 Desktop Runtime kuruluyor. Windows birazdan izin isteyecek.
+turkish.RuntimeFailed=.NET 8 Desktop Runtime kurulmadı ve Audio Mirror onsuz başlayamaz.%n%nhttps://dotnet.microsoft.com/download/dotnet/8.0 adresinden kurun ve bu kurulumu yeniden çalıştırın.
+turkish.RemoveSettings=Kaydedilmiş ayarlar da kaldırılsın mı (aygıt seçimi, ses düzeyleri)?
+
+czech.AutostartTask=Spouštět Audio Mirror se systémem Windows (v oznamovací oblasti)
+czech.AutostartGroup=Při přihlášení:
+czech.RuntimeDownloading=Stahuje se Microsoft .NET 8 Desktop Runtime (asi 56 MB):
+czech.RuntimeInstalling=Instaluje se Microsoft .NET 8 Desktop Runtime. Windows za chvíli požádá o svolení.
+czech.RuntimeFailed=.NET 8 Desktop Runtime nebyl nainstalován a bez něj se Audio Mirror nespustí.%n%nNainstalujte jej z https://dotnet.microsoft.com/download/dotnet/8.0 a spusťte tuto instalaci znovu.
+czech.RemoveSettings=Odstranit také uložená nastavení (výběr zařízení, hlasitosti)?
+
+swedish.AutostartTask=Starta Audio Mirror med Windows (i meddelandefältet)
+swedish.AutostartGroup=Vid inloggning:
+swedish.RuntimeDownloading=Hämtar Microsoft .NET 8 Desktop Runtime (cirka 56 MB):
+swedish.RuntimeInstalling=Installerar Microsoft .NET 8 Desktop Runtime. Windows kommer att be om tillåtelse.
+swedish.RuntimeFailed=.NET 8 Desktop Runtime installerades inte och Audio Mirror kan inte starta utan den.%n%nInstallera den från https://dotnet.microsoft.com/download/dotnet/8.0 och kör det här installationsprogrammet igen.
+swedish.RemoveSettings=Vill du även ta bort de sparade inställningarna (enhetsval, volymer)?
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
@@ -261,10 +351,7 @@ begin
     SettingsDir := ExpandConstant('{userappdata}\AudioMirror');
     if DirExists(SettingsDir) then
     begin
-      if ActiveLanguage = 'german' then
-        Question := 'Sollen die gespeicherten Einstellungen (Geräteauswahl, Lautstärken) ebenfalls entfernt werden?'
-      else
-        Question := 'Also remove the saved settings (device selection, volumes)?';
+      Question := ExpandConstant('{cm:RemoveSettings}');
       if SuppressibleMsgBox(Question,
                             mbConfirmation, MB_YESNO or MB_DEFBUTTON2, IDNO) = IDYES then
       begin
