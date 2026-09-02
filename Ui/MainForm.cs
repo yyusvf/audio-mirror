@@ -35,6 +35,7 @@ internal sealed class MainForm : Form
     private int statusTicks;
     private bool suppressSourceEvent;
     private string? lastError;
+    private UpdateInfo? pendingUpdate;
 
     public MainForm(bool startMinimized)
     {
@@ -177,8 +178,7 @@ internal sealed class MainForm : Form
             RefreshStatus();
         };
         settingsPage.StatusMessage += (_, message) => SetStatus(message, false);
-        settingsPage.UpdateFound += (_, update) =>
-            tray.ShowHint(Strings.AppTitle, Strings.UpdateAvailable(update.Version));
+        settingsPage.UpdateFound += (_, update) => OnUpdateFound(update);
 
         var settingsTab = new TabPage(Strings.TabSettings) { Padding = new Padding(4) };
         settingsTab.Controls.Add(settingsPage);
@@ -921,6 +921,90 @@ internal sealed class MainForm : Form
         WindowState = FormWindowState.Normal;
         Activate();
         BringToFront();
+
+        // Ein Fund, der bei ausgeblendetem Fenster liegen geblieben ist, wird jetzt vorgelegt.
+        if (pendingUpdate != null)
+        {
+            BeginInvoke(() => AskAndInstall(pendingUpdate!));
+        }
+    }
+
+    /// <summary>
+    /// Eine neuere Fassung liegt vor. Bei "automatisch installieren" wird sie ohne Rückfrage
+    /// eingespielt - das ist es, was die Einstellung zusagt. Sonst wird gefragt.
+    ///
+    /// Ist das Fenster ausgeblendet, gibt es zunächst nur einen Hinweis im Infobereich: ein
+    /// Dialog, der unaufgefordert aus dem Nichts aufspringt, wäre zudringlich. Die Frage kommt
+    /// dann, sobald das Fenster geöffnet wird.
+    /// </summary>
+    private void OnUpdateFound(UpdateInfo update)
+    {
+        if (settings.Updates == UpdateMode.Automatic)
+        {
+            _ = InstallAsync(update);
+            return;
+        }
+
+        if (!Visible)
+        {
+            pendingUpdate = update;
+            tray.ShowHint(Strings.AppTitle, Strings.UpdateAvailable(update.Version));
+            return;
+        }
+
+        AskAndInstall(update);
+    }
+
+    private void AskAndInstall(UpdateInfo update)
+    {
+        pendingUpdate = null;
+
+        DialogResult answer = MessageBox.Show(
+            this,
+            Strings.UpdatePrompt(update.Version, UpdateChecker.CurrentVersion.ToString(3)),
+            Strings.AppTitle,
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question);
+
+        if (answer == DialogResult.Yes)
+        {
+            _ = InstallAsync(update);
+        }
+    }
+
+    /// <summary>
+    /// Lädt das Setup und startet es. Danach beendet sich das Programm: das Setup wartet sonst
+    /// darauf, dass die laufende Fassung geschlossen wird.
+    /// </summary>
+    private async Task InstallAsync(UpdateInfo update)
+    {
+        if (update.SetupUrl == null)
+        {
+            // Ohne Setup bleibt nur die Seite - dann lädt man von Hand. Kommt bei den eigenen
+            // Veröffentlichungen nicht vor, ist aber besser als wortlos nichts zu tun.
+            SetUpdateStatus(Strings.UpdateNoSetup);
+            UpdateChecker.OpenPage(update.PageUrl);
+            return;
+        }
+
+        SetUpdateStatus(Strings.UpdateDownloading(update.Version));
+
+        if (!await UpdateChecker.DownloadAndRunAsync(update))
+        {
+            SetUpdateStatus(Strings.UpdateDownloadFailed);
+            UpdateChecker.OpenPage(update.PageUrl);
+            return;
+        }
+
+        SetUpdateStatus(Strings.UpdateStarting);
+        allowExit = true;
+        Close();
+    }
+
+    private void SetUpdateStatus(string text)
+    {
+        settingsPage.ShowUpdateStatus(text);
+        SetStatus(text, false);
     }
 
     private void Post(Action action)

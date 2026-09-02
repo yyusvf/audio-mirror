@@ -263,6 +263,23 @@ internal static class Strings
     public static string UpdateDownloading(string version) =>
         T($"Downloading version {version} …", $"Fassung {version} wird geladen …");
 
+    public static string UpdatePrompt(string version, string current) =>
+        T($"Audio Mirror {version} is available - you have {current}."
+          + Environment.NewLine + Environment.NewLine
+          + "Download and install it now? Audio Mirror closes for the installation "
+          + "and your settings are kept.",
+          $"Audio Mirror {version} ist verfügbar - installiert ist {current}."
+          + Environment.NewLine + Environment.NewLine
+          + "Jetzt herunterladen und installieren? Audio Mirror wird dafür beendet, "
+          + "die Einstellungen bleiben erhalten.");
+
+    public static string UpdateStarting =>
+        T("Starting the installation …", "Installation wird gestartet …");
+
+    public static string UpdateNoSetup =>
+        T("This release has no installer - opening the download page.",
+          "Zu dieser Fassung gibt es kein Setup - die Download-Seite wird geöffnet.");
+
     public static string UpdateDownloadFailed =>
         T("The download failed. Opening the release page instead.",
           "Der Download ist fehlgeschlagen. Stattdessen wird die Release-Seite geöffnet.");

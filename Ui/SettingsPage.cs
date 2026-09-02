@@ -60,6 +60,9 @@ internal sealed class SettingsPage : TableLayoutPanel
     /// <summary>Kurzer Hinweis für die Statuszeile des Hauptfensters.</summary>
     public event EventHandler<string>? StatusMessage;
 
+    /// <summary>Zeigt eine Meldung in der Aktualisierungs-Gruppe an.</summary>
+    public void ShowUpdateStatus(string text) => updateStatus.Text = text;
+
     /// <summary>Meldung, die zuletzt beim Ändern des Autostarts aufgetreten ist.</summary>
     public string? LastAutostartError { get; private set; }
 
@@ -327,26 +330,13 @@ internal sealed class SettingsPage : TableLayoutPanel
             return;
         }
 
+        // Was mit dem Fund geschieht, entscheidet das Hauptfenster - es hat das Fenster für
+        // die Rückfrage und kann sich für die Installation beenden.
         updateStatus.Text = Strings.UpdateAvailable(update.Version);
         UpdateFound?.Invoke(this, update);
-
-        if (settings.Updates == UpdateMode.Automatic && update.SetupUrl != null)
-        {
-            updateStatus.Text = Strings.UpdateDownloading(update.Version);
-            if (!await UpdateChecker.DownloadAndRunAsync(update))
-            {
-                updateStatus.Text = Strings.UpdateDownloadFailed;
-                UpdateChecker.OpenPage(update.PageUrl);
-            }
-        }
-        else if (manual)
-        {
-            UpdateChecker.OpenPage(update.PageUrl);
-        }
-
         checkNow.Enabled = settings.Updates != UpdateMode.Never;
     }
 
-    /// <summary>Eine neuere Fassung wurde gefunden - für den Hinweis im Infobereich.</summary>
+    /// <summary>Eine neuere Fassung wurde gefunden. Das Hauptfenster entscheidet, was folgt.</summary>
     public event EventHandler<UpdateInfo>? UpdateFound;
 }
