@@ -20,7 +20,6 @@ internal sealed class SettingsPage : TableLayoutPanel
     private readonly RadioButton updateAuto = new();
     private readonly RadioButton updateNotify = new();
     private readonly RadioButton updateNever = new();
-    private readonly CheckBox includeBeta = new();
     private readonly Button checkNow = new();
     private readonly Label updateStatus = new();
     private readonly ToolTip tips = new() { AutoPopDelay = 12000, InitialDelay = 300 };
@@ -136,11 +135,11 @@ internal sealed class SettingsPage : TableLayoutPanel
         language.DropDownStyle = ComboBoxStyle.DropDownList;
         language.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         language.Margin = new Padding(0, 3, 3, 3);
-        language.Items.AddRange([Strings.LanguageAutomatic, "English", "Deutsch"]);
+        language.Items.AddRange(["English", "Deutsch"]);
         language.SelectedIndexChanged += (_, _) =>
         {
             if (loading) { return; }
-            settings.Language = language.SelectedIndex switch { 1 => "en", 2 => "de", _ => null };
+            settings.Language = language.SelectedIndex == 1 ? "de" : "en";
             settings.Save();
             StatusMessage?.Invoke(this, Strings.RestartForLanguage);
         };
@@ -223,7 +222,7 @@ internal sealed class SettingsPage : TableLayoutPanel
         {
             Dock = DockStyle.Top,
             ColumnCount = 1,
-            RowCount = 7,
+            RowCount = 6,
             AutoSize = true,
             AutoSizeMode = AutoSizeMode.GrowAndShrink,
             Margin = new Padding(0),
@@ -246,21 +245,10 @@ internal sealed class SettingsPage : TableLayoutPanel
                 settings.Updates = updateAuto.Checked ? UpdateMode.Automatic
                     : updateNever.Checked ? UpdateMode.Never : UpdateMode.Notify;
                 settings.Save();
-                includeBeta.Enabled = !updateNever.Checked;
                 checkNow.Enabled = !updateNever.Checked;
             };
             rows.Controls.Add(button);
         }
-
-        includeBeta.Text = Strings.IncludeBeta;
-        includeBeta.AutoSize = true;
-        includeBeta.Margin = new Padding(3, 6, 3, 2);
-        includeBeta.CheckedChanged += (_, _) =>
-        {
-            if (loading) { return; }
-            settings.IncludeBeta = includeBeta.Checked;
-            settings.Save();
-        };
 
         checkNow.Text = Strings.CheckNow;
         checkNow.AutoSize = true;
@@ -275,7 +263,6 @@ internal sealed class SettingsPage : TableLayoutPanel
         updateStatus.ForeColor = SystemColors.GrayText;
         updateStatus.Text = Strings.CurrentVersion(UpdateChecker.CurrentVersion.ToString(3));
 
-        rows.Controls.Add(includeBeta);
         rows.Controls.Add(checkNow);
         rows.Controls.Add(updateStatus);
         box.Controls.Add(rows);
@@ -303,7 +290,9 @@ internal sealed class SettingsPage : TableLayoutPanel
     {
         autoStart.Checked = Autostart.IsEnabled();
         doubleClick.SelectedIndex = (int)settings.DoubleClickAction;
-        language.SelectedIndex = settings.Language?.ToLowerInvariant() switch { "en" => 1, "de" => 2, _ => 0 };
+        // Ohne eigene Wahl steht hier, was die Anwendung ohnehin verwendet: die erkannte
+        // Windows-Sprache. Gespeichert wird erst, wenn der Nutzer selbst etwas auswählt.
+        language.SelectedIndex = (settings.Language?.ToLowerInvariant() ?? (Strings.German ? "de" : "en")) == "de" ? 1 : 0;
         buffer.Value = Math.Clamp(settings.BufferMs, 10, 250);
         hotkey.Hotkey = (Keys)settings.HotkeyToggleAll;
         hotkeyEnabled.Checked = settings.HotkeyToggleAllEnabled;
@@ -311,8 +300,6 @@ internal sealed class SettingsPage : TableLayoutPanel
         updateAuto.Checked = settings.Updates == UpdateMode.Automatic;
         updateNotify.Checked = settings.Updates == UpdateMode.Notify;
         updateNever.Checked = settings.Updates == UpdateMode.Never;
-        includeBeta.Checked = settings.IncludeBeta;
-        includeBeta.Enabled = settings.Updates != UpdateMode.Never;
         checkNow.Enabled = settings.Updates != UpdateMode.Never;
     }
 
@@ -327,7 +314,7 @@ internal sealed class SettingsPage : TableLayoutPanel
         checkNow.Enabled = false;
         updateStatus.Text = Strings.CheckingUpdates;
 
-        UpdateInfo? update = await UpdateChecker.FindNewerAsync(settings.IncludeBeta);
+        UpdateInfo? update = await UpdateChecker.FindNewerAsync();
         settings.LastUpdateCheckUtc = DateTime.UtcNow;
         settings.Save();
 

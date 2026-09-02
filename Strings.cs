@@ -133,8 +133,7 @@ internal static class Strings
 
     // Statuszeile
     public static string NothingTicked =>
-        T("No output device ticked - tick one to start mirroring right away.",
-          "Kein Zielgerät angehakt – Haken setzen, um sofort dorthin zu spiegeln.");
+        T("No output device ticked.", "Kein Zielgerät angehakt.");
 
     public static string MirroringOnDevices(int running) =>
         T($"Mirroring to {running} device(s).", $"Spiegelung läuft auf {running} Gerät(en).");
@@ -243,7 +242,6 @@ internal static class Strings
     public static string AudioSettings => T("Audio", "Ton");
     public static string UpdateSettings => T("Updates", "Aktualisierungen");
     public static string LanguageLabel => T("Language", "Sprache");
-    public static string LanguageAutomatic => T("Automatic (Windows)", "Automatisch (Windows)");
     public static string DoubleClickLabel => T("Double-click action", "Doppelklick");
     public static string ActionOpenWindow => T("Open window", "Fenster öffnen");
     public static string ActionToggle => T("Toggle mirroring", "Spiegelung umschalten");
@@ -255,7 +253,6 @@ internal static class Strings
     public static string UpdateAutomatic => T("Install updates automatically", "Aktualisierungen automatisch installieren");
     public static string UpdateNotify => T("Notify me when updates are available", "Nur benachrichtigen");
     public static string UpdateNever => T("Never check for updates", "Nie nach Aktualisierungen suchen");
-    public static string IncludeBeta => T("Include beta versions", "Vorabfassungen einbeziehen");
     public static string CheckNow => T("Check now", "Jetzt suchen");
     public static string CheckingUpdates => T("Checking …", "Suche läuft …");
     public static string UpToDate => T("Audio Mirror is up to date.", "Audio Mirror ist aktuell.");

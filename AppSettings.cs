@@ -91,9 +91,6 @@ internal sealed class AppSettings
     /// <summary>Wie mit neuen Fassungen verfahren wird.</summary>
     public UpdateMode Updates { get; set; } = UpdateMode.Notify;
 
-    /// <summary>Ob auch Vorabfassungen berücksichtigt werden.</summary>
-    public bool IncludeBeta { get; set; }
-
     /// <summary>Wann zuletzt nach einer neuen Fassung gesehen wurde.</summary>
     public DateTime LastUpdateCheckUtc { get; set; } = DateTime.MinValue;
 

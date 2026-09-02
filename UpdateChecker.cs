@@ -40,8 +40,11 @@ internal static class UpdateChecker
     public static bool ShouldCheck(UpdateMode mode, DateTime lastCheckUtc) =>
         mode != UpdateMode.Never && DateTime.UtcNow - lastCheckUtc >= MinimumInterval;
 
-    /// <summary>Sucht die neueste Fassung. Liefert <c>null</c>, wenn es nichts Neueres gibt.</summary>
-    public static async Task<UpdateInfo?> FindNewerAsync(bool includeBeta, CancellationToken token = default)
+    /// <summary>
+    /// Sucht die neueste fertige Fassung. Liefert <c>null</c>, wenn es nichts Neueres gibt.
+    /// Vorabfassungen bleiben außen vor.
+    /// </summary>
+    public static async Task<UpdateInfo?> FindNewerAsync(CancellationToken token = default)
     {
         try
         {
@@ -61,8 +64,7 @@ internal static class UpdateChecker
                 {
                     continue;
                 }
-                bool prerelease = release.TryGetProperty("prerelease", out JsonElement pre) && pre.GetBoolean();
-                if (prerelease && !includeBeta)
+                if (release.TryGetProperty("prerelease", out JsonElement pre) && pre.GetBoolean())
                 {
                     continue;
                 }

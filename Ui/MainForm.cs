@@ -27,16 +27,11 @@ internal sealed class MainForm : Form
     private readonly System.Windows.Forms.Timer debounceTimer = new() { Interval = 400 };
     private readonly System.Windows.Forms.Timer statusTimer = new() { Interval = 500 };
 
-    /// <summary>Kurze Verzögerung, damit die Zeilenhöhen vor dem Messen feststehen.</summary>
-    private readonly System.Windows.Forms.Timer fitTimer = new() { Interval = 60 };
-
     private bool needsDeviceRefresh;
     private bool closing;
     private bool allowExit;
     private bool allowVisible;
     private bool trayHintShown;
-    private bool userResized;
-    private Size sizeBeforeUserDrag;
     private int statusTicks;
     private bool suppressSourceEvent;
     private string? lastError;
@@ -81,22 +76,7 @@ internal sealed class MainForm : Form
             }
         };
 
-        // Zieht der Nutzer das Fenster selbst auf eine Größe, wird sie ab dann respektiert.
-        ResizeBegin += (_, _) => sizeBeforeUserDrag = Size;
-        ResizeEnd += (_, _) =>
-        {
-            if (Size != sizeBeforeUserDrag)
-            {
-                userResized = true;
-            }
-        };
-
         debounceTimer.Tick += OnDebounceTick;
-        fitTimer.Tick += (_, _) =>
-        {
-            fitTimer.Stop();
-            FitToContent();
-        };
         statusTimer.Tick += (_, _) => OnStatusTick();
         statusTimer.Start();
 
@@ -132,7 +112,7 @@ internal sealed class MainForm : Form
         StartPosition = FormStartPosition.CenterScreen;
         AutoScaleMode = AutoScaleMode.Font;
         Font = new Font("Segoe UI", 9f);
-        ClientSize = new Size(760, 420);
+        ClientSize = FixedClientSize;
 
         root.Dock = DockStyle.Fill;
         root.ColumnCount = 1;
@@ -205,8 +185,6 @@ internal sealed class MainForm : Form
 
         tabs.TabPages.Add(devices);
         tabs.TabPages.Add(settingsTab);
-        // Nur auf dem Geräte-Reiter folgt die Fenstergröße dem Inhalt.
-        tabs.SelectedIndexChanged += (_, _) => ScheduleFit();
         return tabs;
     }
 
@@ -303,11 +281,20 @@ internal sealed class MainForm : Form
         ApplyMetrics();
     }
 
+    /// <summary>
+    /// Die feste Fenstergröße. Sie richtet sich nach dem Einstellungen-Reiter - dem Reiter mit
+    /// dem unveränderlichen, größten Inhalt. Die Geräteliste wächst nicht mehr mit ihrer Länge,
+    /// sondern scrollt; so springt das Fenster nicht, wenn ein Gerät dazukommt oder aufgeklappt
+    /// wird. Größer ziehen bleibt möglich, kleiner nicht - sonst würde etwas abgeschnitten.
+    /// </summary>
+    private Size FixedClientSize => new(
+        Math.Max(600, Font.Height * 40),
+        Math.Max(380, Font.Height * 25));
+
     private void ApplyMetrics()
     {
-        int line = Font.Height + 6;
-        statusLabel.Height = line;
-        MinimumSize = new Size(Math.Max(560, Font.Height * 34), Font.Height * 13);
+        statusLabel.Height = Font.Height + 6;
+        MinimumSize = SizeFromClientSize(FixedClientSize);
     }
 
     /// <summary>
@@ -316,108 +303,6 @@ internal sealed class MainForm : Form
     /// Nach oben begrenzt auf gut die halbe Bildschirmhöhe - bei vielen Geräten oder vielen
     /// aufgeklappten Anwendungen scrollt die Liste dann, statt über den Bildschirm zu wachsen.
     /// </summary>
-    /// <summary>
-    /// Sorgt dafür, dass die Einstellungen vollständig sichtbar sind. Hier wird nur vergrößert:
-    /// wechselt man zurück zu den Geräten, soll das Fenster nicht plötzlich springen.
-    /// </summary>
-    private void FitToSettings()
-    {
-        Size preferred = settingsPage.GetPreferredSize(new Size(settingsPage.Width, 0));
-        Rectangle work = Screen.FromControl(this).WorkingArea;
-
-        int height = Math.Min(
-            ClientSize.Height + Math.Max(0, preferred.Height - settingsPage.Height),
-            work.Height * 80 / 100);
-        int width = Math.Min(
-            ClientSize.Width + Math.Max(0, preferred.Width - settingsPage.Width),
-            work.Width * 80 / 100);
-
-        if (height - ClientSize.Height > 2 || width - ClientSize.Width > 2)
-        {
-            ClientSize = new Size(Math.Max(width, ClientSize.Width), Math.Max(height, ClientSize.Height));
-        }
-    }
-
-    private void FitToContent()
-    {
-        if (closing || !IsHandleCreated)
-        {
-            return;
-        }
-
-        // Auf dem Einstellungen-Reiter richtet sich die Größe nach dessen Inhalt.
-        if (tabs.SelectedIndex != 0)
-        {
-            FitToSettings();
-            return;
-        }
-
-        // Über die Unterkante messen statt Höhen zu summieren: das berücksichtigt die
-        // tatsächliche Anordnung. Der Bildlauf-Versatz wird herausgerechnet, damit auch eine
-        // gescrollte Liste richtig gemessen wird.
-        devicePanel.PerformLayout();
-        int offset = devicePanel.AutoScrollPosition.Y;
-        int content = devicePanel.Padding.Vertical + 4;
-        foreach (Control child in devicePanel.Controls)
-        {
-            if (child.Visible)
-            {
-                content = Math.Max(content, child.Bottom - offset + devicePanel.Padding.Bottom + 4);
-            }
-        }
-
-        // Der Bereich füllt jetzt den freien Platz; gebraucht wird also die Differenz zwischen
-        // Inhalt und aktueller Höhe.
-        int delta = content - devicePanel.Height;
-        if (delta == 0)
-        {
-            return;
-        }
-
-        Rectangle work = Screen.FromControl(this).WorkingArea;
-        int maxClient = Math.Max(Font.Height * 12, work.Height * 80 / 100);
-        int wanted = Math.Clamp(ClientSize.Height + delta, MinimumSize.Height, maxClient);
-
-        // Hat der Nutzer die Größe selbst gewählt, wird sie nicht wieder eingesammelt - dann
-        // wird nur noch vergrößert, damit nichts abgeschnitten bleibt.
-        if (userResized && wanted <= ClientSize.Height)
-        {
-            return;
-        }
-
-        if (Math.Abs(ClientSize.Height - wanted) > 2)
-        {
-            ClientSize = new Size(ClientSize.Width, wanted);
-        }
-    }
-
-    /// <summary>Anpassung erst nach dem Neuaufbau des Layouts, sonst stimmen die Höhen noch nicht.</summary>
-    private void ScheduleFit()
-    {
-        fitTimer.Stop();
-        fitTimer.Start();
-    }
-
-    protected override void OnShown(EventArgs e)
-    {
-        base.OnShown(e);
-
-        // Mindestbreite aus dem tatsächlichen Platzbedarf ableiten, damit auch bei großer
-        // Schrift oder Anzeigeskalierung nichts über den Fensterrand hinausragt.
-        int frame = Width - ClientSize.Width;
-        int needed = root.PreferredSize.Width + frame + 4;
-        if (needed > MinimumSize.Width)
-        {
-            MinimumSize = new Size(needed, MinimumSize.Height);
-        }
-        if (Width < MinimumSize.Width)
-        {
-            Width = MinimumSize.Width;
-        }
-
-        FitToContent();
-    }
-
     private void ScheduleRefresh()
     {
         needsDeviceRefresh = true;
@@ -566,7 +451,6 @@ internal sealed class MainForm : Form
 
         rows.Reverse();
         devicePanel.ResumeLayout();
-        ScheduleFit();
 
         void AddSection(string caption, List<AudioDeviceInfo> group, string? source)
         {
@@ -617,8 +501,6 @@ internal sealed class MainForm : Form
         bool changed = !before.SetEquals(after);
         if (changed)
         {
-            // Mehr oder weniger Anwendungen heißt: aufgeklappte Zeilen sind höher bzw. flacher.
-            ScheduleFit();
         }
         return changed;
     }
@@ -706,7 +588,6 @@ internal sealed class MainForm : Form
         {
             settings.For(row.DeviceId).Expanded = row.Expanded;
             settings.Save();
-            ScheduleFit();
         }
     }
 
@@ -1091,7 +972,6 @@ internal sealed class MainForm : Form
         closing = true;
         statusTimer.Stop();
         debounceTimer.Stop();
-        fitTimer.Stop();
 
         foreach (DeviceRow row in rows)
         {
