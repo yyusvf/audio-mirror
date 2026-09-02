@@ -10,8 +10,7 @@ Play Windows audio on **several output devices at once** — speakers *and* Blue
 | File | |
 |---|---|
 | `AudioMirror-Setup.exe` | Installer. Start menu entry, optional desktop shortcut, normal uninstall. Detects x64 / ARM64 by itself. |
-| `AudioMirror.exe` | Portable, single file (x64) |
-| `AudioMirror-arm64.exe` | Portable, single file (Windows on ARM) |
+| `AudioMirror-Portable.zip` | No installation — unpack and run. Holds the x64 and the ARM64 build. |
 
 Windows shows "Windows protected your PC" on first launch because the files are not
 code-signed — click *More info → Run anyway*.
@@ -69,6 +68,9 @@ dotnet publish AudioMirror.csproj -c Release -o dist
 dotnet publish AudioMirror.csproj -c Release -r win-arm64 --self-contained true -o dist/arm64
 ISCC.exe setup/AudioMirror.iss     # installer, needs Inno Setup
 ```
+
+The portable archive is just the two published exes plus `LICENSE` and a short `README.txt`,
+zipped as `AudioMirror-Portable.zip`.
 
 ## Not yet tested
 
