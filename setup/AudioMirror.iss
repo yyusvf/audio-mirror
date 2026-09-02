@@ -7,7 +7,7 @@
 ; Erwartet die veröffentlichten Dateien unter dist\ und dist\arm64\.
 
 #define AppName        "Audio Mirror"
-#define AppVersion     "1.2.1"
+#define AppVersion     "1.2.2"
 #define AppPublisher   "Yusuf Esad Mumcu"
 #define AppUrl         "https://github.com/yyusvf/audio-mirror"
 #define AppExe         "AudioMirror.exe"
@@ -28,6 +28,13 @@ VersionInfoVersion={#AppVersion}
 ; umstellen, wer das möchte.
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
+
+; Bei einer Aktualisierung werden Zielordner, Startmenügruppe und die Auswahl der
+; Zusatzaufgaben aus der vorigen Installation übernommen - die zugehörigen Seiten entfallen
+; dann (siehe ShouldSkipPage).
+UsePreviousAppDir=yes
+UsePreviousGroup=yes
+UsePreviousTasks=yes
 
 DefaultDirName={autopf}\{#AppName}
 DefaultGroupName={#AppName}
@@ -68,11 +75,11 @@ english.AutostartGroup=At sign-in:
 german.AutostartTask=Audio Mirror mit Windows starten (im Infobereich)
 german.AutostartGroup=Beim Anmelden:
 
-english.RuntimeTitle=Microsoft .NET 8 Desktop Runtime
-english.RuntimeSubtitle=Audio Mirror needs it and it is not installed yet. Setup downloads it now - about 56 MB. Windows will ask for permission to install it.
+english.RuntimeDownloading=Downloading the Microsoft .NET 8 Desktop Runtime (about 56 MB):
+english.RuntimeInstalling=Installing the Microsoft .NET 8 Desktop Runtime. Windows will ask for permission.
 english.RuntimeFailed=The .NET 8 Desktop Runtime was not installed, and Audio Mirror cannot start without it.%n%nInstall it from https://dotnet.microsoft.com/download/dotnet/8.0 and run this setup again.
-german.RuntimeTitle=Microsoft .NET 8 Desktop Runtime
-german.RuntimeSubtitle=Audio Mirror benötigt sie, und sie ist noch nicht installiert. Das Setup lädt sie jetzt herunter - etwa 56 MB. Windows fragt anschließend nach der Erlaubnis, sie zu installieren.
+german.RuntimeDownloading=Microsoft .NET 8 Desktop Runtime wird geladen (etwa 56 MB):
+german.RuntimeInstalling=Microsoft .NET 8 Desktop Runtime wird installiert. Windows fragt gleich nach der Erlaubnis.
 german.RuntimeFailed=Die .NET 8 Desktop Runtime wurde nicht installiert, und ohne sie startet Audio Mirror nicht.%n%nInstallieren Sie sie von https://dotnet.microsoft.com/download/dotnet/8.0 und starten Sie dieses Setup erneut.
 
 [Tasks]
@@ -92,13 +99,16 @@ Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}";            Filename: "{app}\{#AppExe}"; Tasks: desktopicon
 
 [Registry]
-; Autostart nur anlegen, wenn im Setup gewünscht. Das Programm pflegt denselben Eintrag später
-; selbst über sein Häkchen, deshalb wird er bei der Deinstallation wieder entfernt.
+; Autostart nur bei der Erstinstallation anlegen, und nur wenn dort gewünscht. Danach gehört
+; der Eintrag der Anwendung - sie pflegt ihn über ihr Häkchen und den Infobereich. Würde eine
+; Aktualisierung ihn neu schreiben, käme ein abgeschalteter Autostart stillschweigend zurück.
+; Der zweite Eintrag schreibt nichts, er sorgt nur dafür, dass der Wert beim Deinstallieren in
+; jedem Fall verschwindet.
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; \
     ValueName: "AudioMirror"; ValueData: """{app}\{#AppExe}"" --minimized"; \
-    Flags: uninsdeletevalue; Tasks: autostart
+    Flags: uninsdeletevalue; Tasks: autostart; Check: not IsUpgrade
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: none; \
-    ValueName: "AudioMirror"; Flags: uninsdeletevalue; Tasks: not autostart
+    ValueName: "AudioMirror"; Flags: uninsdeletevalue
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run"; \
     ValueType: none; ValueName: "AudioMirror"; Flags: uninsdeletevalue
 
@@ -112,6 +122,9 @@ Type: files; Name: "{userappdata}\AudioMirror\restored.flag"
 
 [Code]
 const
+  // Dieselbe Kennung wie AppId oben; daraus baut Inno seinen Uninstall-Schlüssel.
+  AppGuid = '{8F3C6A1E-2B47-4D9A-9E51-7C0A5D8B4F62}';
+
   RuntimeUrlX64   = 'https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe';
   RuntimeUrlArm64 = 'https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-arm64.exe';
 
@@ -121,8 +134,8 @@ const
   RuntimeAlreadyThere  = 1638;
 
 var
-  DownloadPage: TDownloadWizardPage;
-  RuntimeFile: String;
+  UpgradeChecked: Boolean;
+  UpgradeDetected: Boolean;
 
 // "C:\Program Files", auch wenn das Setup selbst 32-bittig läuft. Genau dafür setzt Windows
 // ProgramW6432; nur falls es fehlt, wird auf ProgramFiles zurückgegriffen.
@@ -166,50 +179,65 @@ end;
 
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
 begin
+  if ProgressMax > 0 then
+    WizardForm.PreparingLabel.Caption := ExpandConstant('{cm:RuntimeDownloading}') + ' ' +
+      IntToStr((Progress * 100) div ProgressMax) + ' %';
   Result := True;
 end;
 
-procedure InitializeWizard;
+// Ist die Anwendung schon installiert? Dann ist dies eine Aktualisierung. Die Antwort wird
+// gemerkt: Inno legt seinen eigenen Uninstall-Schlüssel während der Installation an, danach
+// sähe auch eine Erstinstallation wie eine Aktualisierung aus.
+function IsUpgrade: Boolean;
+var
+  Key, Dummy: String;
 begin
-  DownloadPage := CreateDownloadPage(
-    ExpandConstant('{cm:RuntimeTitle}'), ExpandConstant('{cm:RuntimeSubtitle}'), @OnDownloadProgress);
-end;
-
-// Heruntergeladen wird erst nach der letzten Seite: bis dahin kann der Nutzer noch abbrechen,
-// ohne dass 56 MB durch die Leitung gegangen sind.
-function NextButtonClick(CurPageID: Integer): Boolean;
-begin
-  Result := True;
-  if (CurPageID <> wpReady) or DesktopRuntimeInstalled then
+  if UpgradeChecked then
+  begin
+    Result := UpgradeDetected;
     Exit;
-
-  DownloadPage.Clear;
-  DownloadPage.Add(RuntimeUrl, 'windowsdesktop-runtime.exe', '');
-  DownloadPage.Show;
-  try
-    try
-      DownloadPage.Download;
-      RuntimeFile := ExpandConstant('{tmp}\windowsdesktop-runtime.exe');
-    except
-      SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
-      Result := False;
-    end;
-  finally
-    DownloadPage.Hide;
   end;
+
+  Key := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' + AppGuid + '_is1';
+  UpgradeDetected := RegQueryStringValue(HKCU, Key, 'UninstallString', Dummy) or
+                     RegQueryStringValue(HKLM, Key, 'UninstallString', Dummy);
+  UpgradeChecked := True;
+  Result := UpgradeDetected;
 end;
 
+// Bei einer Aktualisierung stehen alle Antworten schon fest: Inno übernimmt Zielordner,
+// Startmenügruppe und Zusatzaufgaben aus der vorigen Installation. Die Seiten noch einmal
+// vorzulegen kostet nur Klicks. Übrig bleiben Fortschritt und Abschluss.
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+  Result := IsUpgrade and
+    ((PageID = wpLicense) or (PageID = wpSelectDir) or (PageID = wpSelectProgramGroup) or
+     (PageID = wpSelectTasks) or (PageID = wpReady));
+end;
+
+// Die Laufzeit wird hier geholt, nicht auf einer eigenen Seite: PrepareToInstall läuft auch
+// dann, wenn die Seiten übersprungen werden oder das Setup still installiert.
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 var
   ResultCode: Integer;
+  Installer: String;
 begin
   Result := '';
-  if RuntimeFile = '' then
+  if DesktopRuntimeInstalled then
     Exit;
 
-  // Die Laufzeit installiert maschinenweit und verlangt Administratorrechte - "runas" löst die
-  // Nachfrage von Windows aus. "/passive" zeigt einen Fortschritt, fragt aber nichts.
-  if not ShellExec('runas', RuntimeFile, '/install /passive /norestart', '', SW_SHOW,
+  Installer := ExpandConstant('{tmp}\windowsdesktop-runtime.exe');
+  try
+    DownloadTemporaryFile(RuntimeUrl, 'windowsdesktop-runtime.exe', '', @OnDownloadProgress);
+  except
+    Result := ExpandConstant('{cm:RuntimeFailed}');
+    Exit;
+  end;
+
+  // Die Laufzeit installiert maschinenweit und verlangt Administratorrechte - "runas" löst
+  // die Nachfrage von Windows aus. "/passive" zeigt einen Fortschritt, fragt aber nichts.
+  WizardForm.PreparingLabel.Caption := ExpandConstant('{cm:RuntimeInstalling}');
+  if not ShellExec('runas', Installer, '/install /passive /norestart', '', SW_SHOW,
                    ewWaitUntilTerminated, ResultCode) then
   begin
     Result := ExpandConstant('{cm:RuntimeFailed}');
