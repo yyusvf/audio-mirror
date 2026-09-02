@@ -83,7 +83,7 @@ internal static class Autostart
         string? executable = ExecutablePath;
         if (enabled && executable == null)
         {
-            return "Der Programmpfad konnte nicht ermittelt werden.";
+            return Strings.ExecutablePathUnknown;
         }
 
         try
@@ -91,7 +91,7 @@ internal static class Autostart
             using RegistryKey? run = Registry.CurrentUser.OpenSubKey(RunKeyPath, writable: true);
             if (run == null)
             {
-                return "Der Autostart-Schlüssel in der Registry ist nicht zugänglich.";
+                return Strings.RunKeyUnavailable;
             }
 
             if (enabled)
@@ -117,11 +117,11 @@ internal static class Autostart
         }
         catch (UnauthorizedAccessException)
         {
-            return "Keine Berechtigung, den Autostart zu ändern (evtl. durch eine Gruppenrichtlinie gesperrt).";
+            return Strings.AutostartDenied;
         }
         catch (Exception ex)
         {
-            return "Autostart konnte nicht geändert werden: " + ex.Message;
+            return Strings.AutostartFailed(ex.Message);
         }
     }
 

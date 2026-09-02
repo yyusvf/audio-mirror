@@ -1,3 +1,4 @@
+using AudioMirror;
 using System.Runtime.InteropServices;
 
 namespace AudioMirror.Ui;
@@ -58,7 +59,7 @@ internal sealed class GlobalHotkey : IDisposable
             return null;
         }
 
-        return "Die Tastenkombination ist bereits von einem anderen Programm belegt.";
+        return Strings.HotkeyTaken;
     }
 
     public void Unregister()
@@ -79,13 +80,13 @@ internal sealed class GlobalHotkey : IDisposable
         Keys key = keyData & Keys.KeyCode;
         if (key == Keys.None)
         {
-            return "keine";
+            return Strings.NoHotkey;
         }
 
         var parts = new List<string>();
-        if ((keyData & Keys.Control) == Keys.Control) { parts.Add("Strg"); }
-        if ((keyData & Keys.Shift) == Keys.Shift) { parts.Add("Umschalt"); }
-        if ((keyData & Keys.Alt) == Keys.Alt) { parts.Add("Alt"); }
+        if ((keyData & Keys.Control) == Keys.Control) { parts.Add(Strings.KeyControl); }
+        if ((keyData & Keys.Shift) == Keys.Shift) { parts.Add(Strings.KeyShift); }
+        if ((keyData & Keys.Alt) == Keys.Alt) { parts.Add(Strings.KeyAlt); }
         parts.Add(DescribeKey(key));
         return string.Join(" + ", parts);
     }
@@ -93,16 +94,16 @@ internal sealed class GlobalHotkey : IDisposable
     private static string DescribeKey(Keys key) => key switch
     {
         >= Keys.D0 and <= Keys.D9 => ((char)('0' + (key - Keys.D0))).ToString(),
-        >= Keys.NumPad0 and <= Keys.NumPad9 => "Num " + (key - Keys.NumPad0),
+        >= Keys.NumPad0 and <= Keys.NumPad9 => Strings.KeyNumPad + (key - Keys.NumPad0),
         Keys.Oemplus => "+",
         Keys.OemMinus => "-",
         Keys.OemPipe => "^",
         Keys.OemQuestion => "#",
         Keys.Oemcomma => ",",
         Keys.OemPeriod => ".",
-        Keys.Space => "Leertaste",
-        Keys.Prior => "Bild auf",
-        Keys.Next => "Bild ab",
+        Keys.Space => Strings.KeySpace,
+        Keys.Prior => Strings.KeyPageUp,
+        Keys.Next => Strings.KeyPageDown,
         Keys.Escape => "Esc",
         _ => key.ToString(),
     };
@@ -153,7 +154,7 @@ internal sealed class HotkeyRecorder : TextBox
     protected override void OnEnter(EventArgs e)
     {
         base.OnEnter(e);
-        Text = "Kombination drücken …";
+        Text = Strings.PressCombination;
     }
 
     protected override void OnLeave(EventArgs e)

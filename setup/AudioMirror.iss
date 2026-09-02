@@ -42,6 +42,7 @@ SetupIconFile=..\AudioMirror.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
 
+ShowLanguageDialog=no
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
@@ -55,12 +56,21 @@ CloseApplications=yes
 RestartApplications=no
 
 [Languages]
-Name: "deutsch"; MessagesFile: "compiler:Languages\German.isl"
+; Englisch zuerst: Inno waehlt die Sprache automatisch passend zur Windows-Anzeigesprache und
+; faellt sonst auf den ersten Eintrag zurueck. Deutsches Windows bekommt Deutsch, alles andere
+; Englisch - ohne Sprachabfrage beim Start.
 Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "german";  MessagesFile: "compiler:Languages\German.isl"
+
+[CustomMessages]
+english.AutostartTask=Start Audio Mirror with Windows (in the notification area)
+english.AutostartGroup=At sign-in:
+german.AutostartTask=Audio Mirror mit Windows starten (im Infobereich)
+german.AutostartGroup=Beim Anmelden:
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
-Name: "autostart"; Description: "Audio Mirror mit Windows starten (im Infobereich)"; GroupDescription: "Beim Anmelden:"; Flags: unchecked
+Name: "autostart"; Description: "{cm:AutostartTask}"; GroupDescription: "{cm:AutostartGroup}"; Flags: unchecked
 
 [Files]
 ; Je nach Prozessor nur die passende Fassung ablegen.
@@ -98,13 +108,18 @@ Type: files; Name: "{userappdata}\AudioMirror\restored.flag"
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   SettingsDir: String;
+  Question: String;
 begin
   if CurUninstallStep = usPostUninstall then
   begin
     SettingsDir := ExpandConstant('{userappdata}\AudioMirror');
     if DirExists(SettingsDir) then
     begin
-      if SuppressibleMsgBox('Sollen die gespeicherten Einstellungen (Geräteauswahl, Lautstärken) ebenfalls entfernt werden?',
+      if ActiveLanguage = 'german' then
+        Question := 'Sollen die gespeicherten Einstellungen (Geräteauswahl, Lautstärken) ebenfalls entfernt werden?'
+      else
+        Question := 'Also remove the saved settings (device selection, volumes)?';
+      if SuppressibleMsgBox(Question,
                             mbConfirmation, MB_YESNO or MB_DEFBUTTON2, IDNO) = IDYES then
       begin
         DelTree(SettingsDir, True, True, True);

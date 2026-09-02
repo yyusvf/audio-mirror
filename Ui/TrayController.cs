@@ -1,3 +1,4 @@
+using AudioMirror;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 
@@ -22,7 +23,7 @@ internal sealed class TrayController : IDisposable
     private readonly NotifyIcon notifyIcon;
     private readonly ContextMenuStrip menu = new();
     private readonly IntPtr iconHandle;
-    private string tooltip = "Audio Mirror";
+    private string tooltip = Strings.AppTitle;
     private bool disposed;
 
     public TrayController()
@@ -88,18 +89,18 @@ internal sealed class TrayController : IDisposable
     {
         menu.Items.Clear();
 
-        var header = new ToolStripMenuItem("Zielgeräte") { Enabled = false };
+        var header = new ToolStripMenuItem(Strings.TargetDevices) { Enabled = false };
         menu.Items.Add(header);
 
         IReadOnlyList<TrayDeviceEntry> devices = DeviceProvider?.Invoke() ?? [];
         if (devices.Count == 0)
         {
-            menu.Items.Add(new ToolStripMenuItem("Keine Ausgabegeräte gefunden") { Enabled = false });
+            menu.Items.Add(new ToolStripMenuItem(Strings.NoOutputDevices) { Enabled = false });
         }
 
         foreach (TrayDeviceEntry device in devices)
         {
-            var item = new ToolStripMenuItem(device.IsSource ? device.Name + "  (Quelle)" : device.Name)
+            var item = new ToolStripMenuItem(device.IsSource ? device.Name + Strings.SourceSuffix : device.Name)
             {
                 Checked = device.Enabled,
                 CheckOnClick = false,
@@ -114,11 +115,11 @@ internal sealed class TrayController : IDisposable
         }
 
         menu.Items.Add(new ToolStripSeparator());
-        var open = new ToolStripMenuItem("Fenster öffnen");
+        var open = new ToolStripMenuItem(Strings.OpenWindow);
         open.Click += (_, _) => ShowWindowRequested?.Invoke();
         menu.Items.Add(open);
 
-        var exit = new ToolStripMenuItem("Beenden");
+        var exit = new ToolStripMenuItem(Strings.Exit);
         exit.Click += (_, _) => ExitRequested?.Invoke();
         menu.Items.Add(exit);
     }

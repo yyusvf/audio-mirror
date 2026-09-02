@@ -1,3 +1,4 @@
+using AudioMirror;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 
@@ -515,7 +516,7 @@ internal sealed class MirrorEngine : IDisposable
             int? processId = AudioAppEnumerator.ResolveProcessId(entry.Key);
             if (processId == null)
             {
-                throw new InvalidOperationException("Anwendung läuft nicht.");
+                throw new InvalidOperationException(Strings.AppNotRunning);
             }
 
             var capture = new ProcessLoopbackCapture(processId.Value, Math.Clamp(runningBufferMs / 2, 10, 40));
@@ -555,7 +556,7 @@ internal sealed class MirrorEngine : IDisposable
         try
         {
             string? sourceId = ResolveSourceId()
-                ?? throw new InvalidOperationException("Kein Quellgerät verfügbar.");
+                ?? throw new InvalidOperationException(Strings.NoSourceDevice);
 
             MMDevice source = enumerator.GetDevice(sourceId);
             entry.Device = source;
@@ -599,7 +600,7 @@ internal sealed class MirrorEngine : IDisposable
             }
 
             throw new InvalidOperationException(
-                "Die Aufnahme am Quellgerät konnte nicht gestartet werden: " + (failure?.Message ?? "unbekannt"));
+                Strings.SourceCaptureFailed(failure?.Message ?? "?"));
         }
         catch (Exception ex)
         {
@@ -631,8 +632,8 @@ internal sealed class MirrorEngine : IDisposable
 
         // 0x80070490 = Element nicht gefunden: der Prozess gibt gerade keinen Ton aus.
         return ex.HResult == unchecked((int)0x80070490)
-            ? "Anwendung gibt gerade keinen Ton aus."
-            : "Ton nicht abgreifbar: " + ex.Message;
+            ? Strings.AppSilent
+            : Strings.CaptureFailed(ex.Message);
     }
 
     private string ResolveName(string deviceId)
@@ -644,7 +645,7 @@ internal sealed class MirrorEngine : IDisposable
         }
         catch
         {
-            return "Unbekanntes Gerät";
+            return Strings.UnknownDevice;
         }
     }
 
@@ -840,7 +841,7 @@ internal sealed class MirrorEngine : IDisposable
             Capture = null;
             Format = null;
             Subscribers = [];
-            Error = e.Exception?.Message ?? "Die Tonquelle wurde beendet.";
+            Error = e.Exception?.Message ?? Strings.SourceEnded;
         }
     }
 }

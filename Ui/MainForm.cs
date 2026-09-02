@@ -1,3 +1,4 @@
+using AudioMirror;
 using AudioMirror.Audio;
 
 namespace AudioMirror.Ui;
@@ -117,7 +118,7 @@ internal sealed class MainForm : Form
 
     private void BuildUi()
     {
-        Text = "Audio Mirror";
+        Text = Strings.AppTitle;
         Icon = tray.Icon;
         StartPosition = FormStartPosition.CenterScreen;
         AutoScaleMode = AutoScaleMode.Font;
@@ -169,7 +170,7 @@ internal sealed class MainForm : Form
         };
         header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
 
-        Label caption = ShrinkableLabel("Quelle");
+        Label caption = ShrinkableLabel(Strings.Source);
         caption.ForeColor = SystemColors.GrayText;
 
         sourceSelect.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -195,7 +196,7 @@ internal sealed class MainForm : Form
         container.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         container.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
 
-        Label columns = ShrinkableLabel("Zielgeräte");
+        Label columns = ShrinkableLabel(Strings.TargetDevices);
         columns.ForeColor = SystemColors.GrayText;
         columns.Margin = new Padding(3, 0, 3, 4);
 
@@ -234,7 +235,7 @@ internal sealed class MainForm : Form
 
         var bufferLabel = new Label
         {
-            Text = "Puffer / Latenz:",
+            Text = Strings.BufferLabel,
             AutoSize = true,
             Margin = new Padding(3, 6, 6, 3),
         };
@@ -255,7 +256,7 @@ internal sealed class MainForm : Form
 
         var bufferUnit = new Label
         {
-            Text = "ms",
+            Text = Strings.Milliseconds,
             AutoSize = true,
             Margin = new Padding(0, 6, 3, 3),
         };
@@ -263,15 +264,12 @@ internal sealed class MainForm : Form
         bufferRow.Controls.AddRange([bufferLabel, bufferInput, bufferUnit]);
 
         // Die Erklärung steht als Kurzinfo an der Beschriftung, statt dauerhaft Platz zu belegen.
-        string bufferTip =
-            "Kleiner = weniger Latenz, größer = mehr Reserve gegen Aussetzer."
-            + Environment.NewLine
-            + "Voreinstellung 30 ms. Bei Knacksern erhöhen.";
+        string bufferTip = Strings.BufferTip;
         bufferTips.SetToolTip(bufferLabel, bufferTip);
         bufferTips.SetToolTip(bufferInput, bufferTip);
         bufferTips.SetToolTip(bufferUnit, bufferTip);
 
-        autoStartWindowsCheck.Text = "Mit Windows starten (startet im Infobereich)";
+        autoStartWindowsCheck.Text = Strings.StartWithWindows;
         autoStartWindowsCheck.AutoSize = true;
         autoStartWindowsCheck.Enabled = Autostart.IsSupported;
         suppressAutostartEvent = true;
@@ -283,7 +281,7 @@ internal sealed class MainForm : Form
         statusLabel.AutoEllipsis = true;
         statusLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         statusLabel.TextAlign = ContentAlignment.MiddleLeft;
-        statusLabel.Text = "Bereit.";
+        statusLabel.Text = Strings.Ready;
 
         var hotkeyRow = new FlowLayoutPanel
         {
@@ -296,7 +294,7 @@ internal sealed class MainForm : Form
 
         var hotkeyLabel = new Label
         {
-            Text = "Alles umschalten:",
+            Text = Strings.ToggleAllLabel,
             AutoSize = true,
             Margin = new Padding(3, 7, 6, 3),
         };
@@ -306,7 +304,7 @@ internal sealed class MainForm : Form
         hotkeyRecorder.Hotkey = (Keys)settings.HotkeyToggleAll;
         hotkeyRecorder.HotkeyChanged += OnHotkeyChanged;
 
-        hotkeyEnabledCheck.Text = "Hotkey aktiviert";
+        hotkeyEnabledCheck.Text = Strings.HotkeyEnabled;
         hotkeyEnabledCheck.AutoSize = true;
         hotkeyEnabledCheck.Checked = settings.HotkeyToggleAllEnabled;
         hotkeyEnabledCheck.Margin = new Padding(0, 7, 3, 3);
@@ -319,7 +317,7 @@ internal sealed class MainForm : Form
 
         hotkeyRow.Controls.AddRange([hotkeyLabel, hotkeyRecorder, hotkeyEnabledCheck]);
 
-        closeButton.Text = "Schließen";
+        closeButton.Text = Strings.Close;
         closeButton.AutoSize = true;
         closeButton.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         closeButton.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
@@ -515,8 +513,8 @@ internal sealed class MainForm : Form
         sourceSelect.Items.Clear();
         // In der Klammer steht, welches Gerät der Windows-Standard gerade ist - so ist ohne
         // Nachsehen erkennbar, worauf sich "automatisch" im Moment bezieht.
-        string current = devices.FirstOrDefault(d => d.IsDefault)?.Name ?? "keines vorhanden";
-        sourceSelect.Items.Add(new SourceItem(null, $"Windows-Standardgerät ({current})"));
+        string current = devices.FirstOrDefault(d => d.IsDefault)?.Name ?? Strings.NoDeviceAvailable;
+        sourceSelect.Items.Add(new SourceItem(null, Strings.WindowsDefaultDevice(current)));
 
         // Nur angeschlossene Geräte zur Auswahl stellen: von einem nicht verbundenen Gerät
         // ließe sich ohnehin nichts abgreifen.
@@ -529,7 +527,7 @@ internal sealed class MainForm : Form
         // Auswahl beim Abziehen stillschweigend auf "automatisch" zurückfallen.
         if (wanted != null && devices.All(d => d.Id != wanted && d.Connected))
         {
-            sourceSelect.Items.Add(new SourceItem(wanted, "Zuletzt gewähltes Gerät (nicht verfügbar)"));
+            sourceSelect.Items.Add(new SourceItem(wanted, Strings.LastChosenUnavailable));
         }
 
         sourceSelect.SelectedItem = sourceSelect.Items.OfType<SourceItem>()
@@ -591,9 +589,9 @@ internal sealed class MainForm : Form
         // Dock=Top stapelt in umgekehrter Einfügereihenfolge - daher alles rückwärts einfügen.
         if (disconnected.Count > 0)
         {
-            AddSection("Getrennt", disconnected, sourceId);
+            AddSection(Strings.Disconnected, disconnected, sourceId);
         }
-        AddSection("Verbunden", connected, sourceId);
+        AddSection(Strings.Connected, connected, sourceId);
 
         rows.Reverse();
         devicePanel.ResumeLayout();
@@ -793,13 +791,13 @@ internal sealed class MainForm : Form
 
             if (row.IsSource)
             {
-                row.SetStatus("Quelle", false);
+                row.SetStatus(Strings.SourceShort, false);
                 continue;
             }
 
             if (!row.Connected)
             {
-                row.SetStatus("nicht verbunden – Einstellung bleibt gespeichert", false);
+                row.SetStatus(Strings.NotConnected, false);
                 continue;
             }
 
@@ -811,27 +809,25 @@ internal sealed class MainForm : Form
 
             if (output.Error != null)
             {
-                row.SetStatus(output.Error + " – neuer Versuch läuft", true);
+                row.SetStatus(output.Error + Strings.RetryRunning, true);
                 failed++;
             }
             else if (row.UsesWholeDevice)
             {
-                row.SetStatus($"läuft – kompletter Ton, ca. {output.EstimatedLatencyMs:0} ms", false);
+                row.SetStatus(Strings.RunningWholeSound(output.EstimatedLatencyMs), false);
                 running++;
             }
             else
             {
                 int count = output.ActiveAppCount;
                 row.SetStatus(count == 0
-                    ? "keine Anwendung ausgewählt"
-                    : $"läuft – {count} Anwendung(en), ca. {output.EstimatedLatencyMs:0} ms", false);
+                    ? Strings.NoAppSelected
+                    : Strings.RunningApps(count, output.EstimatedLatencyMs), false);
                 running++;
             }
         }
 
-        tray.SetTooltip(engine.IsRunning
-            ? $"Audio Mirror – spiegelt auf {running} Gerät(e)"
-            : "Audio Mirror – keine Spiegelung");
+        tray.SetTooltip(engine.IsRunning ? Strings.TrayMirroring(running) : Strings.TrayNoMirroring);
 
         if (lastError != null)
         {
@@ -841,29 +837,28 @@ internal sealed class MainForm : Form
 
         if (engine.SourceUnavailable)
         {
-            SetStatus("Das gewählte Quellgerät ist nicht verfügbar – die Spiegelung pausiert, "
-                + "bis es zurück ist oder eine andere Quelle gewählt wird.", true);
+            SetStatus(Strings.SourceUnavailable, true);
             return;
         }
 
         int selected = rows.Count(r => r.Selected && !r.IsSource && r.Connected);
         if (selected == 0)
         {
-            SetStatus("Kein Zielgerät angehakt – Haken setzen, um sofort dorthin zu spiegeln.", false);
+            SetStatus(Strings.NothingTicked, false);
             return;
         }
 
         if (running == 0)
         {
-            string reason = engine.WholeDeviceError ?? "Gerät bzw. Anwendung";
-            SetStatus($"Wartet auf {reason} ({selected} Gerät(e) angehakt).", true);
+            string reason = engine.WholeDeviceError ?? Strings.DeviceOrApp;
+            SetStatus(Strings.WaitingFor(reason, selected), true);
             return;
         }
 
-        string message = $"Spiegelung läuft auf {running} Gerät(en).";
+        string message = Strings.MirroringOnDevices(running);
         if (failed > 0)
         {
-            message += $" {failed} wartet noch.";
+            message += Strings.StillWaiting(failed);
         }
         SetStatus(message, failed > 0);
     }
@@ -889,10 +884,7 @@ internal sealed class MainForm : Form
         if (showHint && !trayHintShown)
         {
             trayHintShown = true;
-            tray.ShowHint(
-                "Audio Mirror läuft weiter",
-                "Das Fenster ist nur ausgeblendet, die Spiegelung läuft im Hintergrund weiter. "
-                + "Doppelklick auf das Symbol holt es zurück, \"Beenden\" schließt das Programm.");
+            tray.ShowHint(Strings.StillRunningTitle, Strings.StillRunningBody);
         }
     }
 
@@ -913,7 +905,7 @@ internal sealed class MainForm : Form
             if (key == wanted && wanted != Keys.None)
             {
                 hotkeyRecorder.Hotkey = (Keys)settings.HotkeyToggleAll;
-                SetStatus($"„{GlobalHotkey.Describe(wanted)}“ ist bereits für {owner} vergeben.", true);
+                SetStatus(Strings.HotkeyAssignedTo(GlobalHotkey.Describe(wanted), owner), true);
                 return;
             }
         }
@@ -981,14 +973,14 @@ internal sealed class MainForm : Form
 
             settings.Save();
             SyncTargets();
-            tray.ShowHint("Spiegelung aus", $"{snapshot.Count} Gerät(e) stummgeschaltet. Erneut drücken stellt sie wieder her.");
+            tray.ShowHint(Strings.MirroringOff, Strings.MutedDevices(snapshot.Count));
             return;
         }
 
         Dictionary<string, DeviceSetting>? saved = settings.HotkeySnapshot;
         if (saved == null || saved.Count == 0)
         {
-            SetStatus("Kein gemerkter Zustand vorhanden – erst etwas anhaken.", true);
+            SetStatus(Strings.NoRememberedState, true);
             return;
         }
 
@@ -1024,9 +1016,9 @@ internal sealed class MainForm : Form
         RefreshAppLists();
         SyncTargets();
 
-        tray.ShowHint("Spiegelung an", skipped == 0
-            ? $"{restored} Gerät(e) wiederhergestellt."
-            : $"{restored} Gerät(e) wiederhergestellt, {skipped} nicht mehr verfügbar.");
+        tray.ShowHint(Strings.MirroringOn, skipped == 0
+            ? Strings.RestoredDevices(restored)
+            : Strings.RestoredDevicesPartly(restored, skipped));
     }
 
     private void OnSessionEnding(object? sender, Microsoft.Win32.SessionEndingEventArgs e) =>

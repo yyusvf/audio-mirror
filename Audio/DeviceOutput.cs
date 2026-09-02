@@ -1,3 +1,4 @@
+using AudioMirror;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -322,14 +323,14 @@ internal sealed class DeviceOutput : IDisposable
         }
         Error = e.Exception != null
             ? DescribeError(e.Exception)
-            : "Wiedergabe wurde vom System beendet.";
+            : Strings.PlaybackStopped;
     }
 
     private static string DescribeError(Exception? ex)
     {
         if (ex == null)
         {
-            return "Unbekannter Fehler.";
+            return Strings.UnknownError;
         }
 
         if (ex is NotSupportedException)
@@ -340,12 +341,12 @@ internal sealed class DeviceOutput : IDisposable
         // NAudio meldet exklusiv belegte bzw. verschwundene Geräte als COM-HRESULT.
         return ex.HResult switch
         {
-            unchecked((int)0x8889000A) => "Gerät ist exklusiv von einer anderen Anwendung belegt.",
-            unchecked((int)0x88890004) => "Gerät ist nicht mehr verfügbar (getrennt oder deaktiviert).",
-            unchecked((int)0x88890008) => "Audioformat wird von diesem Gerät nicht unterstützt.",
-            unchecked((int)0x88890001) => "Gerät wird bereits von dieser Anwendung verwendet.",
-            unchecked((int)0x8889000E) => "Windows-Audiodienst läuft nicht.",
-            unchecked((int)0x80070005) => "Zugriff auf das Gerät verweigert.",
+            unchecked((int)0x8889000A) => Strings.DeviceExclusive,
+            unchecked((int)0x88890004) => Strings.DeviceGone,
+            unchecked((int)0x88890008) => Strings.FormatUnsupported,
+            unchecked((int)0x88890001) => Strings.DeviceInUse,
+            unchecked((int)0x8889000E) => Strings.AudioServiceDown,
+            unchecked((int)0x80070005) => Strings.AccessDenied,
             _ => ex.Message,
         };
     }

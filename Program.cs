@@ -53,9 +53,8 @@ internal static class Program
     private static void ShowFatal(Exception? ex)
     {
         MessageBox.Show(
-            "Unerwarteter Fehler:\r\n\r\n" + (ex?.Message ?? "Unbekannt") +
-            "\r\n\r\nDie Spiegelung wurde gestoppt. Bitte das Programm neu starten.",
-            "Audio Mirror", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Strings.UnexpectedError(ex?.Message ?? Strings.Unknown),
+            Strings.AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]

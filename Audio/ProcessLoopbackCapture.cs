@@ -1,3 +1,4 @@
+using AudioMirror;
 using System.Runtime.InteropServices;
 using NAudio.CoreAudioApi;
 using NAudio.CoreAudioApi.Interfaces;
@@ -218,7 +219,7 @@ internal sealed class ProcessLoopbackCapture : IWaveIn
             if (handler.Result != 0)
             {
                 throw Marshal.GetExceptionForHR(handler.Result)
-                    ?? new InvalidOperationException("Anwendungsaufnahme nicht möglich.");
+                    ?? new InvalidOperationException(Strings.CaptureFailed("?"));
             }
 
             var client = new AudioClient((IAudioClient)handler.Interface!);

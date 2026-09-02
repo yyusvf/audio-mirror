@@ -1,3 +1,4 @@
+using AudioMirror;
 using AudioMirror.Audio;
 
 namespace AudioMirror.Ui;
@@ -84,7 +85,7 @@ internal sealed class DeviceRow : TableLayoutPanel
 
         check = new CheckBox
         {
-            Text = isSource ? name + "  (Quelle)" : name,
+            Text = isSource ? name + Strings.SourceSuffix : name,
             AutoSize = false,
             AutoEllipsis = true,
             TextAlign = ContentAlignment.MiddleLeft,
@@ -137,7 +138,7 @@ internal sealed class DeviceRow : TableLayoutPanel
             TextAlign = ContentAlignment.MiddleLeft,
             ForeColor = SystemColors.GrayText,
             Anchor = AnchorStyles.Left | AnchorStyles.Right,
-            Text = isSource ? "Quelle" : string.Empty,
+            Text = isSource ? Strings.SourceShort : string.Empty,
         };
 
         header.Controls.Add(expander, 0, 0);
@@ -297,7 +298,7 @@ internal sealed class DeviceRow : TableLayoutPanel
         {
             var empty = new Label
             {
-                Text = "Zurzeit gibt keine Anwendung Ton aus.",
+                Text = Strings.NoAppPlaying,
                 AutoSize = false,
                 Height = Font.Height + 6,
                 ForeColor = SystemColors.GrayText,
