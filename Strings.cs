@@ -109,6 +109,10 @@ internal static class Strings
         T("Start with Windows (in the notification area)",
           "Mit Windows starten (startet im Infobereich)");
 
+    /// <summary>Kurzfassung für das Menü im Infobereich - dort ist der Zusatz nur im Weg.</summary>
+    public static string StartWithWindowsShort =>
+        T("Start with Windows", "Mit Windows starten");
+
     // Infobereich
     public static string OpenWindow => T("Open window", "Fenster öffnen");
     public static string Exit => T("Exit", "Beenden");

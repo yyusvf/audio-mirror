@@ -60,6 +60,18 @@ internal sealed class SettingsPage : TableLayoutPanel
     /// <summary>Kurzer Hinweis für die Statuszeile des Hauptfensters.</summary>
     public event EventHandler<string>? StatusMessage;
 
+    /// <summary>
+    /// Schaltet den Autostart um - für den gleichnamigen Eintrag im Infobereich. Der Weg über
+    /// das Kästchen ist Absicht: so gilt dieselbe Fehlerbehandlung wie beim Klick hier.
+    /// </summary>
+    public void ToggleAutostart()
+    {
+        if (autoStart.Enabled)
+        {
+            autoStart.Checked = !autoStart.Checked;
+        }
+    }
+
     /// <summary>Zeigt eine Meldung in der Aktualisierungs-Gruppe an.</summary>
     public void ShowUpdateStatus(string text) => updateStatus.Text = text;
 

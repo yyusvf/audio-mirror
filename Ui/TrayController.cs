@@ -30,14 +30,24 @@ internal sealed class TrayController : IDisposable
     {
         Icon = CreateIcon(out iconHandle);
 
-        menu.Opening += (_, _) => RebuildMenu();
-
         notifyIcon = new NotifyIcon
         {
             Icon = Icon,
             Text = tooltip,
             Visible = true,
             ContextMenuStrip = menu,
+        };
+
+        // Das Menü wird beim Drücken der rechten Taste aufgebaut - also bevor NotifyIcon es
+        // anzeigt. Zuvor geschah das im Opening-Ereignis: wer dort sämtliche Einträge austauscht,
+        // bekommt beim ersten Klick ein Menü, das Windows sofort wieder verwirft. Genau daher
+        // musste man zweimal klicken.
+        notifyIcon.MouseDown += (_, e) =>
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                RebuildMenu();
+            }
         };
 
         // Der Doppelklick tut, was in den Einstellungen dafür hinterlegt ist. Der einfache
@@ -71,6 +81,9 @@ internal sealed class TrayController : IDisposable
 
     public event Action? ExitRequested;
 
+    /// <summary>"Mit Windows starten" wurde im Tray-Menü angeklickt.</summary>
+    public event Action? AutostartToggled;
+
     /// <summary>Gerät wurde im Tray-Menü an- oder abgehakt.</summary>
     public event Action<string, bool>? DeviceToggled;
 
@@ -101,9 +114,6 @@ internal sealed class TrayController : IDisposable
     {
         menu.Items.Clear();
 
-        var header = new ToolStripMenuItem(Strings.TargetDevices) { Enabled = false };
-        menu.Items.Add(header);
-
         IReadOnlyList<TrayDeviceEntry> devices = DeviceProvider?.Invoke() ?? [];
         if (devices.Count == 0)
         {
@@ -127,6 +137,18 @@ internal sealed class TrayController : IDisposable
         }
 
         menu.Items.Add(new ToolStripSeparator());
+
+        // Der Haken wird bei jedem Öffnen frisch aus der Registrierung gelesen: so stimmt er
+        // auch dann, wenn der Autostart anderswo geändert wurde - etwa im Task-Manager.
+        var autostart = new ToolStripMenuItem(Strings.StartWithWindowsShort)
+        {
+            Checked = Autostart.IsEnabled(),
+            CheckOnClick = false,
+            Enabled = Autostart.IsSupported,
+        };
+        autostart.Click += (_, _) => AutostartToggled?.Invoke();
+        menu.Items.Add(autostart);
+
         var open = new ToolStripMenuItem(Strings.OpenWindow);
         open.Click += (_, _) => ShowWindowRequested?.Invoke();
         menu.Items.Add(open);

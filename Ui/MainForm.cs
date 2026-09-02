@@ -59,6 +59,7 @@ internal sealed class MainForm : Form
             .Select(r => new TrayDeviceEntry(r.DeviceId, r.DisplayName, r.Selected, r.IsSource))
             .ToList();
         tray.DeviceToggled += (deviceId, enabled) => ApplySelection(deviceId, enabled);
+        tray.AutostartToggled += () => settingsPage.ToggleAutostart();
         tray.ShowWindowRequested += ShowFromTray;
         tray.DoubleClickActionProvider = () => settings.DoubleClickAction;
         tray.ToggleRequested += ToggleEverything;
