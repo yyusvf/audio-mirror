@@ -44,7 +44,9 @@ AllowNoIcons=yes
 
 LicenseFile=..\LICENSE
 OutputDir=..\release
-OutputBaseFilename=AudioMirror-Setup-{#AppVersion}
+; Die Fassung steht vorn: GitHub sortiert die Dateien einer Veroeffentlichung alphabetisch,
+; und so steht das Setup vor dem portablen Archiv statt dahinter.
+OutputBaseFilename=AudioMirror-{#AppVersion}-Setup
 SetupIconFile=..\AudioMirror.ico
 UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}

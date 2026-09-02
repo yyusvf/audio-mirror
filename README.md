@@ -9,7 +9,7 @@ Play Windows audio on **several output devices at once** — speakers *and* Blue
 
 | File | | |
 |---|---|---|
-| `AudioMirror-Setup.exe` | 2 MB | Installer. Start menu entry, optional desktop shortcut, normal uninstall. Detects x64 / ARM64 by itself, and downloads the .NET 8 Desktop Runtime (~56 MB) if it is missing. |
+| `AudioMirror-<version>-Setup.exe` | 2 MB | Installer. Start menu entry, optional desktop shortcut, normal uninstall. Detects x64 / ARM64 by itself, and downloads the .NET 8 Desktop Runtime (~56 MB) if it is missing. |
 | `AudioMirror-Portable.zip` | 112 MB | Unpack and run — no installation, no runtime, no internet. Holds the x64 and the ARM64 build. |
 
 Windows shows "Windows protected your PC" on first launch because the files are not
