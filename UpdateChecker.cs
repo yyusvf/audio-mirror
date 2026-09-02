@@ -31,11 +31,11 @@ internal static class UpdateChecker
     private const string LatestUrl = "https://api.github.com/repos/yyusvf/audio-mirror/releases?per_page=10";
 
     /// <summary>
-    /// Untergrenze zwischen zwei Anfragen. Kurz genug, dass praktisch jeder Programmstart
-    /// nachsieht - so war es gemeint, und mit einem Tag Abstand kam bei normaler Nutzung nie
-    /// eine Meldung an. Lang genug, dass wiederholtes Starten GitHub nicht zusetzt.
+    /// Untergrenze zwischen zwei Prüfungen im Hintergrund. Eine Suche auf Knopfdruck zählt
+    /// nicht mit - sonst verbrauchte sie genau dieses Fenster, und beim Start käme einen Tag
+    /// lang nichts mehr an.
     /// </summary>
-    private static readonly TimeSpan MinimumInterval = TimeSpan.FromMinutes(15);
+    private static readonly TimeSpan MinimumInterval = TimeSpan.FromDays(1);
 
     public static Version CurrentVersion { get; } = ParseVersion(
         System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "1.0.0");

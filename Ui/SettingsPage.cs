@@ -336,8 +336,14 @@ internal sealed class SettingsPage : TableLayoutPanel
         updateStatus.Text = Strings.CheckingUpdates;
 
         UpdateInfo? update = await UpdateChecker.FindNewerAsync();
-        settings.LastUpdateCheckUtc = DateTime.UtcNow;
-        settings.Save();
+
+        // Nur die Prüfung im Hintergrund setzt den Zeitstempel. Wer selbst sucht, soll damit
+        // nicht die nächste automatische Prüfung um einen Tag verschieben.
+        if (!manual)
+        {
+            settings.LastUpdateCheckUtc = DateTime.UtcNow;
+            settings.Save();
+        }
 
         if (update == null)
         {
