@@ -229,9 +229,33 @@ const
   RuntimeRestartNeeded = 3010;
   RuntimeAlreadyThere  = 1638;
 
+  // Fuer SHChangeNotify: "Dateizuordnung geaendert" - der dokumentierte Weg, dem Explorer
+  // ohne Neuanmeldung mitzuteilen, dass sich unter anderem ein Programmsymbol geaendert hat.
+  SHCNE_ASSOCCHANGED = $08000000;
+  SHCNF_IDLIST       = $0000;
+
 var
   UpgradeChecked: Boolean;
   UpgradeDetected: Boolean;
+
+procedure SHChangeNotify(wEventId: Longint; uFlags: Longint; dwItem1, dwItem2: Longint);
+  external 'SHChangeNotify@shell32.dll stdcall';
+
+// Nach der Installation dem Explorer sagen, dass sich etwas geaendert hat - sonst zeigen
+// Taskleiste und Desktop-Verknuepfung nach einem Symbolwechsel oft noch das alte Symbol,
+// weil Windows dessen Symbol-Zwischenspeicher sonst erst bei der naechsten Anmeldung neu
+// aufbaut. Auch bei einer stillen Aktualisierung im Hintergrund wichtig, nicht nur beim
+// Setup mit Oberflaeche.
+procedure RefreshShellIcons;
+begin
+  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, 0, 0);
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+    RefreshShellIcons;
+end;
 
 // "C:\Program Files", auch wenn das Setup selbst 32-bittig läuft. Genau dafür setzt Windows
 // ProgramW6432; nur falls es fehlt, wird auf ProgramFiles zurückgegriffen.
