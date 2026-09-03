@@ -171,7 +171,10 @@ internal sealed class TrayController : IDisposable
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.Clear(Color.Transparent);
 
-            var colour = Color.FromArgb(0x33, 0x9A, 0xF0);
+            // Mittelton zwischen den beiden Verlaufsfarben des App-Symbols (Blau -> Violett) -
+            // damit Infobereich und Taskleiste als eine Marke wirken, ohne dass hier ein
+            // eigener Verlauf gezeichnet werden muss.
+            var colour = Color.FromArgb(0x63, 0x5D, 0xF1);
             using var brush = new SolidBrush(colour);
             using var pen = new Pen(colour, 3.2f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
