@@ -22,9 +22,9 @@
     <PublishTrimmed>false</PublishTrimmed>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 
-    <Version>1.3.4</Version>
-    <FileVersion>1.3.4.0</FileVersion>
-    <AssemblyVersion>1.3.4.0</AssemblyVersion>
+    <Version>1.3.5</Version>
+    <FileVersion>1.3.5.0</FileVersion>
+    <AssemblyVersion>1.3.5.0</AssemblyVersion>
     <Company>Yusuf Esad Mumcu</Company>
     <Copyright>Copyright (c) 2026 Yusuf Esad Mumcu</Copyright>
     <Product>Audio Mirror</Product>
