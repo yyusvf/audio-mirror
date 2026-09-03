@@ -176,15 +176,46 @@ internal sealed class TrayController : IDisposable
             // eigener Verlauf gezeichnet werden muss.
             var colour = Color.FromArgb(0x63, 0x5D, 0xF1);
             using var brush = new SolidBrush(colour);
-            using var pen = new Pen(colour, 3.2f) { StartCap = LineCap.Round, EndCap = LineCap.Round };
 
-            g.FillEllipse(brush, 3, 12, 9, 9);
-            g.DrawArc(pen, 8, 8, 17, 17, -62, 124);
-            g.DrawArc(pen, 4, 2, 27, 27, -62, 124);
+            // Dieselbe Form wie im App-Symbol (AudioMirror.ico): fuenf Balken, symmetrisch um
+            // die Mitte gespiegelt. Ohne Kachel und ohne Verlauf - ein Infobereich-Symbol mit
+            // eigenem Hintergrund wuerde neben den einfarbigen Windows-Symbolen (Lautstaerke,
+            // WLAN, Akku) als Fremdkoerper wirken.
+            const float barWidth = 3.4f;
+            const float gap = 1.9f;
+            float[] heightFractions = [0.34f, 0.58f, 0.80f, 0.58f, 0.34f];
+            const float baseHeight = 24f;
+            const float centerX = 16f, centerY = 16f;
+
+            float totalWidth = heightFractions.Length * barWidth + (heightFractions.Length - 1) * gap;
+            float startX = centerX - totalWidth / 2;
+
+            for (int i = 0; i < heightFractions.Length; i++)
+            {
+                float barHeight = baseHeight * heightFractions[i];
+                float x = startX + i * (barWidth + gap);
+                FillPillBar(g, brush, x, centerY, barWidth, barHeight);
+            }
         }
 
         handle = bitmap.GetHicon();
         return Icon.FromHandle(handle);
+    }
+
+    /// <summary>
+    /// Ein senkrechter Balken mit voll gerundeten Enden (Kapselform) - GDI+ kennt kein
+    /// abgerundetes Rechteck von Haus aus, darum ein Rechteck fuer die Mitte plus je ein
+    /// Kreis oben und unten, beide im Balkendurchmesser.
+    /// </summary>
+    private static void FillPillBar(Graphics g, Brush brush, float centerX, float centerY, float width, float height)
+    {
+        float half = width / 2;
+        float top = centerY - height / 2;
+        float bottom = centerY + height / 2;
+
+        g.FillEllipse(brush, centerX - half, top - half, width, width);
+        g.FillEllipse(brush, centerX - half, bottom - half, width, width);
+        g.FillRectangle(brush, centerX - half, top, width, height);
     }
 
     public void Dispose()
