@@ -2,10 +2,12 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:AudioMirror.Ui.ViewModels"
+             xmlns:views="clr-namespace:AudioMirror.Ui.Views"
              FontFamily="{StaticResource UiFont}">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisible" />
+        <views:InverseBoolToVisibility x:Key="InverseBoolToVisible" />
 
         <!-- ══ Anwendungszeile ═════════════════════════════════════════════════
              Dieselbe Form wie die Gerätezeile, nur flacher und eingerückt - so bleibt
@@ -23,11 +25,15 @@
                           Style="{StaticResource ThemedCheckBox}"
                           IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
 
-                <TextBlock Grid.Column="1"
-                           Style="{StaticResource BodyText}"
-                           Margin="12,0,12,0"
-                           Foreground="{StaticResource TextSecondaryBrush}"
-                           Text="{Binding DisplayName}" />
+                <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
+                    <TextBlock Style="{StaticResource BodyText}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Text="{Binding DisplayName}" />
+                    <TextBlock Style="{StaticResource SecondaryText}"
+                               Foreground="{StaticResource ErrorBrush}"
+                               Text="{Binding Status}"
+                               Visibility="{Binding HasStatus, Converter={StaticResource BoolToVisible}}" />
+                </StackPanel>
 
                 <Slider Grid.Column="2"
                         Style="{StaticResource ThemedSlider}"
@@ -72,12 +78,21 @@
                                 Margin="12,0,0,0"
                                 CornerRadius="{StaticResource RadiusControl}"
                                 Background="{StaticResource ControlBrush}">
-                            <TextBlock Text="{Binding Glyph}"
-                                       FontFamily="{StaticResource IconFont}"
-                                       FontSize="15"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" />
+                            <Grid>
+                                <!-- Was Windows dem Geraet selbst zuweist, hat Vorrang; die
+                                     Glyphe traegt nur, wenn dort nichts hinterlegt ist. -->
+                                <Image Source="{Binding Icon}"
+                                       Width="20" Height="20"
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       Visibility="{Binding HasIcon, Converter={StaticResource BoolToVisible}}" />
+                                <TextBlock Text="{Binding Glyph}"
+                                           FontFamily="{StaticResource IconFont}"
+                                           FontSize="15"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Visibility="{Binding HasIcon, Converter={StaticResource InverseBoolToVisible}}" />
+                            </Grid>
                         </Border>
 
                         <!-- Name über Zustand -->
@@ -183,8 +198,17 @@
         </ScrollViewer>
 
         <TextBlock Grid.Row="2"
-                   Style="{StaticResource SecondaryText}"
                    Margin="2,12,2,0"
-                   Text="{Binding Status}" />
+                   Text="{Binding Status}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryText}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding StatusIsError}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
     </Grid>
 </UserControl>

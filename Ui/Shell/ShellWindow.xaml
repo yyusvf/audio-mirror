@@ -57,13 +57,31 @@
                 </Image.Source>
             </Image>
 
-            <TextBlock Grid.Column="1"
-                       Text="Audio Mirror"
-                       Margin="10,0,0,0"
-                       VerticalAlignment="Center"
-                       FontSize="{StaticResource FontSizeTitle}"
-                       FontWeight="SemiBold"
-                       Foreground="{StaticResource TextPrimaryBrush}" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="Audio Mirror"
+                           Margin="10,0,0,0"
+                           VerticalAlignment="Center"
+                           FontSize="{StaticResource FontSizeTitle}"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+
+                <!-- IsHitTestVisibleInChrome ist hier entscheidend: ohne das liegt die
+                     Ziehflaeche des Fensters darueber und die Reiter lassen sich nicht
+                     anklicken. -->
+                <StackPanel Orientation="Horizontal"
+                            Margin="16,0,0,0"
+                            shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <RadioButton x:Name="DevicesTab"
+                                 Style="{StaticResource TitleTab}"
+                                 GroupName="Pages"
+                                 IsChecked="True"
+                                 Checked="OnDevicesTab" />
+                    <RadioButton x:Name="SettingsTab"
+                                 Style="{StaticResource TitleTab}"
+                                 GroupName="Pages"
+                                 Checked="OnSettingsTab" />
+                </StackPanel>
+            </StackPanel>
 
             <StackPanel Grid.Column="3"
                         Orientation="Horizontal"

@@ -1,0 +1,122 @@
+<UserControl x:Class="AudioMirror.Ui.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:AudioMirror.Ui.Views"
+             FontFamily="{StaticResource UiFont}">
+
+    <ScrollViewer Style="{StaticResource ThemedScrollViewer}">
+        <!-- Zwei Spalten, solange Platz ist: links Allgemein und Ton, rechts die
+             Aktualisierungen. Bei schmalem Fenster rutschen sie nicht untereinander -
+             dafür sorgt die Mindestbreite des Fensters. -->
+        <Grid Margin="0,0,4,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Margin="0,0,6,0">
+
+                <!-- ══ Allgemein ═══════════════════════════════════════════════ -->
+                <TextBlock Style="{StaticResource SectionLabel}"
+                           Text="{Binding BasicTitle}"
+                           Margin="2,0,0,6" />
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <CheckBox Style="{StaticResource LabeledCheckBox}"
+                                  Content="{Binding AutostartLabel}"
+                                  IsEnabled="{Binding AutostartSupported}"
+                                  IsChecked="{Binding AutostartEnabled, Mode=TwoWay}" />
+
+                        <TextBlock Style="{StaticResource SecondaryText}"
+                                   Text="{Binding DoubleClickLabel}"
+                                   Margin="0,14,0,5" />
+                        <ComboBox Style="{StaticResource ThemedComboBox}"
+                                  ItemsSource="{Binding DoubleClickActions}"
+                                  SelectedIndex="{Binding DoubleClickIndex, Mode=TwoWay}" />
+
+                        <TextBlock Style="{StaticResource SecondaryText}"
+                                   Text="{Binding LanguageLabel}"
+                                   Margin="0,12,0,5" />
+                        <ComboBox Style="{StaticResource ThemedComboBox}"
+                                  ItemsSource="{Binding Languages}"
+                                  SelectedIndex="{Binding LanguageIndex, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <!-- ══ Ton ═════════════════════════════════════════════════════ -->
+                <TextBlock Style="{StaticResource SectionLabel}"
+                           Text="{Binding AudioTitle}"
+                           Margin="2,4,0,6" />
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <Grid ToolTip="{Binding BufferTip}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Style="{StaticResource SecondaryText}"
+                                       Text="{Binding BufferLabel}" />
+                            <TextBlock Grid.Column="1"
+                                       Style="{StaticResource BodyText}"
+                                       Text="{Binding BufferDisplay}" />
+                        </Grid>
+                        <Slider Style="{StaticResource ThemedSlider}"
+                                Margin="0,4,0,0"
+                                ToolTip="{Binding BufferTip}"
+                                Minimum="10" Maximum="250"
+                                TickFrequency="5"
+                                IsSnapToTickEnabled="True"
+                                Value="{Binding BufferMs, Mode=TwoWay}" />
+
+                        <TextBlock Style="{StaticResource SecondaryText}"
+                                   Text="{Binding HotkeyLabel}"
+                                   Margin="0,14,0,5" />
+                        <views:HotkeyBox Hotkey="{Binding Hotkey, Mode=TwoWay}" />
+
+                        <CheckBox Style="{StaticResource LabeledCheckBox}"
+                                  Margin="0,10,0,0"
+                                  Content="{Binding HotkeyEnabledLabel}"
+                                  IsChecked="{Binding HotkeyEnabled, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- ══ Aktualisierungen ════════════════════════════════════════════ -->
+            <StackPanel Grid.Column="1" Margin="6,0,0,0">
+                <TextBlock Style="{StaticResource SectionLabel}"
+                           Text="{Binding UpdateTitle}"
+                           Margin="2,0,0,6" />
+                <Border Style="{StaticResource SettingsCard}">
+                    <StackPanel>
+                        <RadioButton Style="{StaticResource ThemedRadioButton}"
+                                     GroupName="Updates"
+                                     Content="{Binding UpdateAutomaticLabel}"
+                                     IsChecked="{Binding UpdateAutomatic, Mode=TwoWay}" />
+                        <RadioButton Style="{StaticResource ThemedRadioButton}"
+                                     GroupName="Updates"
+                                     Content="{Binding UpdateNotifyLabel}"
+                                     IsChecked="{Binding UpdateNotify, Mode=TwoWay}" />
+                        <RadioButton Style="{StaticResource ThemedRadioButton}"
+                                     GroupName="Updates"
+                                     Content="{Binding UpdateNeverLabel}"
+                                     IsChecked="{Binding UpdateNever, Mode=TwoWay}" />
+
+                        <Button x:Name="CheckNowButton"
+                                Style="{StaticResource StandardButton}"
+                                HorizontalAlignment="Left"
+                                Margin="0,6,0,0"
+                                Content="{Binding CheckNowLabel}"
+                                IsEnabled="{Binding CanCheckNow}"
+                                Click="OnCheckNow" />
+
+                        <TextBlock Style="{StaticResource SecondaryText}"
+                                   Margin="0,10,0,0"
+                                   TextWrapping="Wrap"
+                                   Text="{Binding UpdateStatus}" />
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -15,6 +15,7 @@ internal sealed class DevicesPageViewModel : ViewModelBase
 {
     private SourceItem? selectedSource;
     private string status = string.Empty;
+    private bool statusIsError;
 
     public string SourceLabel => Strings.Source;
 
@@ -32,5 +33,12 @@ internal sealed class DevicesPageViewModel : ViewModelBase
     {
         get => status;
         set => Set(ref status, value);
+    }
+
+    /// <summary>Faerbt die Statuszeile rot, wenn etwas nicht laeuft.</summary>
+    public bool StatusIsError
+    {
+        get => statusIsError;
+        set => Set(ref statusIsError, value);
     }
 }

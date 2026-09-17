@@ -22,7 +22,7 @@
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
     <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentColorLight}" />
     <SolidColorBrush x:Key="AccentDimBrush" Color="#38635DF1" />
-    <SolidColorBrush x:Key="AccentFaintBrush" Color="#1C635DF1" />
+    <SolidColorBrush x:Key="AccentFaintBrush" Color="#33635DF1" />
 
     <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
         <GradientStop Offset="0" Color="{StaticResource AccentGradientStart}" />
@@ -37,23 +37,23 @@
 
     <!-- ══ Flächen ═════════════════════════════════════════════════════════════
          Durchweg weiß mit niedrigem Alpha, damit Mica durchscheint. -->
-    <SolidColorBrush x:Key="SurfaceBrush" Color="#0BFFFFFF" />
-    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#15FFFFFF" />
-    <SolidColorBrush x:Key="SurfacePressedBrush" Color="#08FFFFFF" />
-    <SolidColorBrush x:Key="CardBrush" Color="#0DFFFFFF" />
-    <SolidColorBrush x:Key="ControlBrush" Color="#0FFFFFFF" />
-    <SolidColorBrush x:Key="ControlHoverBrush" Color="#17FFFFFF" />
-    <SolidColorBrush x:Key="ControlPressedBrush" Color="#0AFFFFFF" />
-    <SolidColorBrush x:Key="ControlDisabledBrush" Color="#08FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#16FFFFFF" />
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#24FFFFFF" />
+    <SolidColorBrush x:Key="SurfacePressedBrush" Color="#10FFFFFF" />
+    <SolidColorBrush x:Key="CardBrush" Color="#1CFFFFFF" />
+    <SolidColorBrush x:Key="ControlBrush" Color="#1FFFFFFF" />
+    <SolidColorBrush x:Key="ControlHoverBrush" Color="#2BFFFFFF" />
+    <SolidColorBrush x:Key="ControlPressedBrush" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="ControlDisabledBrush" Color="#10FFFFFF" />
 
     <!-- Rückfall, wenn Mica nicht zur Verfügung steht (Windows 10). Dann trägt das
          Fenster diesen Ton, und die Flächen darüber wirken wie vorgesehen. -->
-    <SolidColorBrush x:Key="WindowFallbackBrush" Color="#1F1F23" />
+    <SolidColorBrush x:Key="WindowFallbackBrush" Color="#2B2B33" />
 
     <!-- ══ Ränder ══════════════════════════════════════════════════════════════ -->
-    <SolidColorBrush x:Key="StrokeBrush" Color="#14FFFFFF" />
-    <SolidColorBrush x:Key="StrokeStrongBrush" Color="#22FFFFFF" />
-    <SolidColorBrush x:Key="DividerBrush" Color="#0FFFFFFF" />
+    <SolidColorBrush x:Key="StrokeBrush" Color="#20FFFFFF" />
+    <SolidColorBrush x:Key="StrokeStrongBrush" Color="#33FFFFFF" />
+    <SolidColorBrush x:Key="DividerBrush" Color="#1AFFFFFF" />
 
     <!-- ══ Zustände ════════════════════════════════════════════════════════════ -->
     <SolidColorBrush x:Key="OkBrush" Color="#7DDC7D" />

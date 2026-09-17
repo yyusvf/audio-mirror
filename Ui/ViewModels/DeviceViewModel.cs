@@ -8,6 +8,7 @@ internal sealed class AppViewModel : ViewModelBase
 {
     private bool isEnabled = true;
     private float volume = 1f;
+    private string status = string.Empty;
 
     public AppViewModel(string key, string displayName)
     {
@@ -38,6 +39,21 @@ internal sealed class AppViewModel : ViewModelBase
     }
 
     public string VolumeText => $"{volume * 100:0} %";
+
+    /// <summary>Hinweis an der Zeile, etwa wenn sich der Ton nicht abgreifen laesst.</summary>
+    public string Status
+    {
+        get => status;
+        set
+        {
+            if (Set(ref status, value))
+            {
+                Raise(nameof(HasStatus));
+            }
+        }
+    }
+
+    public bool HasStatus => !string.IsNullOrEmpty(status);
 }
 
 /// <summary>
@@ -51,12 +67,14 @@ internal sealed class DeviceViewModel : ViewModelBase
     private bool isExpanded;
     private string status = string.Empty;
 
-    public DeviceViewModel(string deviceId, string displayName, AudioDeviceKind kind, bool isSource)
+    public DeviceViewModel(string deviceId, string displayName, AudioDeviceKind kind, bool isSource,
+        string? iconPath = null)
     {
         DeviceId = deviceId;
         DisplayName = displayName;
         Kind = kind;
         IsSource = isSource;
+        Icon = Views.DeviceIconSource.TryLoad(iconPath);
 
         Apps.CollectionChanged += (_, _) => Raise(nameof(HasApps));
     }
@@ -73,10 +91,14 @@ internal sealed class DeviceViewModel : ViewModelBase
     public bool CanToggle => !IsSource;
 
     /// <summary>
-    /// Glyphe aus der Symbolschrift, passend zur Geräteart. Die Symbole, die Windows den
-    /// Geräten selbst zuweist, kommen später dazu - dafür muss das Handle aus SHDefExtractIcon
-    /// erst in eine WPF-Bildquelle übersetzt werden.
+    /// Das Symbol, das Windows dem Gerät selbst zuweist. Null, wenn keines hinterlegt ist -
+    /// dann zeigt die Zeile <see cref="Glyph"/>.
     /// </summary>
+    public System.Windows.Media.ImageSource? Icon { get; }
+
+    public bool HasIcon => Icon != null;
+
+    /// <summary>Glyphe zur Geräteart - der Rückfall, wenn Windows kein Symbol hinterlegt hat.</summary>
     public string Glyph => Kind switch
     {
         AudioDeviceKind.Headphones => "",

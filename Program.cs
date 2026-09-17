@@ -1,7 +1,5 @@
-using System.Drawing;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using AudioMirror.Ui;
+using AudioMirror.Ui.Shell;
 
 namespace AudioMirror;
 
@@ -10,25 +8,6 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-        // Vorschau der neuen Oberfläche, solange sie entsteht. Bewusst vor der Instanzsperre:
-        // so lässt sie sich ansehen, während die laufende Fassung weiterspiegelt.
-        if (args.Any(a => string.Equals(a, "--newui", StringComparison.OrdinalIgnoreCase)))
-        {
-            Strings.Configure(AppSettings.Load().Language);
-            Ui.Shell.WpfHost.Ensure();
-
-            var preview = new Ui.Shell.ShellWindow();
-#if DEBUG
-            preview.SetContent(new Ui.Views.DevicesPage
-            {
-                DataContext = Ui.Shell.DesignData.Devices(),
-            });
-#endif
-            preview.Show();
-            System.Windows.Threading.Dispatcher.Run();
-            return;
-        }
-
 #if DEBUG
         // Nur zum Ansehen während der Arbeit an der Oberfläche: zeichnet das Fenster in eine
         // PNG-Datei, ohne es auf den Bildschirm zu legen.
@@ -36,15 +15,15 @@ internal static class Program
         if (renderAt >= 0 && renderAt + 1 < args.Length)
         {
             Strings.Configure(AppSettings.Load().Language);
-            Ui.Shell.WpfHost.Ensure();
+            WpfHost.Ensure();
 
-            var shell = new Ui.Shell.ShellWindow();
-            shell.SetContent(new Ui.Views.DevicesPage
-            {
-                DataContext = Ui.Shell.DesignData.Devices(),
-            });
+            var shell = new ShellWindow();
+            bool wantsSettings = args.Any(a => string.Equals(a, "settings", StringComparison.OrdinalIgnoreCase));
+            shell.SetContent(wantsSettings
+                ? new Ui.Views.SettingsPage { DataContext = new Ui.ViewModels.SettingsPageViewModel(AppSettings.Load()) }
+                : new Ui.Views.DevicesPage { DataContext = DesignData.Devices() });
 
-            Ui.Shell.DesignRender.Capture(shell, args[renderAt + 1], 720, 560);
+            DesignRender.Capture(shell, args[renderAt + 1], 720, 560);
             return;
         }
 #endif
@@ -69,7 +48,6 @@ internal static class Program
         Strings.Configure(AppSettings.Load().Language);
 
         // Spec 4.5: kein Absturz bei unerwarteten Fehlern - stattdessen verständliche Meldung.
-        Application.ThreadException += (_, e) => ShowFatal(e.Exception);
         AppDomain.CurrentDomain.UnhandledException += (_, e) => ShowFatal(e.ExceptionObject as Exception);
 
         // Windows startet Programme nach der Anmeldung teils von sich aus wieder ("Apps nach der
@@ -90,16 +68,26 @@ internal static class Program
         bool restoredByWindows = StartupState.ConsumeStoppedByWindows();
         bool startedQuietly = byAutostartEntry || restoredByWindows;
 
-        ApplicationConfiguration.Initialize();
-        Application.Run(new MainForm(startedQuietly));
+        System.Windows.Application application = WpfHost.Ensure();
+        application.DispatcherUnhandledException += (_, e) =>
+        {
+            ShowFatal(e.Exception);
+            e.Handled = true;
+        };
+
+        using var controller = new MirrorController(startedQuietly);
+        application.Run();
+
         SingleInstance.Release();
     }
 
     private static void ShowFatal(Exception? ex)
     {
-        MessageBox.Show(
+        System.Windows.MessageBox.Show(
             Strings.UnexpectedError(ex?.Message ?? Strings.Unknown),
-            Strings.AppTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            Strings.AppTitle,
+            System.Windows.MessageBoxButton.OK,
+            System.Windows.MessageBoxImage.Error);
     }
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]

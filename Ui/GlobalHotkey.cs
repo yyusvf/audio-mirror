@@ -32,7 +32,14 @@ internal sealed class GlobalHotkey : IDisposable
 
     /// <summary>Wurde die Kombination gedrückt?</summary>
     public static bool IsHotkeyMessage(ref Message m, int id) =>
-        m.Msg == WmHotkey && m.WParam.ToInt32() == id;
+        IsHotkeyMessage(m.Msg, m.WParam, id);
+
+    /// <summary>
+    /// Dieselbe Pruefung fuer den Fensterhaken in WPF: dort kommen die Bestandteile der
+    /// Nachricht einzeln an, nicht als Message-Struktur.
+    /// </summary>
+    public static bool IsHotkeyMessage(int msg, IntPtr wParam, int id) =>
+        msg == WmHotkey && wParam.ToInt32() == id;
 
     public bool IsRegistered => registered;
 
