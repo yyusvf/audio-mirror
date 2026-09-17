@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Windows.Forms;
 namespace AudioMirror.Ui;
 
 internal sealed class AppMixEventArgs(string appKey, bool enabled, float volume) : EventArgs

@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using AudioMirror.Ui;
 
@@ -8,6 +10,45 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+        // Vorschau der neuen Oberfläche, solange sie entsteht. Bewusst vor der Instanzsperre:
+        // so lässt sie sich ansehen, während die laufende Fassung weiterspiegelt.
+        if (args.Any(a => string.Equals(a, "--newui", StringComparison.OrdinalIgnoreCase)))
+        {
+            Strings.Configure(AppSettings.Load().Language);
+            Ui.Shell.WpfHost.Ensure();
+
+            var preview = new Ui.Shell.ShellWindow();
+#if DEBUG
+            preview.SetContent(new Ui.Views.DevicesPage
+            {
+                DataContext = Ui.Shell.DesignData.Devices(),
+            });
+#endif
+            preview.Show();
+            System.Windows.Threading.Dispatcher.Run();
+            return;
+        }
+
+#if DEBUG
+        // Nur zum Ansehen während der Arbeit an der Oberfläche: zeichnet das Fenster in eine
+        // PNG-Datei, ohne es auf den Bildschirm zu legen.
+        int renderAt = Array.FindIndex(args, a => string.Equals(a, "--render", StringComparison.OrdinalIgnoreCase));
+        if (renderAt >= 0 && renderAt + 1 < args.Length)
+        {
+            Strings.Configure(AppSettings.Load().Language);
+            Ui.Shell.WpfHost.Ensure();
+
+            var shell = new Ui.Shell.ShellWindow();
+            shell.SetContent(new Ui.Views.DevicesPage
+            {
+                DataContext = Ui.Shell.DesignData.Devices(),
+            });
+
+            Ui.Shell.DesignRender.Capture(shell, args[renderAt + 1], 720, 560);
+            return;
+        }
+#endif
+
         bool byAutostartEntry = args.Any(a =>
             string.Equals(a, Autostart.MinimizedArgument, StringComparison.OrdinalIgnoreCase));
 

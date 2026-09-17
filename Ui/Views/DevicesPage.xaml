@@ -1,0 +1,190 @@
+<UserControl x:Class="AudioMirror.Ui.Views.DevicesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:AudioMirror.Ui.ViewModels"
+             FontFamily="{StaticResource UiFont}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisible" />
+
+        <!-- ══ Anwendungszeile ═════════════════════════════════════════════════
+             Dieselbe Form wie die Gerätezeile, nur flacher und eingerückt - so bleibt
+             erkennbar, dass sie zum Gerät darüber gehört. -->
+        <DataTemplate DataType="{x:Type vm:AppViewModel}">
+            <Grid Height="{StaticResource AppRowHeight}" Margin="0,1,0,1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <CheckBox Grid.Column="0"
+                          Style="{StaticResource ThemedCheckBox}"
+                          IsChecked="{Binding IsEnabled, Mode=TwoWay}" />
+
+                <TextBlock Grid.Column="1"
+                           Style="{StaticResource BodyText}"
+                           Margin="12,0,12,0"
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           Text="{Binding DisplayName}" />
+
+                <Slider Grid.Column="2"
+                        Style="{StaticResource ThemedSlider}"
+                        Width="96"
+                        Value="{Binding Volume, Mode=TwoWay}" />
+
+                <TextBlock Grid.Column="3"
+                           Style="{StaticResource SecondaryText}"
+                           Width="44"
+                           Margin="8,0,0,0"
+                           TextAlignment="Right"
+                           Text="{Binding VolumeText}" />
+            </Grid>
+        </DataTemplate>
+
+        <!-- ══ Gerätezeile ═════════════════════════════════════════════════════ -->
+        <DataTemplate DataType="{x:Type vm:DeviceViewModel}">
+            <Border x:Name="RowShell"
+                    Margin="0,0,0,4"
+                    CornerRadius="{StaticResource RadiusCard}"
+                    Background="{StaticResource CardBrush}">
+                <StackPanel>
+
+                    <Grid Height="{StaticResource DeviceRowHeight}" Margin="{StaticResource RowPadding}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <CheckBox Grid.Column="0"
+                                  Style="{StaticResource ThemedCheckBox}"
+                                  IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                  IsEnabled="{Binding CanToggle}" />
+
+                        <!-- Symbol der Geräteart -->
+                        <Border Grid.Column="1"
+                                Width="32" Height="32"
+                                Margin="12,0,0,0"
+                                CornerRadius="{StaticResource RadiusControl}"
+                                Background="{StaticResource ControlBrush}">
+                            <TextBlock Text="{Binding Glyph}"
+                                       FontFamily="{StaticResource IconFont}"
+                                       FontSize="15"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+
+                        <!-- Name über Zustand -->
+                        <StackPanel Grid.Column="2" Margin="12,0,12,0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource BodyText}"
+                                       Text="{Binding DisplayName}" />
+                            <TextBlock Style="{StaticResource SecondaryText}"
+                                       Margin="0,1,0,0"
+                                       Text="{Binding Status}" />
+                        </StackPanel>
+
+                        <Slider Grid.Column="3"
+                                Style="{StaticResource ThemedSlider}"
+                                Width="112"
+                                Value="{Binding Volume, Mode=TwoWay}" />
+
+                        <TextBlock Grid.Column="4"
+                                   Style="{StaticResource SecondaryText}"
+                                   Width="44"
+                                   Margin="8,0,0,0"
+                                   TextAlignment="Right"
+                                   Text="{Binding VolumeText}" />
+
+                        <!-- Aufklappen: nur sichtbar, wenn überhaupt etwas Ton ausgibt -->
+                        <ToggleButton Grid.Column="5"
+                                      x:Name="Expander"
+                                      Margin="4,0,0,0"
+                                      IsChecked="{Binding IsExpanded, Mode=TwoWay}"
+                                      Visibility="{Binding HasApps, Converter={StaticResource BoolToVisible}}"
+                                      Cursor="Hand"
+                                      Focusable="False">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border x:Name="Fill"
+                                            Width="28" Height="28"
+                                            CornerRadius="{StaticResource RadiusControl}"
+                                            Background="Transparent">
+                                        <TextBlock Text="{Binding ExpandGlyph}"
+                                                   FontFamily="{StaticResource IconFont}"
+                                                   FontSize="11"
+                                                   Foreground="{StaticResource TextTertiaryBrush}"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center" />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Fill" Property="Background"
+                                                    Value="{StaticResource ControlHoverBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                    </Grid>
+
+                    <!-- Anwendungsmischung -->
+                    <Border Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisible}}"
+                            Margin="56,0,12,10"
+                            Padding="0,4,0,0"
+                            BorderThickness="0,1,0,0"
+                            BorderBrush="{StaticResource DividerBrush}">
+                        <ItemsControl ItemsSource="{Binding Apps}" />
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <DataTemplate.Triggers>
+                <!-- Angehakt: der Akzent legt sich leicht unter die Zeile, damit die aktiven
+                     Ziele auf einen Blick zu finden sind. -->
+                <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                    <Setter TargetName="RowShell" Property="Background"
+                            Value="{StaticResource AccentFaintBrush}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsSource}" Value="True">
+                    <Setter TargetName="RowShell" Property="Background"
+                            Value="{StaticResource SurfacePressedBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ══ Quelle ══════════════════════════════════════════════════════════ -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,12">
+            <TextBlock Style="{StaticResource SectionLabel}"
+                       Text="{Binding SourceLabel}"
+                       Margin="2,0,0,6" />
+            <ComboBox x:Name="SourceSelect"
+                      Style="{StaticResource ThemedComboBox}"
+                      ItemsSource="{Binding Sources}"
+                      SelectedItem="{Binding SelectedSource, Mode=TwoWay}" />
+        </StackPanel>
+
+        <!-- ══ Zielgeräte ══════════════════════════════════════════════════════ -->
+        <ScrollViewer Grid.Row="1" Style="{StaticResource ThemedScrollViewer}">
+            <ItemsControl ItemsSource="{Binding Devices}" Margin="0,0,4,0" />
+        </ScrollViewer>
+
+        <TextBlock Grid.Row="2"
+                   Style="{StaticResource SecondaryText}"
+                   Margin="2,12,2,0"
+                   Text="{Binding Status}" />
+    </Grid>
+</UserControl>

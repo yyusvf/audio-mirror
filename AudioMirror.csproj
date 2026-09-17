@@ -3,7 +3,19 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+
+    <!-- Beides zugleich: Die Oberflaeche entsteht in WPF, waehrend das Symbol im
+         Infobereich weiterhin ueber NotifyIcon aus WinForms laeuft. Kostet nichts an
+         Groesse - die Laufzeit liefert WPF und WinForms ohnehin gemeinsam aus, WPF lag
+         in der self-contained exe bisher blosz ungenutzt herum. -->
     <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+
+    <!-- Kein App.xaml: Program.Main bleibt der Einstiegspunkt, weil dort die
+         Instanzsperre, der Neustart-Vermerk und der stille Start haengen. WPF wuerde
+         sonst ein eigenes Main erzeugen. -->
+    <EnableDefaultApplicationDefinition>false</EnableDefaultApplicationDefinition>
+
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
@@ -32,7 +44,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- WinForms und WPF benennen vieles gleich: Application, Brush, Color, Point, Size.
+         Solange beide im Projekt liegen, waeren die impliziten WinForms-Usings in jeder
+         WPF-Datei eine Mehrdeutigkeit. Also stehen sie dort, wo WinForms noch gebraucht
+         wird, ausdruecklich im Kopf der Datei. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="NAudio" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Dasselbe Symbol, das auch die exe traegt, zusaetzlich als WPF-Ressource: die
+         Titelleiste zeichnet es selbst und kommt an die Win32-Ressource nicht heran. -->
+    <Resource Include="AudioMirror.ico" />
   </ItemGroup>
 
 </Project>
