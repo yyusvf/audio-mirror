@@ -12,7 +12,6 @@ internal sealed class MainForm : Form
     private readonly TrayController tray = new();
     private readonly AppSettings settings = AppSettings.Load();
     private readonly List<DeviceRow> rows = [];
-    private readonly List<Control> sectionHeaders = [];
     private readonly bool startMinimized;
 
     private readonly TableLayoutPanel root = new();
@@ -417,74 +416,40 @@ internal sealed class MainForm : Form
             row.Dispose();
         }
         rows.Clear();
-        foreach (Control header in sectionHeaders)
-        {
-            devicePanel.Controls.Remove(header);
-            header.Dispose();
-        }
-        sectionHeaders.Clear();
 
+        // Getrennte Geräte werden gar nicht mehr angezeigt, auch nicht mit gespeicherter
+        // Einstellung - das Zielgeräte-Fenster zeigt nur, was gerade angeschlossen ist. Ihre
+        // Einstellung bleibt trotzdem erhalten: settings.For(id) liest und schreibt direkt in
+        // der Einstellungsdatei, unabhängig davon, ob dafür gerade eine Zeile existiert. Steckt
+        // ein Gerät später wieder an, erscheint hier automatisch dieselbe Zeile mit demselben
+        // Haken und derselben Lautstärke wie zuvor.
         List<AudioDeviceInfo> connected = devices.Where(d => d.Connected).ToList();
 
-        // Getrennte Geräte nur zeigen, wenn für sie tatsächlich etwas eingerichtet wurde.
-        // Sonst stünden hier dauerhaft Buchsen herum, die nie jemand benutzt hat - ihre
-        // Einstellung wird trotzdem weitergeführt, sie ist nur nicht sichtbar.
-        List<AudioDeviceInfo> disconnected = devices
-            .Where(d => !d.Connected && IsConfigured(d.Id))
-            .ToList();
-
-        // Geräte, die Windows gar nicht mehr aufzählt, für die es aber eine gespeicherte
-        // Einstellung gibt, gehören ebenfalls unter „Getrennt“ - sonst verschwände die
-        // Einstellung wortlos aus der Oberfläche.
-        var known = devices.Select(d => d.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        foreach ((string id, DeviceSetting saved) in settings.Devices)
+        // Dock=Top stapelt in umgekehrter Einfügereihenfolge - daher rückwärts einfügen.
+        foreach (AudioDeviceInfo device in Enumerable.Reverse(connected))
         {
-            if (!known.Contains(id) && !string.IsNullOrWhiteSpace(saved.Name) && IsConfigured(id))
-            {
-                disconnected.Add(new AudioDeviceInfo(
-                    id, saved.Name!, false, false, (AudioDeviceKind)saved.Kind, saved.IconPath));
-            }
-        }
-        disconnected = disconnected.OrderBy(d => d.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
+            var row = new DeviceRow(
+                device.Id, device.Name, device.Id == sourceId, device.Kind, device.Connected, device.IconPath);
 
-        // Dock=Top stapelt in umgekehrter Einfügereihenfolge - daher alles rückwärts einfügen.
-        if (disconnected.Count > 0)
-        {
-            AddSection(Strings.Disconnected, disconnected, sourceId);
+            DeviceSetting setting = settings.For(device.Id);
+            setting.Name = device.Name;
+            setting.Kind = (int)device.Kind;
+            setting.IconPath = device.IconPath;
+            row.Volume = setting.Volume;
+            row.Selected = setting.Enabled;
+            row.Expanded = setting.Expanded && device.Connected;
+
+            row.SelectionChanged += OnRowSelectionChanged;
+            row.VolumeChanged += OnRowVolumeChanged;
+            row.AppMixChanged += OnRowAppMixChanged;
+            row.ExpandedChanged += OnRowExpandedChanged;
+
+            rows.Add(row);
+            devicePanel.Controls.Add(row);
         }
-        AddSection(Strings.Connected, connected, sourceId);
 
         rows.Reverse();
         devicePanel.ResumeLayout();
-
-        void AddSection(string caption, List<AudioDeviceInfo> group, string? source)
-        {
-            foreach (AudioDeviceInfo device in Enumerable.Reverse(group))
-            {
-                var row = new DeviceRow(
-                    device.Id, device.Name, device.Id == source, device.Kind, device.Connected, device.IconPath);
-
-                DeviceSetting setting = settings.For(device.Id);
-                setting.Name = device.Name;
-                setting.Kind = (int)device.Kind;
-                setting.IconPath = device.IconPath;
-                row.Volume = setting.Volume;
-                row.Selected = setting.Enabled;
-                row.Expanded = setting.Expanded && device.Connected;
-
-                row.SelectionChanged += OnRowSelectionChanged;
-                row.VolumeChanged += OnRowVolumeChanged;
-                row.AppMixChanged += OnRowAppMixChanged;
-                row.ExpandedChanged += OnRowExpandedChanged;
-
-                rows.Add(row);
-                devicePanel.Controls.Add(row);
-            }
-
-            var header = new SectionHeader(caption);
-            sectionHeaders.Add(header);
-            devicePanel.Controls.Add(header);
-        }
     }
 
     /// <summary>Aktualisiert die Anwendungslisten aller Geräte. Liefert true, wenn sich etwas geändert hat.</summary>
@@ -503,25 +468,7 @@ internal sealed class MainForm : Form
         devicePanel.ResumeLayout();
 
         var after = rows.SelectMany(r => r.AppStates.Select(a => r.DeviceId + "|" + a.Key)).ToHashSet();
-        bool changed = !before.SetEquals(after);
-        if (changed)
-        {
-        }
-        return changed;
-    }
-
-    /// <summary>
-    /// Ob für ein Gerät je etwas eingerichtet wurde - angehakt, in der Lautstärke verändert oder
-    /// mit einer Anwendungsmischung versehen. Nur solche Geräte sind es wert, im Abschnitt
-    /// „Getrennt“ aufgeführt zu werden.
-    /// </summary>
-    private bool IsConfigured(string deviceId)
-    {
-        if (!settings.Devices.TryGetValue(deviceId, out DeviceSetting? saved))
-        {
-            return false;
-        }
-        return saved.Enabled || saved.Volume < 0.999f || (saved.Apps?.Count ?? 0) > 0;
+        return !before.SetEquals(after);
     }
 
     private void OnRowSelectionChanged(object? sender, EventArgs e)

@@ -91,16 +91,6 @@ internal static class Strings
         pl: "Urządzenia wyjściowe", ru: "Устройства вывода", uk: "Пристрої виведення",
         tr: "Çıkış aygıtları", cs: "Výstupní zařízení", sv: "Uppspelningsenheter");
 
-    public static string Connected => T("Connected",
-        de: "Verbunden", fr: "Connectés", es: "Conectados", it: "Collegati", pt: "Conectados",
-        nl: "Verbonden", pl: "Podłączone", ru: "Подключены", uk: "Підключені", tr: "Bağlı",
-        cs: "Připojená", sv: "Anslutna");
-
-    public static string Disconnected => T("Disconnected",
-        de: "Getrennt", fr: "Déconnectés", es: "Desconectados", it: "Scollegati",
-        pt: "Desconectados", nl: "Niet verbonden", pl: "Odłączone", ru: "Отключены",
-        uk: "Відключені", tr: "Bağlı değil", cs: "Odpojená", sv: "Frånkopplade");
-
     public static string Close => T("Close",
         de: "Schließen", fr: "Fermer", es: "Cerrar", it: "Chiudi", pt: "Fechar", nl: "Sluiten",
         pl: "Zamknij", ru: "Закрыть", uk: "Закрити", tr: "Kapat", cs: "Zavřít", sv: "Stäng");
