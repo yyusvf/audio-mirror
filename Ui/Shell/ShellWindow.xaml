@@ -17,12 +17,17 @@
         weiterhin wie bei jedem anderen Fenster. Der Weg über WindowStyle="None" mit
         AllowsTransparency würde das alles selbst nachbauen müssen - und nebenbei Mica
         ausschalten, weil das Fenster dann in Software gezeichnet wird.
+
+        GlassFrameThickness="-1" ist die Bedingung dafür, dass Mica überhaupt zu sehen ist:
+        damit reicht der Fensterrahmen über die gesamte Innenfläche, und genau dort zeichnet
+        der Fenstermanager den Hintergrund. Bei 0 endet der Rahmen am Fensterrand, Mica liegt
+        zwar an, wird aber von der Zeichenfläche vollständig verdeckt.
     -->
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="{StaticResource TitleBarHeight}"
                       ResizeBorderThickness="6"
                       CornerRadius="0"
-                      GlassFrameThickness="0"
+                      GlassFrameThickness="-1"
                       UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 

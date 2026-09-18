@@ -4,9 +4,6 @@ title Audio Mirror - Entwicklungsfassung
 
 rem Baut den aktuellen Stand und startet ihn. Die Vorlage liegt im Projekt unter
 rem tools\, auf dem Desktop liegt eine Kopie davon.
-rem
-rem Das --newui am Ende zeigt die neue Oberflaeche. Sobald sie der Normalstart ist,
-rem kann es hier weg.
 
 set "REPO=C:\Users\yusuf\Documents\audio-mirror"
 set "EXE=%REPO%\bin\Debug\net8.0-windows\win-x64\AudioMirror.exe"
@@ -49,5 +46,5 @@ if not exist "%EXE%" (
 )
 
 echo Starte ...
-start "" "%EXE%" --newui
+start "" "%EXE%"
 exit /b 0

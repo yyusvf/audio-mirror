@@ -46,7 +46,27 @@ internal static class WindowEffects
         // Runde Ecken: Windows 11 rundet von sich aus, aber nicht bei jedem Fensterstil.
         Set(handle, WindowCornerPreference, CornerRound);
 
-        return Set(handle, SystemBackdropType, BackdropMica);
+        if (!Set(handle, SystemBackdropType, BackdropMica))
+        {
+            return false;
+        }
+
+        // Der entscheidende zweite Schritt. Mica liegt jetzt am Fenster an, zu sehen ist
+        // davon aber nichts: WPF zeichnet seine Oberfläche auf eine undurchsichtig schwarze
+        // Fläche, und die deckt den Hintergrund des Fenstermanagers vollständig zu. Erst
+        // wenn diese Fläche selbst durchsichtig ist, scheint Mica hindurch - überall dort,
+        // wo die Oberfläche nichts zeichnet.
+        //
+        // Deshalb steht das hier und nicht weiter oben: ohne Mica dahinter wäre das Fenster
+        // schlicht durchsichtig und man sähe den Schreibtisch.
+        HwndSource? source = HwndSource.FromHwnd(handle);
+        if (source?.CompositionTarget == null)
+        {
+            return false;
+        }
+
+        source.CompositionTarget.BackgroundColor = Colors.Transparent;
+        return true;
     }
 
     /// <summary>Färbt das Fenster ein, wenn Mica nicht getragen wird.</summary>
