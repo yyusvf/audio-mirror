@@ -7,7 +7,7 @@
         MinWidth="560" MinHeight="360"
         WindowStartupLocation="CenterScreen"
         Icon="pack://application:,,,/AudioMirror.ico"
-        Background="Transparent"
+        Background="{StaticResource WindowBrush}"
         TextOptions.TextFormattingMode="Display"
         UseLayoutRounding="True"
         FontFamily="{StaticResource UiFont}">
@@ -21,8 +21,7 @@
 
         GlassFrameThickness bleibt bei 0. Ein ausgedehnter Rahmen bringt auf Windows 11 die
         Fenstertasten des Systems zurück - sie werden genau in dieser Fläche gezeichnet, und
-        zwar zusätzlich zu den eigenen. Für Mica wird er nicht gebraucht: den Hintergrund legt
-        der Fenstermanager über die ganze Fensterfläche, siehe WindowEffects.
+        zwar zusätzlich zu den eigenen.
     -->
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="{StaticResource TitleBarHeight}"

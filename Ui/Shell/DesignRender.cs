@@ -28,12 +28,11 @@ internal static class DesignRender
         window.Height = height;
         window.ShowInTaskbar = false;
 
-        // Für die Aufnahme den Rückfallton unterlegen: Mica entsteht erst beim Zusammensetzen
-        // auf dem Bildschirm, ohne Grund stünde heller Text auf durchsichtiger Fläche. Der Ton
-        // kommt auf das Wurzelelement, weil abgezeichnet wird, was im Fenster steht - der
-        // Fensterhintergrund selbst gehört nicht dazu.
+        // Den Fensterton auf das Wurzelelement legen: abgezeichnet wird, was im Fenster
+        // steht, der Hintergrund des Fensters selbst gehört nicht dazu. Ohne das stünde
+        // heller Text auf durchsichtiger Fläche.
         if (window.Content is System.Windows.Controls.Panel root
-            && window.TryFindResource("WindowFallbackBrush") is Brush fallback)
+            && window.TryFindResource("WindowBrush") is Brush fallback)
         {
             root.Background = fallback;
         }

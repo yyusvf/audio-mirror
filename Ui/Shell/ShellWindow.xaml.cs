@@ -19,14 +19,8 @@ public partial class ShellWindow : Window
         DevicesTab.Content = Strings.TabDevices;
         SettingsTab.Content = Strings.TabSettings;
 
-        // Mica lässt sich erst setzen, wenn das Fenster ein Handle hat.
-        SourceInitialized += (_, _) =>
-        {
-            if (!WindowEffects.Apply(this))
-            {
-                WindowEffects.ApplyFallbackBackground(this);
-            }
-        };
+        // Dunkle Titelleiste und runde Ecken greifen erst, wenn das Fenster ein Handle hat.
+        SourceInitialized += (_, _) => WindowEffects.Apply(this);
 
         StateChanged += (_, _) => UpdateMaximizeGlyph();
     }

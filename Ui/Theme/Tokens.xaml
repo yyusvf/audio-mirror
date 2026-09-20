@@ -2,66 +2,71 @@
     Alle Farben und Maße der Oberfläche. Im übrigen Markup steht keine Farbe und kein
     Pixelwert direkt - was hier nicht als Schlüssel auftaucht, gehört auch nicht ins Markup.
 
-    Die Grautöne entsprechen der Fluent-Palette, wie sie WinUI im Dunkelmodus verwendet:
-    weiß mit Alpha, nicht undurchsichtige Grauwerte. Nur so bleibt der Mica-Hintergrund des
-    Fensters sichtbar, statt von flachen Flächen zugedeckt zu werden.
+    Die Palette ist die von TagTuner: durchgehend deckende Töne, keine Durchsicht. Was der
+    Infobereich für sein Menü braucht, liest Palette.cs hier heraus - auch dort steht keine
+    zweite Farbtabelle.
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <!-- ══ Akzent ══════════════════════════════════════════════════════════════
-         Aus dem eigenen Programmsymbol: dessen Verlauf läuft von Blau nach Violett,
-         der Vollton dazwischen ist derselbe, den auch das Symbol im Infobereich trägt. -->
-    <Color x:Key="AccentColor">#635DF1</Color>
-    <Color x:Key="AccentColorLight">#7B76F4</Color>
-    <Color x:Key="AccentGradientStart">#3B6FF6</Color>
-    <Color x:Key="AccentGradientEnd">#8B4CE8</Color>
+    <!-- ══ Akzent ══════════════════════════════════════════════════════════════ -->
+    <Color x:Key="AccentColor">#C8F542</Color>
 
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
-    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentColorLight}" />
-    <SolidColorBrush x:Key="AccentDimBrush" Color="#38635DF1" />
-    <SolidColorBrush x:Key="AccentFaintBrush" Color="#28635DF1" />
 
-    <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Offset="0" Color="{StaticResource AccentGradientStart}" />
-        <GradientStop Offset="1" Color="{StaticResource AccentGradientEnd}" />
-    </LinearGradientBrush>
+    <!-- Abgeleitet: die Spec nennt keinen Schwebezustand. Etwas heller als der Vollton,
+         damit die Bewegung spürbar ist, ohne den Ton zu wechseln. -->
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#D6F873" />
+
+    <!-- Flächiger Akzent, 15 Prozent Deckung. Hinterlegt ganze Zeilen und den aktiven
+         Reiter - als Vollton wäre beides erschlagend. -->
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#26C8F542" />
+
+    <!-- Was auf einer Akzentfläche liegt: Haken, Beschriftung einer Akzenttaste. Das Limett
+         ist hell, weißer Text darauf wäre nicht zu lesen - also der Fensterton. -->
+    <SolidColorBrush x:Key="OnAccentBrush" Color="#202020" />
 
     <!-- ══ Text ════════════════════════════════════════════════════════════════ -->
-    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFFFF" />
-    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#C5FFFFFF" />
-    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#87FFFFFF" />
-    <SolidColorBrush x:Key="TextDisabledBrush" Color="#5DFFFFFF" />
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#C4C4C4" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#8A8A8A" />
 
-    <!-- ══ Flächen ═════════════════════════════════════════════════════════════
-         Durchweg weiß mit niedrigem Alpha, damit Mica durchscheint. Die Werte sind bewusst
-         niedrig: jede dieser Flächen liegt auf Mica, und was hier an Deckkraft dazukommt,
-         geht an Durchsicht verloren. -->
-    <SolidColorBrush x:Key="SurfaceBrush" Color="#0EFFFFFF" />
-    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#1AFFFFFF" />
-    <SolidColorBrush x:Key="SurfacePressedBrush" Color="#08FFFFFF" />
-    <SolidColorBrush x:Key="CardBrush" Color="#12FFFFFF" />
-    <SolidColorBrush x:Key="ControlBrush" Color="#15FFFFFF" />
-    <SolidColorBrush x:Key="ControlHoverBrush" Color="#20FFFFFF" />
-    <SolidColorBrush x:Key="ControlPressedBrush" Color="#0CFFFFFF" />
-    <SolidColorBrush x:Key="ControlDisabledBrush" Color="#0AFFFFFF" />
+    <!-- Abgeleitet: eine Stufe unter "schwach", damit Abgeschaltetes sich auch von bloß
+         Nebensächlichem unterscheidet. -->
+    <SolidColorBrush x:Key="TextDisabledBrush" Color="#6A6A6A" />
 
-    <!-- Rückfall, wenn Mica nicht zur Verfügung steht (Windows 10). Dann trägt das
-         Fenster diesen Ton, und die Flächen darüber wirken wie vorgesehen. -->
-    <SolidColorBrush x:Key="WindowFallbackBrush" Color="#2B2B33" />
+    <!-- ══ Flächen ═════════════════════════════════════════════════════════════ -->
+    <SolidColorBrush x:Key="WindowBrush" Color="#202020" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#1C1C1C" />
+
+    <!-- Abgeleitet: die Tasten der Titelleiste liegen auf dem Fensterton, nicht auf einer
+         Karte - sie brauchen eigene Zustände, sonst wären sie beim Schweben unsichtbar. -->
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#2D2D2D" />
+    <SolidColorBrush x:Key="SurfacePressedBrush" Color="#262626" />
+    <SolidColorBrush x:Key="CardBrush" Color="#2D2D2D" />
+    <SolidColorBrush x:Key="ControlBrush" Color="#2D2D2D" />
+
+    <!-- Abgeleitet: Schweben hellt auf, Drücken dunkelt ab, Abgeschaltetes bleibt knapp
+         über dem Fensterton. -->
+    <SolidColorBrush x:Key="ControlHoverBrush" Color="#383838" />
+    <SolidColorBrush x:Key="ControlPressedBrush" Color="#272727" />
+    <SolidColorBrush x:Key="ControlDisabledBrush" Color="#262626" />
 
     <!-- ══ Ränder ══════════════════════════════════════════════════════════════ -->
-    <SolidColorBrush x:Key="StrokeBrush" Color="#1AFFFFFF" />
-    <SolidColorBrush x:Key="StrokeStrongBrush" Color="#2AFFFFFF" />
-    <SolidColorBrush x:Key="DividerBrush" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="StrokeBrush" Color="#303030" />
+    <SolidColorBrush x:Key="DividerBrush" Color="#303030" />
+
+    <!-- Abgeleitet: ein Rand, der auf #2D2D2D noch zu sehen ist - #303030 verschwindet dort. -->
+    <SolidColorBrush x:Key="StrokeStrongBrush" Color="#3F3F3F" />
 
     <!-- ══ Zustände ════════════════════════════════════════════════════════════ -->
     <SolidColorBrush x:Key="OkBrush" Color="#7DDC7D" />
     <SolidColorBrush x:Key="WarnBrush" Color="#F5C451" />
     <SolidColorBrush x:Key="ErrorBrush" Color="#F57B7B" />
     <SolidColorBrush x:Key="CloseHoverBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="ClosePressedBrush" Color="#8E2117" />
 
     <!-- ══ Rundungen ═══════════════════════════════════════════════════════════ -->
     <CornerRadius x:Key="RadiusControl">5</CornerRadius>
@@ -80,7 +85,7 @@
     <Thickness x:Key="RowPadding">12,0,12,0</Thickness>
 
     <!-- ══ Schrift ═════════════════════════════════════════════════════════════ -->
-    <FontFamily x:Key="UiFont">Segoe UI Variable Text, Segoe UI</FontFamily>
+    <FontFamily x:Key="UiFont">Segoe UI</FontFamily>
     <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
 
     <sys:Double x:Key="FontSizeSmall">11</sys:Double>

@@ -16,8 +16,12 @@ namespace AudioMirror.Ui;
 /// </summary>
 internal static class AppIconArt
 {
-    /// <summary>Mittelton zwischen den beiden Verlaufsfarben, die das Programm früher trug.</summary>
-    public static readonly Color Colour = Color.FromArgb(0x63, 0x5D, 0xF1);
+    /// <summary>
+    /// Der Akzent aus Tokens.xaml. Nicht von dort gelesen, sondern hier eingetragen: das
+    /// Symbol im Infobereich entsteht, bevor ein Fenster steht, und die .ico-Datei wird ganz
+    /// ohne laufende Oberfläche geschrieben.
+    /// </summary>
+    public static readonly Color Colour = Color.FromArgb(0xC8, 0xF5, 0x42);
 
     private const float Reference = 32f;
     private const float BarWidth = 3.4f;

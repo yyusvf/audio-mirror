@@ -164,11 +164,11 @@
                      Ziele auf einen Blick zu finden sind. -->
                 <DataTrigger Binding="{Binding IsEnabled}" Value="True">
                     <Setter TargetName="RowShell" Property="Background"
-                            Value="{StaticResource AccentFaintBrush}" />
+                            Value="{StaticResource AccentSoftBrush}" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsSource}" Value="True">
                     <Setter TargetName="RowShell" Property="Background"
-                            Value="{StaticResource SurfacePressedBrush}" />
+                            Value="{StaticResource SurfaceBrush}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>

@@ -6,39 +6,33 @@ using System.Windows.Media;
 namespace AudioMirror.Ui.Shell;
 
 /// <summary>
-/// Dunkle Titelleiste, Mica-Hintergrund und runde Ecken - alles drei stellt der
-/// Fenstermanager, nicht WPF. WPF kennt dafür keine Eigenschaften, also führt der Weg über
-/// <c>DwmSetWindowAttribute</c>.
+/// Dunkle Titelleiste und runde Ecken - beides stellt der Fenstermanager, nicht WPF. WPF kennt
+/// dafür keine Eigenschaften, also führt der Weg über <c>DwmSetWindowAttribute</c>.
 ///
-/// Jede der drei Angaben ist ab einer anderen Windows-Fassung vorhanden, und ältere
-/// Fassungen antworten schlicht mit einem Fehlercode, statt zu stürzen. Genau darauf baut
-/// dieser Code: versuchen, den Rückgabewert ansehen, und wenn Mica nicht getragen wird,
-/// bekommt das Fenster einen einfarbigen dunklen Grund.
+/// Beide Angaben sind ab einer bestimmten Windows-Fassung vorhanden, und ältere antworten
+/// schlicht mit einem Fehlercode, statt zu stürzen. Ein Rückfall ist deshalb nicht nötig: die
+/// Farben des Fensters stehen ohnehin fest, betroffen wären nur Rahmen und Ecken.
+///
+/// Mica wird bewusst nicht gesetzt. Der Hintergrund des Fensters ist deckend (#202020), ein
+/// durchscheinender Untergrund wäre davon vollständig verdeckt.
 /// </summary>
 internal static class WindowEffects
 {
     private const int UseImmersiveDarkMode = 20;
     private const int WindowCornerPreference = 33;
-    private const int SystemBackdropType = 38;
 
     private const int CornerRound = 2;
-    private const int BackdropMica = 2;
-
-    private const int FirstBuildWithFullWindowBackdrop = 22621;
 
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 
-    /// <summary>
-    /// Wendet die drei Angaben an. Liefert false, wenn Mica nicht zur Verfügung steht - dann
-    /// muss das Fenster selbst für einen Hintergrund sorgen.
-    /// </summary>
-    public static bool Apply(Window window)
+    /// <summary>Anzuwenden, sobald das Fenster ein Handle hat - vorher greift keine der Angaben.</summary>
+    public static void Apply(Window window)
     {
         IntPtr handle = new WindowInteropHelper(window).Handle;
         if (handle == IntPtr.Zero)
         {
-            return false;
+            return;
         }
 
         // Dunkle Titelleiste. Betrifft hier nur noch den Rahmen, weil die Leiste selbst
@@ -47,50 +41,10 @@ internal static class WindowEffects
 
         // Runde Ecken: Windows 11 rundet von sich aus, aber nicht bei jedem Fensterstil.
         Set(handle, WindowCornerPreference, CornerRound);
-
-        // Erst ab 22H2 legt der Fenstermanager den Hintergrund über die ganze Fensterfläche.
-        // Davor blieb er auf den Fensterrahmen beschränkt und war nur zu sehen, wenn man
-        // diesen über die Innenfläche ausdehnte - was hier nicht in Frage kommt, weil damit
-        // die Fenstertasten des Systems ein zweites Mal gezeichnet würden.
-        if (Environment.OSVersion.Version.Build < FirstBuildWithFullWindowBackdrop)
-        {
-            return false;
-        }
-
-        if (!Set(handle, SystemBackdropType, BackdropMica))
-        {
-            return false;
-        }
-
-        // Der entscheidende zweite Schritt. Mica liegt jetzt am Fenster an, zu sehen ist
-        // davon aber nichts: WPF zeichnet seine Oberfläche auf eine undurchsichtig schwarze
-        // Fläche, und die deckt den Hintergrund des Fenstermanagers vollständig zu. Erst
-        // wenn diese Fläche selbst durchsichtig ist, scheint Mica hindurch - überall dort,
-        // wo die Oberfläche nichts zeichnet.
-        //
-        // Deshalb steht das hier und nicht weiter oben: ohne Mica dahinter wäre das Fenster
-        // schlicht durchsichtig und man sähe den Schreibtisch.
-        HwndSource? source = HwndSource.FromHwnd(handle);
-        if (source?.CompositionTarget == null)
-        {
-            return false;
-        }
-
-        source.CompositionTarget.BackgroundColor = Colors.Transparent;
-        return true;
     }
 
-    /// <summary>Färbt das Fenster ein, wenn Mica nicht getragen wird.</summary>
-    public static void ApplyFallbackBackground(Window window)
+    private static void Set(IntPtr handle, int attribute, int value)
     {
-        if (window.TryFindResource("WindowFallbackBrush") is Brush brush)
-        {
-            window.Background = brush;
-        }
-    }
-
-    private static bool Set(IntPtr handle, int attribute, int value)
-    {
-        return DwmSetWindowAttribute(handle, attribute, ref value, sizeof(int)) == 0;
+        DwmSetWindowAttribute(handle, attribute, ref value, sizeof(int));
     }
 }

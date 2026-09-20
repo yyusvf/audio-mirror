@@ -27,7 +27,7 @@
                                        Text="&#xE73E;"
                                        FontFamily="{StaticResource IconFont}"
                                        FontSize="12"
-                                       Foreground="White"
+                                       Foreground="{StaticResource OnAccentBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Visibility="Collapsed" />
@@ -85,7 +85,7 @@
                                        Text="&#xE73E;"
                                        FontFamily="{StaticResource IconFont}"
                                        FontSize="12"
-                                       Foreground="White"
+                                       Foreground="{StaticResource OnAccentBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Visibility="Collapsed" />
@@ -128,15 +128,30 @@
                                 CornerRadius="2"
                                 VerticalAlignment="Center"
                                 Background="{StaticResource StrokeStrongBrush}" />
-                        <Border x:Name="Filled"
-                                Height="4"
-                                CornerRadius="2"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Background="{StaticResource AccentBrush}" />
                         <Track x:Name="PART_Track">
+                            <!-- Der gefüllte Teil steckt in der linken Hälfte der Spur. Als
+                                 eigenes Element daneben hatte er keine Breite: die kennt nur
+                                 der Track, und der teilt sie seinen beiden Hälften zu. -->
                             <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="Slider.DecreaseLarge" Opacity="0" Focusable="False" />
+                                <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Grid Background="Transparent">
+                                                <Border x:Name="Filled"
+                                                        Height="4"
+                                                        CornerRadius="2"
+                                                        VerticalAlignment="Center"
+                                                        Background="{StaticResource AccentBrush}" />
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter TargetName="Filled" Property="Background"
+                                                            Value="{StaticResource TextDisabledBrush}" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
                             </Track.DecreaseRepeatButton>
                             <Track.IncreaseRepeatButton>
                                 <RepeatButton Command="Slider.IncreaseLarge" Opacity="0" Focusable="False" />
@@ -148,7 +163,7 @@
                                             <Grid Background="Transparent">
                                                 <Ellipse Fill="{StaticResource AccentBrush}" />
                                                 <Ellipse x:Name="Core"
-                                                         Fill="White"
+                                                         Fill="{StaticResource TextPrimaryBrush}"
                                                          Margin="4" />
                                             </Grid>
                                             <ControlTemplate.Triggers>
@@ -167,7 +182,6 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Filled" Property="Background" Value="{StaticResource TextDisabledBrush}" />
                             <Setter TargetName="Grip" Property="Opacity" Value="0.4" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -262,7 +276,7 @@
                             <Setter TargetName="Fill" Property="Background" Value="{StaticResource ControlHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentDimBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentSoftBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -327,7 +341,7 @@
                                VerticalOffset="4"
                                IsOpen="{TemplateBinding IsDropDownOpen}"
                                PopupAnimation="Fade">
-                            <Border Background="#2A2A30"
+                            <Border Background="{StaticResource CardBrush}"
                                     BorderBrush="{StaticResource StrokeStrongBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{StaticResource RadiusCard}"
@@ -369,7 +383,7 @@
                                      StrokeThickness="1" />
                             <Ellipse x:Name="Dot"
                                      Margin="5"
-                                     Fill="White"
+                                     Fill="{StaticResource OnAccentBrush}"
                                      Visibility="Collapsed" />
                         </Grid>
                         <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center" />
@@ -429,7 +443,7 @@
                         </Trigger>
                         <Trigger Property="IsRecording" Value="True">
                             <Setter TargetName="Fill" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentDimBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentSoftBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

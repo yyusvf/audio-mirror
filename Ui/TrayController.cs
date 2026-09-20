@@ -1,6 +1,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AudioMirror;
+using AudioMirror.Ui.Theme;
 using System.Runtime.InteropServices;
 
 namespace AudioMirror.Ui;
@@ -30,6 +31,14 @@ internal sealed class TrayController : IDisposable
     public TrayController()
     {
         Icon = CreateIcon(out iconHandle);
+
+        // Das Menü zeichnet sich über einen Renderer; der eingebaute holt seine Farben aus
+        // der Systemtabelle und wäre hell. Text und Grund kommen zusätzlich direkt ans Menü,
+        // weil beides an den Einträgen hängt und nicht an der Farbtabelle.
+        menu.RenderMode = ToolStripRenderMode.Professional;
+        menu.Renderer = new DarkMenuRenderer();
+        menu.BackColor = Palette.Window;
+        menu.ForeColor = Palette.Text;
 
         notifyIcon = new NotifyIcon
         {
@@ -118,7 +127,7 @@ internal sealed class TrayController : IDisposable
         IReadOnlyList<TrayDeviceEntry> devices = DeviceProvider?.Invoke() ?? [];
         if (devices.Count == 0)
         {
-            menu.Items.Add(new ToolStripMenuItem(Strings.NoOutputDevices) { Enabled = false });
+            menu.Items.Add(Style(new ToolStripMenuItem(Strings.NoOutputDevices) { Enabled = false }));
         }
 
         foreach (TrayDeviceEntry device in devices)
@@ -134,7 +143,7 @@ internal sealed class TrayController : IDisposable
             string id = device.Id;
             bool nowEnabled = !device.Enabled;
             item.Click += (_, _) => DeviceToggled?.Invoke(id, nowEnabled);
-            menu.Items.Add(item);
+            menu.Items.Add(Style(item));
         }
 
         menu.Items.Add(new ToolStripSeparator());
@@ -148,15 +157,27 @@ internal sealed class TrayController : IDisposable
             Enabled = Autostart.IsSupported,
         };
         autostart.Click += (_, _) => AutostartToggled?.Invoke();
-        menu.Items.Add(autostart);
+        menu.Items.Add(Style(autostart));
 
         var open = new ToolStripMenuItem(Strings.OpenWindow);
         open.Click += (_, _) => ShowWindowRequested?.Invoke();
-        menu.Items.Add(open);
+        menu.Items.Add(Style(open));
 
         var exit = new ToolStripMenuItem(Strings.Exit);
         exit.Click += (_, _) => ExitRequested?.Invoke();
-        menu.Items.Add(exit);
+        menu.Items.Add(Style(exit));
+    }
+
+    /// <summary>
+    /// Farben an einem Menüeintrag. Die Farbtabelle des Renderers deckt nur Flächen ab; den
+    /// Text holt sich jeder Eintrag selbst, und ein abgeschalteter nimmt dafür den Grauton des
+    /// Systems - auf dunklem Grund kaum zu sehen.
+    /// </summary>
+    private static ToolStripMenuItem Style(ToolStripMenuItem item)
+    {
+        item.BackColor = Palette.Window;
+        item.ForeColor = item.Enabled ? Palette.Text : Palette.TextDisabled;
+        return item;
     }
 
     /// <summary>
