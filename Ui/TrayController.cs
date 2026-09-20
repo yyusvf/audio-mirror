@@ -1,7 +1,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AudioMirror;
-using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 
 namespace AudioMirror.Ui;
@@ -161,63 +160,14 @@ internal sealed class TrayController : IDisposable
     }
 
     /// <summary>
-    /// Zeichnet das Symbol zur Laufzeit - ein Punkt mit zwei abgehenden Wellen. Dadurch braucht
-    /// das Projekt keine mitgelieferte .ico-Datei, und das Ergebnis bleibt bei jeder
-    /// Anzeigeskalierung sauber.
+    /// Das Symbol im Infobereich - dieselbe Zeichnung wie Taskleiste, Fenster und Titelleiste,
+    /// siehe <see cref="AppIconArt"/>.
     /// </summary>
     private static Icon CreateIcon(out IntPtr handle)
     {
-        using var bitmap = new Bitmap(32, 32);
-        using (Graphics g = Graphics.FromImage(bitmap))
-        {
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.Clear(Color.Transparent);
-
-            // Mittelton zwischen den beiden Verlaufsfarben des App-Symbols (Blau -> Violett) -
-            // damit Infobereich und Taskleiste als eine Marke wirken, ohne dass hier ein
-            // eigener Verlauf gezeichnet werden muss.
-            var colour = Color.FromArgb(0x63, 0x5D, 0xF1);
-            using var brush = new SolidBrush(colour);
-
-            // Dieselbe Form wie im App-Symbol (AudioMirror.ico): fuenf Balken, symmetrisch um
-            // die Mitte gespiegelt. Ohne Kachel und ohne Verlauf - ein Infobereich-Symbol mit
-            // eigenem Hintergrund wuerde neben den einfarbigen Windows-Symbolen (Lautstaerke,
-            // WLAN, Akku) als Fremdkoerper wirken.
-            const float barWidth = 3.4f;
-            const float gap = 1.9f;
-            float[] heightFractions = [0.34f, 0.58f, 0.80f, 0.58f, 0.34f];
-            const float baseHeight = 24f;
-            const float centerX = 16f, centerY = 16f;
-
-            float totalWidth = heightFractions.Length * barWidth + (heightFractions.Length - 1) * gap;
-            float startX = centerX - totalWidth / 2;
-
-            for (int i = 0; i < heightFractions.Length; i++)
-            {
-                float barHeight = baseHeight * heightFractions[i];
-                float x = startX + i * (barWidth + gap);
-                FillPillBar(g, brush, x, centerY, barWidth, barHeight);
-            }
-        }
-
+        using Bitmap bitmap = AppIconArt.Render(32);
         handle = bitmap.GetHicon();
         return Icon.FromHandle(handle);
-    }
-
-    /// <summary>
-    /// Ein senkrechter Balken mit voll gerundeten Enden (Kapselform) - GDI+ kennt kein
-    /// abgerundetes Rechteck von Haus aus, darum ein Rechteck fuer die Mitte plus je ein
-    /// Kreis oben und unten, beide im Balkendurchmesser.
-    /// </summary>
-    private static void FillPillBar(Graphics g, Brush brush, float centerX, float centerY, float width, float height)
-    {
-        float half = width / 2;
-        float top = centerY - height / 2;
-        float bottom = centerY + height / 2;
-
-        g.FillEllipse(brush, centerX - half, top - half, width, width);
-        g.FillEllipse(brush, centerX - half, bottom - half, width, width);
-        g.FillRectangle(brush, centerX - half, top, width, height);
     }
 
     public void Dispose()

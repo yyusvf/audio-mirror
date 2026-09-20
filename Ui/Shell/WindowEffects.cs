@@ -24,6 +24,8 @@ internal static class WindowEffects
     private const int CornerRound = 2;
     private const int BackdropMica = 2;
 
+    private const int FirstBuildWithFullWindowBackdrop = 22621;
+
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 
@@ -45,6 +47,15 @@ internal static class WindowEffects
 
         // Runde Ecken: Windows 11 rundet von sich aus, aber nicht bei jedem Fensterstil.
         Set(handle, WindowCornerPreference, CornerRound);
+
+        // Erst ab 22H2 legt der Fenstermanager den Hintergrund über die ganze Fensterfläche.
+        // Davor blieb er auf den Fensterrahmen beschränkt und war nur zu sehen, wenn man
+        // diesen über die Innenfläche ausdehnte - was hier nicht in Frage kommt, weil damit
+        // die Fenstertasten des Systems ein zweites Mal gezeichnet würden.
+        if (Environment.OSVersion.Version.Build < FirstBuildWithFullWindowBackdrop)
+        {
+            return false;
+        }
 
         if (!Set(handle, SystemBackdropType, BackdropMica))
         {

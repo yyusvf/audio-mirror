@@ -6,6 +6,7 @@
         Width="720" Height="520"
         MinWidth="560" MinHeight="360"
         WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/AudioMirror.ico"
         Background="Transparent"
         TextOptions.TextFormattingMode="Display"
         UseLayoutRounding="True"
@@ -18,16 +19,16 @@
         AllowsTransparency würde das alles selbst nachbauen müssen - und nebenbei Mica
         ausschalten, weil das Fenster dann in Software gezeichnet wird.
 
-        GlassFrameThickness="-1" ist die Bedingung dafür, dass Mica überhaupt zu sehen ist:
-        damit reicht der Fensterrahmen über die gesamte Innenfläche, und genau dort zeichnet
-        der Fenstermanager den Hintergrund. Bei 0 endet der Rahmen am Fensterrand, Mica liegt
-        zwar an, wird aber von der Zeichenfläche vollständig verdeckt.
+        GlassFrameThickness bleibt bei 0. Ein ausgedehnter Rahmen bringt auf Windows 11 die
+        Fenstertasten des Systems zurück - sie werden genau in dieser Fläche gezeichnet, und
+        zwar zusätzlich zu den eigenen. Für Mica wird er nicht gebraucht: den Hintergrund legt
+        der Fenstermanager über die ganze Fensterfläche, siehe WindowEffects.
     -->
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="{StaticResource TitleBarHeight}"
                       ResizeBorderThickness="6"
                       CornerRadius="0"
-                      GlassFrameThickness="-1"
+                      GlassFrameThickness="0"
                       UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
@@ -51,14 +52,15 @@
 
             <!-- DecodePixelWidth waehlt die passende Stufe aus der .ico. Ohne das nimmt WPF
                  die groesste (256) und rechnet sie auf 20 Pixel herunter - das Ergebnis ist
-                 weich statt scharf. -->
+                 weich statt scharf. 40 statt 20, weil die Stufe bei 150 oder 200 Prozent
+                 Anzeigeskalierung auf 30 oder 40 Pixel hochgerechnet wird. -->
             <Image Grid.Column="0"
                    Width="20" Height="20"
                    Margin="14,0,0,0"
                    VerticalAlignment="Center">
                 <Image.Source>
                     <BitmapImage UriSource="pack://application:,,,/AudioMirror.ico"
-                                 DecodePixelWidth="20" />
+                                 DecodePixelWidth="40" />
                 </Image.Source>
             </Image>
 

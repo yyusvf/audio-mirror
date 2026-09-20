@@ -9,6 +9,15 @@ internal static class Program
     private static void Main(string[] args)
     {
 #if DEBUG
+        // Schreibt AudioMirror.ico neu aus der Zeichnung in AppIconArt - aufzurufen, wenn
+        // sich die Form aendert.
+        int iconAt = Array.FindIndex(args, a => string.Equals(a, "--makeicon", StringComparison.OrdinalIgnoreCase));
+        if (iconAt >= 0 && iconAt + 1 < args.Length)
+        {
+            Ui.AppIconFile.Write(args[iconAt + 1]);
+            return;
+        }
+
         // Nur zum Ansehen während der Arbeit an der Oberfläche: zeichnet das Fenster in eine
         // PNG-Datei, ohne es auf den Bildschirm zu legen.
         int renderAt = Array.FindIndex(args, a => string.Equals(a, "--render", StringComparison.OrdinalIgnoreCase));
