@@ -47,6 +47,10 @@ internal static class WpfHost
             });
         }
 
+        // Erst nach den Wörterbüchern: die Akzent-Pinsel müssen stehen, bevor sie gefärbt
+        // werden können.
+        Theme.SystemAccent.Attach(application);
+
         return application;
     }
 }

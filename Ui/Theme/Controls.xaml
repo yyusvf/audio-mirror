@@ -169,9 +169,9 @@
         waere die dunkle Beschriftung nicht mehr zu lesen.
     -->
     <Style x:Key="AccentButton" TargetType="Button" BasedOn="{StaticResource StandardButton}">
-        <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource OnAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource OnAccentBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -183,10 +183,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentHoverBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource AccentBrush}" />
                             <Setter TargetName="Fill" Property="Opacity" Value="0.8" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
@@ -229,7 +229,7 @@
                             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource AccentSoftBrush}" />
                             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
                             <Setter Property="FontWeight" Value="SemiBold" />
                         </Trigger>

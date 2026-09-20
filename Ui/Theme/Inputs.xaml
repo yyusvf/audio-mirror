@@ -27,7 +27,7 @@
                                        Text="&#xE73E;"
                                        FontFamily="{StaticResource IconFont}"
                                        FontSize="12"
-                                       Foreground="{StaticResource OnAccentBrush}"
+                                       Foreground="{DynamicResource OnAccentBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Visibility="Collapsed" />
@@ -35,8 +35,8 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Box" Property="Background" Value="{StaticResource AccentBrush}" />
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                             <Setter TargetName="Check" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <MultiTrigger>
@@ -51,7 +51,7 @@
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsChecked" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Box" Property="Background" Value="{StaticResource AccentHoverBrush}" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Box" Property="Background" Value="{StaticResource ControlDisabledBrush}" />
@@ -85,7 +85,7 @@
                                        Text="&#xE73E;"
                                        FontFamily="{StaticResource IconFont}"
                                        FontSize="12"
-                                       Foreground="{StaticResource OnAccentBrush}"
+                                       Foreground="{DynamicResource OnAccentBrush}"
                                        HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Visibility="Collapsed" />
@@ -94,12 +94,12 @@
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Box" Property="Background" Value="{StaticResource AccentBrush}" />
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                             <Setter TargetName="Check" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}" />
@@ -141,7 +141,7 @@
                                                         Height="4"
                                                         CornerRadius="2"
                                                         VerticalAlignment="Center"
-                                                        Background="{StaticResource AccentBrush}" />
+                                                        Background="{DynamicResource AccentBrush}" />
                                             </Grid>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsEnabled" Value="False">
@@ -161,7 +161,7 @@
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
                                             <Grid Background="Transparent">
-                                                <Ellipse Fill="{StaticResource AccentBrush}" />
+                                                <Ellipse Fill="{DynamicResource AccentBrush}" />
                                                 <Ellipse x:Name="Core"
                                                          Fill="{StaticResource TextPrimaryBrush}"
                                                          Margin="4" />
@@ -276,7 +276,7 @@
                             <Setter TargetName="Fill" Property="Background" Value="{StaticResource ControlHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource AccentSoftBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -383,19 +383,19 @@
                                      StrokeThickness="1" />
                             <Ellipse x:Name="Dot"
                                      Margin="5"
-                                     Fill="{StaticResource OnAccentBrush}"
+                                     Fill="{DynamicResource OnAccentBrush}"
                                      Visibility="Collapsed" />
                         </Grid>
                         <ContentPresenter Margin="10,0,0,0" VerticalAlignment="Center" />
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Ring" Property="Fill" Value="{StaticResource AccentBrush}" />
-                            <Setter TargetName="Ring" Property="Stroke" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="Ring" Property="Fill" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="Ring" Property="Stroke" Value="{DynamicResource AccentBrush}" />
                             <Setter TargetName="Dot" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Ring" Property="Stroke" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="Ring" Property="Stroke" Value="{DynamicResource AccentBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}" />
@@ -442,8 +442,8 @@
                             <Setter TargetName="Fill" Property="Background" Value="{StaticResource ControlHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsRecording" Value="True">
-                            <Setter TargetName="Fill" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                            <Setter TargetName="Fill" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource AccentSoftBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

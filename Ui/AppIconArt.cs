@@ -17,11 +17,11 @@ namespace AudioMirror.Ui;
 internal static class AppIconArt
 {
     /// <summary>
-    /// Der Akzent aus Tokens.xaml. Nicht von dort gelesen, sondern hier eingetragen: das
-    /// Symbol im Infobereich entsteht, bevor ein Fenster steht, und die .ico-Datei wird ganz
-    /// ohne laufende Oberfläche geschrieben.
+    /// Das Blau des Programms. Bewusst nicht die Akzentfarbe des Systems: das Symbol ist die
+    /// Marke und soll auf jedem Rechner gleich aussehen, während die Bedienelemente im Fenster
+    /// der Einstellung des Nutzers folgen.
     /// </summary>
-    public static readonly Color Colour = Color.FromArgb(0xC8, 0xF5, 0x42);
+    public static readonly Color Colour = Color.FromArgb(0x63, 0x5D, 0xF1);
 
     private const float Reference = 32f;
     private const float BarWidth = 3.4f;

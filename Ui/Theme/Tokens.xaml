@@ -11,22 +11,24 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <!-- ══ Akzent ══════════════════════════════════════════════════════════════ -->
-    <Color x:Key="AccentColor">#C8F542</Color>
+    <!-- ══ Akzent ══════════════════════════════════════════════════════════════
+         Diese vier Werte setzt SystemAccent beim Start auf die Akzentfarbe, die in den
+         Windows-Einstellungen steht, und hält sie nach, wenn sie dort geändert wird.
 
-    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
-
-    <!-- Abgeleitet: die Spec nennt keinen Schwebezustand. Etwas heller als der Vollton,
-         damit die Bewegung spürbar ist, ohne den Ton zu wechseln. -->
-    <SolidColorBrush x:Key="AccentHoverBrush" Color="#D6F873" />
+         Was hier steht, ist das Blau des Programms. Es ist der Rückfall, wenn sich die
+         Systemfarbe nicht lesen lässt - und zugleich die Farbe, die das Programmsymbol
+         unabhängig davon trägt, siehe AppIconArt. -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#635DF1" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#7B76F4" />
 
     <!-- Flächiger Akzent, 15 Prozent Deckung. Hinterlegt ganze Zeilen und den aktiven
          Reiter - als Vollton wäre beides erschlagend. -->
-    <SolidColorBrush x:Key="AccentSoftBrush" Color="#26C8F542" />
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#26635DF1" />
 
-    <!-- Was auf einer Akzentfläche liegt: Haken, Beschriftung einer Akzenttaste. Das Limett
-         ist hell, weißer Text darauf wäre nicht zu lesen - also der Fensterton. -->
-    <SolidColorBrush x:Key="OnAccentBrush" Color="#202020" />
+    <!-- Was auf einer Akzentfläche liegt: Haken, Auswahlpunkt, Beschriftung einer
+         Akzenttaste. Richtet sich nach der Helligkeit des Akzents, darum ebenfalls von
+         SystemAccent gesetzt. -->
+    <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
 
     <!-- ══ Text ════════════════════════════════════════════════════════════════ -->
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FFFFFF" />
