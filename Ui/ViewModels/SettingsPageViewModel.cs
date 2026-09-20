@@ -154,6 +154,16 @@ internal sealed class SettingsPageViewModel : ViewModelBase
     public string BufferDisplay => $"{BufferMs} {Strings.Milliseconds}";
 
     public string HotkeyLabel => Strings.ToggleAllLabel;
+
+    /// <summary>
+    /// Überschrift des eigenen Abschnitts für die Tastenkombination. Es ist die vorhandene
+    /// Beschriftung ohne den Doppelpunkt - eine eigene Zeichenkette dafür hieße, sie in alle
+    /// dreizehn Sprachen zu übersetzen, und der Wortlaut wäre derselbe.
+    ///
+    /// Das Leerzeichen gehört mit abgeschnitten: im Französischen steht vor dem Doppelpunkt
+    /// eines, und zwar ein geschütztes.
+    /// </summary>
+    public string HotkeyTitle => Strings.ToggleAllLabel.TrimEnd(':', ' ', '\u00A0', '\u202F');
     public string HotkeyEnabledLabel => Strings.HotkeyEnabled;
 
     public Keys Hotkey

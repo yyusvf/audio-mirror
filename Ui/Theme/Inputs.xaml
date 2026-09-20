@@ -413,7 +413,6 @@
         <Setter Property="Background" Value="{StaticResource CardBrush}" />
         <Setter Property="CornerRadius" Value="{StaticResource RadiusCard}" />
         <Setter Property="Padding" Value="{StaticResource CardPadding}" />
-        <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
     <!-- Tastenkombination: sieht aus wie ein Eingabefeld und nimmt eine auf. -->
@@ -435,7 +434,9 @@
                             BorderThickness="1"
                             CornerRadius="{StaticResource RadiusControl}"
                             Padding="12,0">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <!-- Links wie in einem Eingabefeld. Mittig sah der Inhalt verloren aus,
+                             seit das Feld die Breite seiner Karte einnimmt. -->
+                        <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">

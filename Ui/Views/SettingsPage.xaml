@@ -4,24 +4,49 @@
              xmlns:views="clr-namespace:AudioMirror.Ui.Views"
              FontFamily="{StaticResource UiFont}">
 
+    <UserControl.Resources>
+        <!--
+            Eine Zelle des Rasters: Überschrift oben, darunter die Karte. Die Karte füllt den
+            Rest der Zelle aus - dadurch sind beide Karten einer Reihe gleich hoch, auch wenn
+            die eine weniger Inhalt hat als die andere. Ohne das endet jede Karte dort, wo ihr
+            Inhalt aufhört, und die Reihe steht unten ausgefranst da.
+        -->
+        <Style x:Key="SettingsCell" TargetType="Grid">
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+        </Style>
+    </UserControl.Resources>
+
     <ScrollViewer Style="{StaticResource ThemedScrollViewer}">
-        <!-- Zwei Spalten, solange Platz ist: links Allgemein und Ton, rechts die
-             Aktualisierungen. Bei schmalem Fenster rutschen sie nicht untereinander -
-             dafür sorgt die Mindestbreite des Fensters. -->
+        <!--
+            Zwei Spalten, zwei Reihen, vier gleich breite Zellen. Die Fugen kommen vom Rand
+            der Zellen, nicht aus den Karten: so ist der Abstand zwischen zwei Karten überall
+            gleich breit. Untereinander rutschen die Spalten nicht - dafür sorgt die
+            Mindestbreite des Fensters.
+        -->
         <Grid Margin="0,0,4,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <StackPanel Grid.Column="0" Margin="0,0,6,0">
+            <!-- ══ Allgemein ═══════════════════════════════════════════════════ -->
+            <Grid Grid.Row="0" Grid.Column="0" Style="{StaticResource SettingsCell}" Margin="0,0,6,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-                <!-- ══ Allgemein ═══════════════════════════════════════════════ -->
-                <TextBlock Style="{StaticResource SectionLabel}"
+                <TextBlock Grid.Row="0"
+                           Style="{StaticResource SectionLabel}"
                            Text="{Binding BasicTitle}"
                            Margin="2,0,0,6" />
-                <Border Style="{StaticResource SettingsCard}">
-                    <StackPanel>
+
+                <Border Grid.Row="1" Style="{StaticResource SettingsCard}">
+                    <StackPanel VerticalAlignment="Top">
                         <CheckBox Style="{StaticResource LabeledCheckBox}"
                                   Content="{Binding AutostartLabel}"
                                   IsEnabled="{Binding AutostartSupported}"
@@ -42,13 +67,65 @@
                                   SelectedIndex="{Binding LanguageIndex, Mode=TwoWay}" />
                     </StackPanel>
                 </Border>
+            </Grid>
 
-                <!-- ══ Ton ═════════════════════════════════════════════════════ -->
-                <TextBlock Style="{StaticResource SectionLabel}"
+            <!-- ══ Aktualisierungen ════════════════════════════════════════════ -->
+            <Grid Grid.Row="0" Grid.Column="1" Style="{StaticResource SettingsCell}" Margin="6,0,0,12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Style="{StaticResource SectionLabel}"
+                           Text="{Binding UpdateTitle}"
+                           Margin="2,0,0,6" />
+
+                <Border Grid.Row="1" Style="{StaticResource SettingsCard}">
+                    <StackPanel VerticalAlignment="Top">
+                        <RadioButton Style="{StaticResource ThemedRadioButton}"
+                                     GroupName="Updates"
+                                     Content="{Binding UpdateAutomaticLabel}"
+                                     IsChecked="{Binding UpdateAutomatic, Mode=TwoWay}" />
+                        <RadioButton Style="{StaticResource ThemedRadioButton}"
+                                     GroupName="Updates"
+                                     Content="{Binding UpdateNotifyLabel}"
+                                     IsChecked="{Binding UpdateNotify, Mode=TwoWay}" />
+                        <RadioButton Style="{StaticResource ThemedRadioButton}"
+                                     GroupName="Updates"
+                                     Content="{Binding UpdateNeverLabel}"
+                                     IsChecked="{Binding UpdateNever, Mode=TwoWay}" />
+
+                        <Button x:Name="CheckNowButton"
+                                Style="{StaticResource StandardButton}"
+                                HorizontalAlignment="Left"
+                                Margin="0,10,0,0"
+                                Content="{Binding CheckNowLabel}"
+                                IsEnabled="{Binding CanCheckNow}"
+                                Click="OnCheckNow" />
+
+                        <TextBlock Style="{StaticResource SecondaryText}"
+                                   Margin="0,10,0,0"
+                                   TextWrapping="Wrap"
+                                   Text="{Binding UpdateStatus}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ══ Ton ═════════════════════════════════════════════════════════ -->
+            <Grid Grid.Row="1" Grid.Column="0" Style="{StaticResource SettingsCell}" Margin="0,0,6,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Style="{StaticResource SectionLabel}"
                            Text="{Binding AudioTitle}"
-                           Margin="2,4,0,6" />
-                <Border Style="{StaticResource SettingsCard}">
-                    <StackPanel>
+                           Margin="2,0,0,6" />
+
+                <Border Grid.Row="1" Style="{StaticResource SettingsCard}">
+                    <StackPanel VerticalAlignment="Top">
                         <Grid ToolTip="{Binding BufferTip}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -68,11 +145,28 @@
                                 TickFrequency="5"
                                 IsSnapToTickEnabled="True"
                                 Value="{Binding BufferMs, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
 
-                        <TextBlock Style="{StaticResource SecondaryText}"
-                                   Text="{Binding HotkeyLabel}"
-                                   Margin="0,14,0,5" />
-                        <views:HotkeyBox Hotkey="{Binding Hotkey, Mode=TwoWay}" />
+            <!-- ══ Tastenkombination ═══════════════════════════════════════════
+                 Steht nicht mehr unter Ton: eine Tastenkombination ist keine
+                 Toneinstellung, und als vierter Abschnitt geht das Raster auf. -->
+            <Grid Grid.Row="1" Grid.Column="1" Style="{StaticResource SettingsCell}" Margin="6,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Style="{StaticResource SectionLabel}"
+                           Text="{Binding HotkeyTitle}"
+                           Margin="2,0,0,6" />
+
+                <Border Grid.Row="1" Style="{StaticResource SettingsCard}">
+                    <StackPanel VerticalAlignment="Top">
+                        <views:HotkeyBox Hotkey="{Binding Hotkey, Mode=TwoWay}"
+                                         HorizontalAlignment="Stretch" />
 
                         <CheckBox Style="{StaticResource LabeledCheckBox}"
                                   Margin="0,10,0,0"
@@ -80,43 +174,7 @@
                                   IsChecked="{Binding HotkeyEnabled, Mode=TwoWay}" />
                     </StackPanel>
                 </Border>
-            </StackPanel>
-
-            <!-- ══ Aktualisierungen ════════════════════════════════════════════ -->
-            <StackPanel Grid.Column="1" Margin="6,0,0,0">
-                <TextBlock Style="{StaticResource SectionLabel}"
-                           Text="{Binding UpdateTitle}"
-                           Margin="2,0,0,6" />
-                <Border Style="{StaticResource SettingsCard}">
-                    <StackPanel>
-                        <RadioButton Style="{StaticResource ThemedRadioButton}"
-                                     GroupName="Updates"
-                                     Content="{Binding UpdateAutomaticLabel}"
-                                     IsChecked="{Binding UpdateAutomatic, Mode=TwoWay}" />
-                        <RadioButton Style="{StaticResource ThemedRadioButton}"
-                                     GroupName="Updates"
-                                     Content="{Binding UpdateNotifyLabel}"
-                                     IsChecked="{Binding UpdateNotify, Mode=TwoWay}" />
-                        <RadioButton Style="{StaticResource ThemedRadioButton}"
-                                     GroupName="Updates"
-                                     Content="{Binding UpdateNeverLabel}"
-                                     IsChecked="{Binding UpdateNever, Mode=TwoWay}" />
-
-                        <Button x:Name="CheckNowButton"
-                                Style="{StaticResource StandardButton}"
-                                HorizontalAlignment="Left"
-                                Margin="0,6,0,0"
-                                Content="{Binding CheckNowLabel}"
-                                IsEnabled="{Binding CanCheckNow}"
-                                Click="OnCheckNow" />
-
-                        <TextBlock Style="{StaticResource SecondaryText}"
-                                   Margin="0,10,0,0"
-                                   TextWrapping="Wrap"
-                                   Text="{Binding UpdateStatus}" />
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+            </Grid>
         </Grid>
     </ScrollViewer>
 </UserControl>
