@@ -27,10 +27,10 @@
 
                 <StackPanel Grid.Column="1" Margin="12,0,12,0" VerticalAlignment="Center">
                     <TextBlock Style="{StaticResource BodyText}"
-                               Foreground="{StaticResource TextSecondaryBrush}"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
                                Text="{Binding DisplayName}" />
                     <TextBlock Style="{StaticResource SecondaryText}"
-                               Foreground="{StaticResource ErrorBrush}"
+                               Foreground="{DynamicResource ErrorBrush}"
                                Text="{Binding Status}"
                                Visibility="{Binding HasStatus, Converter={StaticResource BoolToVisible}}" />
                 </StackPanel>
@@ -54,7 +54,7 @@
             <Border x:Name="RowShell"
                     Margin="0,0,0,4"
                     CornerRadius="{StaticResource RadiusCard}"
-                    Background="{StaticResource CardBrush}">
+                    Background="{DynamicResource CardBrush}">
                 <StackPanel>
 
                     <Grid Height="{StaticResource DeviceRowHeight}" Margin="{StaticResource RowPadding}">
@@ -77,7 +77,7 @@
                                 Width="32" Height="32"
                                 Margin="12,0,0,0"
                                 CornerRadius="{StaticResource RadiusControl}"
-                                Background="{StaticResource ControlBrush}">
+                                Background="{DynamicResource ControlBrush}">
                             <Grid>
                                 <!-- Was Windows dem Geraet selbst zuweist, hat Vorrang; die
                                      Glyphe traegt nur, wenn dort nichts hinterlegt ist. -->
@@ -88,7 +88,7 @@
                                 <TextBlock Text="{Binding Glyph}"
                                            FontFamily="{StaticResource IconFont}"
                                            FontSize="15"
-                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           Foreground="{DynamicResource TextSecondaryBrush}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"
                                            Visibility="{Binding HasIcon, Converter={StaticResource InverseBoolToVisible}}" />
@@ -133,14 +133,14 @@
                                         <TextBlock Text="{Binding ExpandGlyph}"
                                                    FontFamily="{StaticResource IconFont}"
                                                    FontSize="11"
-                                                   Foreground="{StaticResource TextTertiaryBrush}"
+                                                   Foreground="{DynamicResource TextTertiaryBrush}"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center" />
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter TargetName="Fill" Property="Background"
-                                                    Value="{StaticResource ControlHoverBrush}" />
+                                                    Value="{DynamicResource ControlHoverBrush}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -153,7 +153,7 @@
                             Margin="56,0,12,10"
                             Padding="0,4,0,0"
                             BorderThickness="0,1,0,0"
-                            BorderBrush="{StaticResource DividerBrush}">
+                            BorderBrush="{DynamicResource DividerBrush}">
                         <ItemsControl ItemsSource="{Binding Apps}" />
                     </Border>
                 </StackPanel>
@@ -168,7 +168,7 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsSource}" Value="True">
                     <Setter TargetName="RowShell" Property="Background"
-                            Value="{StaticResource SurfaceBrush}" />
+                            Value="{DynamicResource SurfaceBrush}" />
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -204,7 +204,7 @@
                 <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryText}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding StatusIsError}" Value="True">
-                            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

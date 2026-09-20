@@ -857,6 +857,26 @@ internal static class Strings
         de: "Sprache", fr: "Langue", es: "Idioma", it: "Lingua", pt: "Idioma", nl: "Taal",
         pl: "Język", ru: "Язык", uk: "Мова", tr: "Dil", cs: "Jazyk", sv: "Språk");
 
+    public static string ThemeLabel => T("Appearance",
+        de: "Erscheinungsbild", fr: "Apparence", es: "Apariencia", it: "Aspetto",
+        pt: "Aparência", nl: "Weergave", pl: "Wygląd", ru: "Оформление", uk: "Оформлення",
+        tr: "Görünüm", cs: "Vzhled", sv: "Utseende");
+
+    public static string ThemeSystem => T("System default",
+        de: "Systemstandard", fr: "Par défaut du système", es: "Predeterminado del sistema",
+        it: "Predefinito di sistema", pt: "Predefinição do sistema", nl: "Systeemstandaard",
+        pl: "Domyślne systemu", ru: "Как в системе", uk: "Як у системі",
+        tr: "Sistem varsayılanı", cs: "Podle systému", sv: "Systemstandard");
+
+    public static string ThemeLight => T("Light",
+        de: "Hell", fr: "Clair", es: "Claro", it: "Chiaro", pt: "Claro", nl: "Licht",
+        pl: "Jasny", ru: "Светлое", uk: "Світле", tr: "Açık", cs: "Světlý", sv: "Ljust");
+
+    public static string ThemeDark => T("Dark",
+        de: "Dunkel", fr: "Sombre", es: "Oscuro", it: "Scuro", pt: "Escuro", nl: "Donker",
+        pl: "Ciemny", ru: "Тёмное", uk: "Темне", tr: "Koyu", cs: "Tmavý", sv: "Mörkt");
+
+
     public static string DoubleClickLabel => T("Double-click action",
         de: "Doppelklick", fr: "Double-clic", es: "Doble clic", it: "Doppio clic",
         pt: "Duplo clique", nl: "Dubbelklik", pl: "Dwukliknięcie", ru: "Двойной щелчок",

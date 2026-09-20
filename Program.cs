@@ -23,8 +23,23 @@ internal static class Program
         int renderAt = Array.FindIndex(args, a => string.Equals(a, "--render", StringComparison.OrdinalIgnoreCase));
         if (renderAt >= 0 && renderAt + 1 < args.Length)
         {
-            Strings.Configure(AppSettings.Load().Language);
-            WpfHost.Ensure();
+            AppSettings preview = AppSettings.Load();
+            Strings.Configure(preview.Language);
+
+            WpfHost.Ensure(preview.Theme);
+
+            // Beide Farbsätze lassen sich so abzeichnen, ohne die Einstellung anzufassen -
+            // und zwar über denselben Weg wie die Auswahl in den Einstellungen. Das ist
+            // Absicht: der Austausch zur Laufzeit ist der Teil, der schiefgehen kann, nicht
+            // das Laden beim Start.
+            if (args.Any(a => string.Equals(a, "light", StringComparison.OrdinalIgnoreCase)))
+            {
+                Ui.Theme.ThemeManager.SetMode(ThemeMode.Light);
+            }
+            else if (args.Any(a => string.Equals(a, "dark", StringComparison.OrdinalIgnoreCase)))
+            {
+                Ui.Theme.ThemeManager.SetMode(ThemeMode.Dark);
+            }
 
             var shell = new ShellWindow();
             bool wantsSettings = args.Any(a => string.Equals(a, "settings", StringComparison.OrdinalIgnoreCase));
@@ -77,7 +92,7 @@ internal static class Program
         bool restoredByWindows = StartupState.ConsumeStoppedByWindows();
         bool startedQuietly = byAutostartEntry || restoredByWindows;
 
-        System.Windows.Application application = WpfHost.Ensure();
+        System.Windows.Application application = WpfHost.Ensure(AppSettings.Load().Theme);
         application.DispatcherUnhandledException += (_, e) =>
         {
             ShowFatal(e.Exception);

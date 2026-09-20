@@ -7,7 +7,7 @@
         MinWidth="560" MinHeight="360"
         WindowStartupLocation="CenterScreen"
         Icon="pack://application:,,,/AudioMirror.ico"
-        Background="{StaticResource WindowBrush}"
+        Background="{DynamicResource WindowBrush}"
         TextOptions.TextFormattingMode="Display"
         UseLayoutRounding="True"
         FontFamily="{StaticResource UiFont}">
@@ -69,7 +69,7 @@
                            VerticalAlignment="Center"
                            FontSize="{StaticResource FontSizeTitle}"
                            FontWeight="SemiBold"
-                           Foreground="{StaticResource TextPrimaryBrush}" />
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
 
                 <!-- IsHitTestVisibleInChrome ist hier entscheidend: ohne das liegt die
                      Ziehflaeche des Fensters darueber und die Reiter lassen sich nicht

@@ -19,8 +19,13 @@ public partial class ShellWindow : Window
         DevicesTab.Content = Strings.TabDevices;
         SettingsTab.Content = Strings.TabSettings;
 
-        // Dunkle Titelleiste und runde Ecken greifen erst, wenn das Fenster ein Handle hat.
-        SourceInitialized += (_, _) => WindowEffects.Apply(this);
+        // Titelleiste und runde Ecken greifen erst, wenn das Fenster ein Handle hat.
+        SourceInitialized += (_, _) => ApplyWindowEffects();
+
+        // Der Farbsatz kann sich im laufenden Betrieb ändern - über die Einstellungen oder,
+        // wenn Windows gefolgt wird, von außen. Der Rahmen zieht dann mit.
+        Theme.ThemeManager.Changed += ApplyWindowEffects;
+        Closed += (_, _) => Theme.ThemeManager.Changed -= ApplyWindowEffects;
 
         StateChanged += (_, _) => UpdateMaximizeGlyph();
     }
@@ -70,6 +75,8 @@ public partial class ShellWindow : Window
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
     private void OnClose(object sender, RoutedEventArgs e) => CloseRequested?.Invoke();
+
+    private void ApplyWindowEffects() => WindowEffects.Apply(this, Theme.ThemeManager.IsDark);
 
     /// <summary>Wiederherstellen und Maximieren teilen sich die Taste, also auch die Glyphe.</summary>
     private void UpdateMaximizeGlyph() =>

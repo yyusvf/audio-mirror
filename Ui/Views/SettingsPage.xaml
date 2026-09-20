@@ -60,6 +60,13 @@
                                   SelectedIndex="{Binding DoubleClickIndex, Mode=TwoWay}" />
 
                         <TextBlock Style="{StaticResource SecondaryText}"
+                                   Text="{Binding ThemeLabel}"
+                                   Margin="0,12,0,5" />
+                        <ComboBox Style="{StaticResource ThemedComboBox}"
+                                  ItemsSource="{Binding Themes}"
+                                  SelectedIndex="{Binding ThemeIndex, Mode=TwoWay}" />
+
+                        <TextBlock Style="{StaticResource SecondaryText}"
                                    Text="{Binding LanguageLabel}"
                                    Margin="0,12,0,5" />
                         <ComboBox Style="{StaticResource ThemedComboBox}"

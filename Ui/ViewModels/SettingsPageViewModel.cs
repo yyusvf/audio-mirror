@@ -36,6 +36,13 @@ internal sealed class SettingsPageViewModel : ViewModelBase
 
         Languages = [.. Strings.SupportedNames];
 
+        Themes =
+        [
+            Strings.ThemeSystem,
+            Strings.ThemeLight,
+            Strings.ThemeDark,
+        ];
+
         updateStatus = Strings.CurrentVersion(UpdateChecker.CurrentVersion.ToString(3));
         loading = false;
     }
@@ -100,6 +107,32 @@ internal sealed class SettingsPageViewModel : ViewModelBase
 
             settings.DoubleClickAction = (TrayAction)value;
             settings.Save();
+            Raise();
+        }
+    }
+
+    public string ThemeLabel => Strings.ThemeLabel;
+
+    /// <summary>In der Reihenfolge von <see cref="ThemeMode"/> - der Index ist der Wert.</summary>
+    public IReadOnlyList<string> Themes { get; }
+
+    public int ThemeIndex
+    {
+        get => (int)settings.Theme;
+        set
+        {
+            if (loading || value < 0 || value > (int)ThemeMode.Dark || value == (int)settings.Theme)
+            {
+                return;
+            }
+
+            settings.Theme = (ThemeMode)value;
+            settings.Save();
+
+            // Wirkt sofort: der Farbsatz wird getauscht, die Bedienelemente holen ihre Farben
+            // über DynamicResource und ziehen mit. Kein Neustart nötig, anders als bei der
+            // Sprache, wo die Texte bereits gesetzt sind.
+            Theme.ThemeManager.SetMode(settings.Theme);
             Raise();
         }
     }

@@ -5,12 +5,12 @@ using DrawingColor = System.Drawing.Color;
 namespace AudioMirror.Ui.Theme;
 
 /// <summary>
-/// Die Farben aus Tokens.xaml, für den Teil des Programms, der nicht in WPF gezeichnet wird -
-/// das Menü im Infobereich ist weiterhin ein WinForms-Menü.
+/// Die Farben des gerade eingebundenen Farbsatzes, für den Teil des Programms, der nicht in
+/// WPF gezeichnet wird - das Menü im Infobereich ist weiterhin ein WinForms-Menü.
 ///
-/// Bewusst keine zweite Farbtabelle: die Werte werden zur Laufzeit aus den geladenen
+/// Bewusst keine zweite Farbtabelle: die Werte werden bei jedem Zugriff aus den geladenen
 /// Ressourcen gelesen. Eine Kopie hier wäre genau die verstreute Farbe, die vermieden werden
-/// soll - sie würde beim nächsten Umfärben übersehen.
+/// soll - und ein Wechsel zwischen hell und dunkel käme hier nie an.
 /// </summary>
 internal static class Palette
 {

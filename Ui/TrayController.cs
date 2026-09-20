@@ -33,12 +33,11 @@ internal sealed class TrayController : IDisposable
         Icon = CreateIcon(out iconHandle);
 
         // Das Menü zeichnet sich über einen Renderer; der eingebaute holt seine Farben aus
-        // der Systemtabelle und wäre hell. Text und Grund kommen zusätzlich direkt ans Menü,
-        // weil beides an den Einträgen hängt und nicht an der Farbtabelle.
+        // der Systemtabelle und wäre immer hell. Die Farbtabelle des eigenen Renderers liest
+        // bei jedem Zeichnen neu, der Wechsel zwischen hell und dunkel kommt darüber von
+        // selbst an. Grund und Text hängen dagegen am Menü und werden beim Aufbauen gesetzt.
         menu.RenderMode = ToolStripRenderMode.Professional;
-        menu.Renderer = new DarkMenuRenderer();
-        menu.BackColor = Palette.Window;
-        menu.ForeColor = Palette.Text;
+        menu.Renderer = new ThemedMenuRenderer();
 
         notifyIcon = new NotifyIcon
         {
@@ -123,6 +122,8 @@ internal sealed class TrayController : IDisposable
     private void RebuildMenu()
     {
         menu.Items.Clear();
+        menu.BackColor = Palette.Window;
+        menu.ForeColor = Palette.Text;
 
         IReadOnlyList<TrayDeviceEntry> devices = DeviceProvider?.Invoke() ?? [];
         if (devices.Count == 0)

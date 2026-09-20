@@ -20,8 +20,8 @@
                         <Border x:Name="Box"
                                 Width="20" Height="20"
                                 CornerRadius="4"
-                                Background="{StaticResource ControlBrush}"
-                                BorderBrush="{StaticResource StrokeStrongBrush}"
+                                Background="{DynamicResource ControlBrush}"
+                                BorderBrush="{DynamicResource StrokeStrongBrush}"
                                 BorderThickness="1">
                             <TextBlock x:Name="Check"
                                        Text="&#xE73E;"
@@ -44,7 +44,7 @@
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="IsChecked" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Box" Property="Background" Value="{StaticResource ControlHoverBrush}" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource ControlHoverBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -54,9 +54,9 @@
                             <Setter TargetName="Box" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Box" Property="Background" Value="{StaticResource ControlDisabledBrush}" />
-                            <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource StrokeBrush}" />
-                            <Setter TargetName="Check" Property="Foreground" Value="{StaticResource TextDisabledBrush}" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource ControlDisabledBrush}" />
+                            <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource StrokeBrush}" />
+                            <Setter TargetName="Check" Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -67,7 +67,7 @@
     <!-- Kontrollkästchen mit Beschriftung daneben - für die Einstellungen. -->
     <Style x:Key="LabeledCheckBox" TargetType="CheckBox">
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
         <Setter Property="Template">
@@ -78,8 +78,8 @@
                                 Width="20" Height="20"
                                 CornerRadius="4"
                                 VerticalAlignment="Center"
-                                Background="{StaticResource ControlBrush}"
-                                BorderBrush="{StaticResource StrokeStrongBrush}"
+                                Background="{DynamicResource ControlBrush}"
+                                BorderBrush="{DynamicResource StrokeStrongBrush}"
                                 BorderThickness="1">
                             <TextBlock x:Name="Check"
                                        Text="&#xE73E;"
@@ -102,8 +102,8 @@
                             <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}" />
-                            <Setter TargetName="Box" Property="Background" Value="{StaticResource ControlDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
+                            <Setter TargetName="Box" Property="Background" Value="{DynamicResource ControlDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -127,7 +127,7 @@
                         <Border Height="4"
                                 CornerRadius="2"
                                 VerticalAlignment="Center"
-                                Background="{StaticResource StrokeStrongBrush}" />
+                                Background="{DynamicResource StrokeStrongBrush}" />
                         <Track x:Name="PART_Track">
                             <!-- Der gefüllte Teil steckt in der linken Hälfte der Spur. Als
                                  eigenes Element daneben hatte er keine Breite: die kennt nur
@@ -146,7 +146,7 @@
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsEnabled" Value="False">
                                                     <Setter TargetName="Filled" Property="Background"
-                                                            Value="{StaticResource TextDisabledBrush}" />
+                                                            Value="{DynamicResource TextDisabledBrush}" />
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -163,7 +163,7 @@
                                             <Grid Background="Transparent">
                                                 <Ellipse Fill="{DynamicResource AccentBrush}" />
                                                 <Ellipse x:Name="Core"
-                                                         Fill="{StaticResource TextPrimaryBrush}"
+                                                         Fill="{DynamicResource TextPrimaryBrush}"
                                                          Margin="4" />
                                             </Grid>
                                             <ControlTemplate.Triggers>
@@ -210,7 +210,7 @@
                                 <Thumb>
                                     <Thumb.Template>
                                         <ControlTemplate TargetType="Thumb">
-                                            <Border Background="{StaticResource StrokeStrongBrush}"
+                                            <Border Background="{DynamicResource StrokeStrongBrush}"
                                                     CornerRadius="3"
                                                     Width="6"
                                                     HorizontalAlignment="Center" />
@@ -258,7 +258,7 @@
          bekommt es einen eigenen, deckenden Grund. -->
     <Style x:Key="ComboItem" TargetType="ComboBoxItem">
         <Setter Property="Padding" Value="12,8" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
         <Setter Property="Template">
@@ -273,7 +273,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource ControlHoverBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource ControlHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Fill" Property="Background" Value="{DynamicResource AccentSoftBrush}" />
@@ -286,7 +286,7 @@
 
     <Style x:Key="ThemedComboBox" TargetType="ComboBox">
         <Setter Property="Height" Value="34" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
         <Setter Property="Cursor" Value="Hand" />
@@ -303,8 +303,8 @@
                             <ToggleButton.Template>
                                 <ControlTemplate TargetType="ToggleButton">
                                     <Border x:Name="Fill"
-                                            Background="{StaticResource ControlBrush}"
-                                            BorderBrush="{StaticResource StrokeBrush}"
+                                            Background="{DynamicResource ControlBrush}"
+                                            BorderBrush="{DynamicResource StrokeBrush}"
                                             BorderThickness="1"
                                             CornerRadius="{StaticResource RadiusControl}">
                                         <Grid>
@@ -319,12 +319,12 @@
                                                        FontSize="10"
                                                        Margin="10,0,12,0"
                                                        VerticalAlignment="Center"
-                                                       Foreground="{StaticResource TextTertiaryBrush}" />
+                                                       Foreground="{DynamicResource TextTertiaryBrush}" />
                                         </Grid>
                                     </Border>
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource ControlHoverBrush}" />
+                                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource ControlHoverBrush}" />
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -341,8 +341,8 @@
                                VerticalOffset="4"
                                IsOpen="{TemplateBinding IsDropDownOpen}"
                                PopupAnimation="Fade">
-                            <Border Background="{StaticResource CardBrush}"
-                                    BorderBrush="{StaticResource StrokeStrongBrush}"
+                            <Border Background="{DynamicResource CardBrush}"
+                                    BorderBrush="{DynamicResource StrokeStrongBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{StaticResource RadiusCard}"
                                     Padding="0,4"
@@ -356,7 +356,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -368,7 +368,7 @@
     <!-- ══ Auswahlknopf ════════════════════════════════════════════════════════ -->
     <Style x:Key="ThemedRadioButton" TargetType="RadioButton">
         <Setter Property="Cursor" Value="Hand" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
         <Setter Property="Margin" Value="0,0,0,8" />
@@ -378,8 +378,8 @@
                     <StackPanel Orientation="Horizontal" Background="Transparent">
                         <Grid Width="20" Height="20" VerticalAlignment="Center">
                             <Ellipse x:Name="Ring"
-                                     Fill="{StaticResource ControlBrush}"
-                                     Stroke="{StaticResource StrokeStrongBrush}"
+                                     Fill="{DynamicResource ControlBrush}"
+                                     Stroke="{DynamicResource StrokeStrongBrush}"
                                      StrokeThickness="1" />
                             <Ellipse x:Name="Dot"
                                      Margin="5"
@@ -398,7 +398,7 @@
                             <Setter TargetName="Ring" Property="Stroke" Value="{DynamicResource AccentBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -410,7 +410,7 @@
          Ersetzt die GroupBox: eine Karte mit Überschrift darüber, wie in den
          Windows-Einstellungen. -->
     <Style x:Key="SettingsCard" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource CardBrush}" />
+        <Setter Property="Background" Value="{DynamicResource CardBrush}" />
         <Setter Property="CornerRadius" Value="{StaticResource RadiusCard}" />
         <Setter Property="Padding" Value="{StaticResource CardPadding}" />
     </Style>
@@ -420,8 +420,8 @@
         <Setter Property="Height" Value="32" />
         <Setter Property="MinWidth" Value="150" />
         <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="Background" Value="{StaticResource ControlBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{StaticResource UiFont}" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
         <Setter Property="Cursor" Value="Hand" />
@@ -430,7 +430,7 @@
                 <ControlTemplate TargetType="{x:Type views:HotkeyBox}">
                     <Border x:Name="Fill"
                             Background="{TemplateBinding Background}"
-                            BorderBrush="{StaticResource StrokeBrush}"
+                            BorderBrush="{DynamicResource StrokeBrush}"
                             BorderThickness="1"
                             CornerRadius="{StaticResource RadiusControl}"
                             Padding="12,0">
@@ -440,7 +440,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Fill" Property="Background" Value="{StaticResource ControlHoverBrush}" />
+                            <Setter TargetName="Fill" Property="Background" Value="{DynamicResource ControlHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsRecording" Value="True">
                             <Setter TargetName="Fill" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />

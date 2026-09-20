@@ -1,0 +1,71 @@
+<!--
+    Der helle Farbsatz. Dark.xaml führt dieselben Schlüssel mit dunklen Werten; welcher von
+    beiden eingebunden ist, entscheidet ThemeManager.
+
+    Die Werte sind nicht die umgedrehten des dunklen Satzes. Auf hellem Grund liegen Karten
+    über dem Fensterton, nicht darunter: dort ist Weiß die Karte und das Grau der Hintergrund,
+    im Dunklen ist es genau andersherum. Ein bloßes Umkehren ergäbe Karten, die im Fenster
+    versinken.
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ══ Akzent ══════════════════════════════════════════════════════════════
+         Diese vier Werte setzt SystemAccent beim Start auf die Akzentfarbe, die in den
+         Windows-Einstellungen steht - im hellen Satz abgedunkelt statt aufgehellt.
+
+         Was hier steht, ist das Blau des Programms und zugleich der Rückfall, wenn sich die
+         Systemfarbe nicht lesen lässt. -->
+    <SolidColorBrush x:Key="AccentBrush" Color="#4A44D6" />
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="#3A34C0" />
+
+    <!-- Flächiger Akzent, 15 Prozent Deckung. -->
+    <SolidColorBrush x:Key="AccentSoftBrush" Color="#264A44D6" />
+
+    <!-- Was auf einer Akzentfläche liegt. Richtet sich nach der Helligkeit des Akzents,
+         darum ebenfalls von SystemAccent gesetzt. -->
+    <SolidColorBrush x:Key="OnAccentBrush" Color="#FFFFFF" />
+
+    <!-- ══ Text ════════════════════════════════════════════════════════════════
+         Kein reines Schwarz: auf hellem Grund wirkt es hart, und Windows selbst setzt für
+         Fließtext einen Ton knapp darüber. -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#1A1A1A" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#4A4A4A" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#6E6E6E" />
+    <SolidColorBrush x:Key="TextDisabledBrush" Color="#A0A0A0" />
+
+    <!-- ══ Flächen ═════════════════════════════════════════════════════════════
+         Umgekehrte Schichtung: der Fensterton ist grau, die Karten liegen als Weiß darüber. -->
+    <SolidColorBrush x:Key="WindowBrush" Color="#F3F3F3" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="#E8E8E8" />
+
+    <!-- Die Tasten der Titelleiste liegen auf dem Fensterton, nicht auf einer Karte. -->
+    <SolidColorBrush x:Key="SurfaceHoverBrush" Color="#E4E4E4" />
+    <SolidColorBrush x:Key="SurfacePressedBrush" Color="#D8D8D8" />
+    <SolidColorBrush x:Key="CardBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="ControlBrush" Color="#FFFFFF" />
+
+    <!-- Hier dunkelt Schweben ab statt aufzuhellen - über Weiß gibt es nichts mehr. -->
+    <SolidColorBrush x:Key="ControlHoverBrush" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="ControlPressedBrush" Color="#E6E6E6" />
+    <SolidColorBrush x:Key="ControlDisabledBrush" Color="#F7F7F7" />
+
+    <!-- ══ Ränder ══════════════════════════════════════════════════════════════
+         Auf Weiß trägt ein Rand mehr als im Dunklen: dort grenzt eine Karte sich durch ihre
+         eigene Helligkeit ab, hier ist sie so hell wie es geht und braucht die Linie. -->
+    <SolidColorBrush x:Key="StrokeBrush" Color="#E0E0E0" />
+    <SolidColorBrush x:Key="DividerBrush" Color="#E5E5E5" />
+    <SolidColorBrush x:Key="StrokeStrongBrush" Color="#C4C4C4" />
+
+    <!-- ══ Zustände ════════════════════════════════════════════════════════════
+         Kräftiger als im dunklen Satz: die pastelligen Töne von dort sind auf Weiß nicht zu
+         lesen. -->
+    <SolidColorBrush x:Key="OkBrush" Color="#0F7B2F" />
+    <SolidColorBrush x:Key="WarnBrush" Color="#8A6100" />
+    <SolidColorBrush x:Key="ErrorBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="CloseHoverBrush" Color="#C42B1C" />
+    <SolidColorBrush x:Key="ClosePressedBrush" Color="#8E2117" />
+    <SolidColorBrush x:Key="OnCloseBrush" Color="#FFFFFF" />
+
+</ResourceDictionary>

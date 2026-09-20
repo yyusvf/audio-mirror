@@ -1,0 +1,38 @@
+<!--
+    Maße, Rundungen und Schriften - alles, was mit dem Farbsatz nichts zu tun hat und
+    deshalb beim Umschalten zwischen hell und dunkel stehen bleibt.
+
+    Die Farben liegen in Dark.xaml und Light.xaml. ThemeManager tauscht davon eine gegen
+    die andere; im Markup steht weder hier noch dort eine Farbe direkt.
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- ══ Rundungen ═══════════════════════════════════════════════════════════ -->
+    <CornerRadius x:Key="RadiusControl">5</CornerRadius>
+    <CornerRadius x:Key="RadiusCard">8</CornerRadius>
+    <CornerRadius x:Key="RadiusPill">999</CornerRadius>
+
+    <!-- ══ Maße ════════════════════════════════════════════════════════════════ -->
+    <sys:Double x:Key="TitleBarHeight">48</sys:Double>
+    <sys:Double x:Key="DeviceRowHeight">56</sys:Double>
+    <sys:Double x:Key="AppRowHeight">40</sys:Double>
+    <sys:Double x:Key="CaptionButtonWidth">46</sys:Double>
+    <sys:Double x:Key="GlyphButtonSize">32</sys:Double>
+
+    <Thickness x:Key="PagePadding">16,12,16,12</Thickness>
+    <Thickness x:Key="CardPadding">12</Thickness>
+    <Thickness x:Key="RowPadding">12,0,12,0</Thickness>
+
+    <!-- ══ Schrift ═════════════════════════════════════════════════════════════ -->
+    <FontFamily x:Key="UiFont">Segoe UI</FontFamily>
+    <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
+
+    <sys:Double x:Key="FontSizeSmall">11</sys:Double>
+    <sys:Double x:Key="FontSizeBody">13</sys:Double>
+    <sys:Double x:Key="FontSizeTitle">14</sys:Double>
+    <sys:Double x:Key="FontSizeHeading">17</sys:Double>
+
+</ResourceDictionary>

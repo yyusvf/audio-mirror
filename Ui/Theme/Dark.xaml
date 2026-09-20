@@ -1,15 +1,13 @@
 <!--
-    Alle Farben und Maße der Oberfläche. Im übrigen Markup steht keine Farbe und kein
-    Pixelwert direkt - was hier nicht als Schlüssel auftaucht, gehört auch nicht ins Markup.
+    Der dunkle Farbsatz. Light.xaml führt dieselben Schlüssel mit hellen Werten; welcher von
+    beiden eingebunden ist, entscheidet ThemeManager.
 
-    Die Palette ist die von TagTuner: durchgehend deckende Töne, keine Durchsicht. Was der
-    Infobereich für sein Menü braucht, liest Palette.cs hier heraus - auch dort steht keine
-    zweite Farbtabelle.
+    Jeder Schlüssel muss in beiden Dateien vorkommen, sonst bliebe beim Umschalten ein Wert
+    des anderen Satzes stehen. Was nicht von der Helligkeit abhängt, gehört nach Metrics.xaml.
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- ══ Akzent ══════════════════════════════════════════════════════════════
          Diese vier Werte setzt SystemAccent beim Start auf die Akzentfarbe, die in den
@@ -70,29 +68,8 @@
     <SolidColorBrush x:Key="CloseHoverBrush" Color="#C42B1C" />
     <SolidColorBrush x:Key="ClosePressedBrush" Color="#8E2117" />
 
-    <!-- ══ Rundungen ═══════════════════════════════════════════════════════════ -->
-    <CornerRadius x:Key="RadiusControl">5</CornerRadius>
-    <CornerRadius x:Key="RadiusCard">8</CornerRadius>
-    <CornerRadius x:Key="RadiusPill">999</CornerRadius>
-
-    <!-- ══ Maße ════════════════════════════════════════════════════════════════ -->
-    <sys:Double x:Key="TitleBarHeight">48</sys:Double>
-    <sys:Double x:Key="DeviceRowHeight">56</sys:Double>
-    <sys:Double x:Key="AppRowHeight">40</sys:Double>
-    <sys:Double x:Key="CaptionButtonWidth">46</sys:Double>
-    <sys:Double x:Key="GlyphButtonSize">32</sys:Double>
-
-    <Thickness x:Key="PagePadding">16,12,16,12</Thickness>
-    <Thickness x:Key="CardPadding">12</Thickness>
-    <Thickness x:Key="RowPadding">12,0,12,0</Thickness>
-
-    <!-- ══ Schrift ═════════════════════════════════════════════════════════════ -->
-    <FontFamily x:Key="UiFont">Segoe UI</FontFamily>
-    <FontFamily x:Key="IconFont">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
-
-    <sys:Double x:Key="FontSizeSmall">11</sys:Double>
-    <sys:Double x:Key="FontSizeBody">13</sys:Double>
-    <sys:Double x:Key="FontSizeTitle">14</sys:Double>
-    <sys:Double x:Key="FontSizeHeading">17</sys:Double>
+    <!-- Das Kreuz auf dem roten Grund. In beiden Farbsätzen weiß: der Grund ist derselbe,
+         und die übliche Textfarbe wäre im hellen Satz dunkel und damit kaum zu lesen. -->
+    <SolidColorBrush x:Key="OnCloseBrush" Color="#FFFFFF" />
 
 </ResourceDictionary>

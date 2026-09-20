@@ -19,7 +19,7 @@ internal static class WpfHost
     private static Application? application;
 
     /// <summary>Die laufende WPF-Anwendung, bei Bedarf samt Stilvorrat erzeugt.</summary>
-    public static Application Ensure()
+    public static Application Ensure(ThemeMode theme = ThemeMode.System)
     {
         if (application != null)
         {
@@ -33,10 +33,14 @@ internal static class WpfHost
             ShutdownMode = ShutdownMode.OnExplicitShutdown,
         };
 
-        // Reihenfolge zählt: Tokens zuerst, danach alles, was sich darauf beruft.
+        // Reihenfolge zählt. Die Maße stehen vorn, weil die Vorlagen sie über StaticResource
+        // holen - das wird beim Laden aufgelöst und braucht den Wert vorher. Die Farben holen
+        // sie über DynamicResource, das sucht zur Laufzeit im ganzen Vorrat; auf welchem Platz
+        // der Farbsatz liegt, ist dafür gleich. Dass er trotzdem einen festen Platz hat, liegt
+        // am Umschalten: ThemeManager tauscht genau diesen aus.
         foreach (string path in new[]
         {
-            "Ui/Theme/Tokens.xaml",
+            "Ui/Theme/Metrics.xaml",
             "Ui/Theme/Controls.xaml",
             "Ui/Theme/Inputs.xaml",
         })
@@ -48,8 +52,9 @@ internal static class WpfHost
         }
 
         // Erst nach den Wörterbüchern: die Akzent-Pinsel müssen stehen, bevor sie gefärbt
-        // werden können.
+        // werden können. Der Farbsatz kommt dabei an seinen Platz.
         Theme.SystemAccent.Attach(application);
+        Theme.ThemeManager.Attach(application, theme);
 
         return application;
     }

@@ -6,14 +6,15 @@ using System.Windows.Media;
 namespace AudioMirror.Ui.Shell;
 
 /// <summary>
-/// Dunkle Titelleiste und runde Ecken - beides stellt der Fenstermanager, nicht WPF. WPF kennt
+/// Titelleiste in der Farbe des Farbsatzes und runde Ecken - beides stellt der
+/// Fenstermanager, nicht WPF. WPF kennt
 /// dafür keine Eigenschaften, also führt der Weg über <c>DwmSetWindowAttribute</c>.
 ///
 /// Beide Angaben sind ab einer bestimmten Windows-Fassung vorhanden, und ältere antworten
 /// schlicht mit einem Fehlercode, statt zu stürzen. Ein Rückfall ist deshalb nicht nötig: die
 /// Farben des Fensters stehen ohnehin fest, betroffen wären nur Rahmen und Ecken.
 ///
-/// Mica wird bewusst nicht gesetzt. Der Hintergrund des Fensters ist deckend (#202020), ein
+/// Mica wird bewusst nicht gesetzt. Der Hintergrund des Fensters ist deckend, ein
 /// durchscheinender Untergrund wäre davon vollständig verdeckt.
 /// </summary>
 internal static class WindowEffects
@@ -26,8 +27,11 @@ internal static class WindowEffects
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
 
-    /// <summary>Anzuwenden, sobald das Fenster ein Handle hat - vorher greift keine der Angaben.</summary>
-    public static void Apply(Window window)
+    /// <summary>
+    /// Anzuwenden, sobald das Fenster ein Handle hat - vorher greift keine der Angaben - und
+    /// erneut nach jedem Wechsel des Farbsatzes.
+    /// </summary>
+    public static void Apply(Window window, bool dark)
     {
         IntPtr handle = new WindowInteropHelper(window).Handle;
         if (handle == IntPtr.Zero)
@@ -35,9 +39,10 @@ internal static class WindowEffects
             return;
         }
 
-        // Dunkle Titelleiste. Betrifft hier nur noch den Rahmen, weil die Leiste selbst
-        // gezeichnet wird - der Unterschied fällt am Fensterrand und beim Umschalten auf.
-        Set(handle, UseImmersiveDarkMode, 1);
+        // Betrifft hier nur noch den Rahmen, weil die Leiste selbst gezeichnet wird - der
+        // Unterschied fällt am Fensterrand auf, wo sonst ein heller Strich um ein dunkles
+        // Fenster stünde.
+        Set(handle, UseImmersiveDarkMode, dark ? 1 : 0);
 
         // Runde Ecken: Windows 11 rundet von sich aus, aber nicht bei jedem Fensterstil.
         Set(handle, WindowCornerPreference, CornerRound);

@@ -5,19 +5,22 @@ using AudioMirror.Ui.Theme;
 namespace AudioMirror.Ui;
 
 /// <summary>
-/// Das Menü im Infobereich in denselben Farben wie das Fenster.
+/// Das Menü im Infobereich in denselben Farben wie das Fenster - in beiden Farbsätzen.
 ///
-/// WinForms hat keinen dunklen Modus. Ein <see cref="ContextMenuStrip"/> zeichnet sich über
-/// einen Renderer, und der eingebaute holt seine Farben aus der Systemtabelle - hell, mit
-/// blauer Auswahl. Ersetzt wird deshalb die Farbtabelle, nicht das Zeichnen selbst: so bleiben
-/// Maße, Tastaturführung und Haken das, was der Nutzer von jedem anderen Menü kennt.
+/// WinForms kennt keinen Farbsatz. Ein <see cref="ContextMenuStrip"/> zeichnet sich über einen
+/// Renderer, und der eingebaute holt seine Farben aus der Systemtabelle. Ersetzt wird deshalb
+/// die Farbtabelle, nicht das Zeichnen selbst: so bleiben Maße, Tastaturführung und Haken das,
+/// was der Nutzer von jedem anderen Menü kennt.
+///
+/// Die Tabelle fragt bei jedem Zeichnen neu über <see cref="Palette"/> nach. Ein Wechsel
+/// zwischen hell und dunkel braucht hier darum nichts weiter.
 ///
 /// Zwei Dinge gehen über die Tabelle nicht und stehen darum unten: der Rahmen des Menüs und
 /// der Haken, den der eingebaute Renderer als dunkles Häkchen auf hellem Grund zeichnet.
 /// </summary>
-internal sealed class DarkMenuRenderer : ToolStripProfessionalRenderer
+internal sealed class ThemedMenuRenderer : ToolStripProfessionalRenderer
 {
-    public DarkMenuRenderer() : base(new DarkColours())
+    public ThemedMenuRenderer() : base(new ThemedColours())
     {
         // Eckige Ecken wie im Fenster; der eingebaute Renderer rundet sonst nach eigener
         // Vorgabe und lässt an den Ecken den Grund des Systems stehen.
@@ -63,9 +66,9 @@ internal sealed class DarkMenuRenderer : ToolStripProfessionalRenderer
     /// Die Farbtabelle, aus der der eingebaute Renderer schöpft. Jeder Wert kommt aus
     /// <see cref="Palette"/>, also aus derselben Datei wie die Farben des Fensters.
     /// </summary>
-    private sealed class DarkColours : ProfessionalColorTable
+    private sealed class ThemedColours : ProfessionalColorTable
     {
-        public DarkColours()
+        public ThemedColours()
         {
             // Sonst mischt WinForms die Werte mit den Systemfarben auf.
             UseSystemColors = false;

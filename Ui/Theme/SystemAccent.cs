@@ -6,12 +6,12 @@ using Application = System.Windows.Application;
 namespace AudioMirror.Ui.Theme;
 
 /// <summary>
-/// Färbt die Akzent-Pinsel aus Tokens.xaml mit der Akzentfarbe, die in den Windows-
-/// Einstellungen steht. Betroffen ist alles, was in der Oberfläche farbig ist: Haken,
-/// Schieberegler, Auswahlpunkte, der aktive Reiter, angehakte Zeilen.
+/// Färbt die Akzent-Pinsel mit der Akzentfarbe, die in den Windows-Einstellungen steht.
+/// Betroffen ist alles, was in der Oberfläche farbig ist: Haken, Schieberegler,
+/// Auswahlpunkte, der aktive Reiter, angehakte Zeilen.
 ///
-/// Das Blau in Tokens.xaml bleibt als Rückfall stehen - es ist die Farbe des Programms und
-/// greift, wenn sich die Systemfarbe nicht lesen lässt.
+/// Das Blau in Dark.xaml und Light.xaml bleibt als Rückfall stehen - es ist die Farbe des
+/// Programms und greift, wenn sich die Systemfarbe nicht lesen lässt.
 ///
 /// Die Pinsel werden ausgetauscht, nicht umgefärbt: WPF friert Pinsel ein, die aus einem
 /// Wörterbuch kommen, und ein eingefrorener Pinsel lässt sich nicht mehr ändern. Der neue
@@ -22,18 +22,28 @@ namespace AudioMirror.Ui.Theme;
 internal static class SystemAccent
 {
     /// <summary>
-    /// Helligkeit, die der Akzent auf dem dunklen Grund mindestens haben muss. Windows geht
-    /// im dunklen Modus genauso vor und nimmt eine aufgehellte Stufe statt des Volltons -
-    /// ein dunkelblauer Akzent wäre auf #202020 sonst kaum vom Hintergrund zu unterscheiden.
+    /// Helligkeit, die der Akzent auf dunklem Grund mindestens haben muss. Windows geht im
+    /// dunklen Modus genauso vor und nimmt eine aufgehellte Stufe statt des Volltons - ein
+    /// dunkelblauer Akzent wäre auf #202020 sonst kaum vom Hintergrund zu unterscheiden.
     /// </summary>
     private const double MinimumLuminance = 0.30;
+
+    /// <summary>
+    /// Und das Gegenstück für den hellen Farbsatz: dort wird derselbe Akzent abgedunkelt,
+    /// weil er sonst auf Weiß verschwindet. Ein helles Gelb als Systemfarbe ist kein
+    /// Sonderfall, sondern eine Einstellung, die es wirklich gibt.
+    /// </summary>
+    private const double MaximumLuminance = 0.32;
 
     [DllImport("dwmapi.dll")]
     private static extern int DwmGetColorizationColor(out uint colour, [MarshalAs(UnmanagedType.Bool)] out bool opaque);
 
+    private static Application? host;
+
     /// <summary>Setzt die Farben und hält sie nach, wenn der Nutzer sie in Windows ändert.</summary>
     public static void Attach(Application application)
     {
+        host = application;
         Apply(application);
 
         // Die Akzentfarbe steckt in den Personalisierungs-Einstellungen; Windows meldet deren
@@ -47,6 +57,15 @@ internal static class SystemAccent
         };
     }
 
+    /// <summary>Neu bestimmen, weil sich der Farbsatz darunter geändert hat.</summary>
+    public static void Refresh()
+    {
+        if (host != null)
+        {
+            Apply(host);
+        }
+    }
+
     private static void Apply(Application application)
     {
         if (Read() is not Color system)
@@ -54,10 +73,15 @@ internal static class SystemAccent
             return;
         }
 
-        Color accent = Lighten(system, MinimumLuminance);
+        // Derselbe Systemton führt je nach Farbsatz zu einer anderen Farbe: auf dunklem Grund
+        // muss er hell genug sein, auf hellem dunkel genug.
+        Color accent = ThemeManager.IsDark
+            ? Lighten(system, MinimumLuminance)
+            : Darken(system, MaximumLuminance);
 
         Set(application, "AccentBrush", accent);
-        Set(application, "AccentHoverBrush", Blend(accent, Colors.White, 0.18));
+        Set(application, "AccentHoverBrush",
+            Blend(accent, ThemeManager.IsDark ? Colors.White : Colors.Black, 0.18));
         Set(application, "AccentSoftBrush", Color.FromArgb(0x26, accent.R, accent.G, accent.B));
 
         // Was auf der Akzentfläche liegt, richtet sich nach ihr: von Weiß und dem Fensterton
@@ -111,6 +135,17 @@ internal static class SystemAccent
         for (int i = 0; i < 8 && Luminance(result) < target; i++)
         {
             result = Blend(result, Colors.White, 0.15);
+        }
+        return result;
+    }
+
+    /// <summary>Dasselbe nach unten, mit Schwarz.</summary>
+    private static Color Darken(Color colour, double target)
+    {
+        Color result = colour;
+        for (int i = 0; i < 8 && Luminance(result) > target; i++)
+        {
+            result = Blend(result, Colors.Black, 0.15);
         }
         return result;
     }

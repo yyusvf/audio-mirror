@@ -14,6 +14,16 @@ internal sealed class AppMixSetting
 }
 
 /// <summary>Was ein Doppelklick auf das Tray-Symbol tut.</summary>
+/// <summary>Welcher Farbsatz die Oberfläche trägt.</summary>
+internal enum ThemeMode
+{
+    /// <summary>Dem folgen, was in Windows unter "Farbe" für Apps eingestellt ist.</summary>
+    System = 0,
+
+    Light = 1,
+    Dark = 2,
+}
+
 internal enum TrayAction
 {
     OpenWindow = 0,
@@ -88,6 +98,9 @@ internal sealed class AppSettings
 
     /// <summary>Was ein Doppelklick auf das Symbol im Infobereich auslöst.</summary>
     public TrayAction DoubleClickAction { get; set; } = TrayAction.OpenWindow;
+
+    /// <summary>Hell, dunkel, oder was Windows vorgibt.</summary>
+    public ThemeMode Theme { get; set; } = ThemeMode.System;
 
     /// <summary>Wie mit neuen Fassungen verfahren wird.</summary>
     public UpdateMode Updates { get; set; } = UpdateMode.Notify;
