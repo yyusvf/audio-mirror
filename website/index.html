@@ -242,31 +242,34 @@
 
   <!-- Download -->
   <section class="download" id="download">
-    <div class="wrap download-grid">
-      <div class="download-copy">
-        <h2 class="reveal">Free and open source.</h2>
-        <p class="sub reveal">Needs Windows 11, or Windows 10 build 20348 and later. Runs on x64 and ARM64.</p>
-        <p class="note reveal"><i class="ph ph-shield-warning" aria-hidden="true"></i>The files are not code-signed, so Windows may say "Windows protected your PC". Click More info, then Run anyway.</p>
-      </div>
+    <div class="wrap download-inner">
+      <img class="download-icon reveal" src="/assets/img/icon-256.png" width="112" height="112" alt="">
+      <h2 class="reveal" style="--d:1">Get Audio Mirror.</h2>
+      <p class="sub reveal" style="--d:2">Free and open source. For Windows 11, or Windows 10 build 20348 and later, on x64 and ARM64.</p>
+
       <div class="options">
-        <a class="option option-main reveal" id="dl-setup" href="https://github.com/yyusvf/audio-mirror/releases/download/v1.4.0/AudioMirror-1.4.0-Setup.exe">
-          <i class="ph ph-download-simple" aria-hidden="true"></i>
-          <span class="option-text">
-            <b>Installer</b>
-            <span>Start menu entry and a normal uninstall. Fetches the .NET 8 runtime if it is missing.</span>
+        <a class="option option-main reveal" style="--d:3" id="dl-setup" href="https://github.com/yyusvf/audio-mirror/releases/download/v1.4.0/AudioMirror-1.4.0-Setup.exe">
+          <span class="option-head">
+            <i class="ph ph-download-simple" aria-hidden="true"></i>
+            <span class="option-meta"><span data-version>1.4.0</span><span data-size>2.4 MB</span></span>
           </span>
-          <span class="option-meta"><span data-version>1.4.0</span><span data-size>2.4 MB</span></span>
+          <b>Installer</b>
+          <span class="option-desc">Start menu entry and a normal uninstall. Fetches the .NET 8 runtime if it is missing.</span>
+          <span class="option-action">Download installer</span>
         </a>
-        <a class="option reveal" style="--d:1" id="dl-portable" href="https://github.com/yyusvf/audio-mirror/releases/latest/download/AudioMirror-Portable.zip">
-          <i class="ph ph-file-zip" aria-hidden="true"></i>
-          <span class="option-text">
-            <b>Portable</b>
-            <span>Unpack and run. No installation, no runtime, no internet.</span>
+        <a class="option reveal" style="--d:4" id="dl-portable" href="https://github.com/yyusvf/audio-mirror/releases/latest/download/AudioMirror-Portable.zip">
+          <span class="option-head">
+            <i class="ph ph-file-zip" aria-hidden="true"></i>
+            <span class="option-meta"><span data-version>1.4.0</span><span data-size>112 MB</span></span>
           </span>
-          <span class="option-meta"><span data-version>1.4.0</span><span data-size>112 MB</span></span>
+          <b>Portable</b>
+          <span class="option-desc">Unpack and run. No installation, no runtime, no internet. Holds both builds.</span>
+          <span class="option-action">Download ZIP</span>
         </a>
-        <a class="all-releases reveal" style="--d:2" href="https://github.com/yyusvf/audio-mirror/releases">All releases and changelog <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
       </div>
+
+      <p class="note reveal" style="--d:5"><i class="ph ph-shield-warning" aria-hidden="true"></i>The files are not code-signed, so Windows may say "Windows protected your PC". Click More info, then Run anyway.</p>
+      <a class="all-releases reveal" style="--d:5" href="https://github.com/yyusvf/audio-mirror/releases">All releases and changelog <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
     </div>
   </section>
 
