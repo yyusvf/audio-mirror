@@ -39,3 +39,10 @@ greifen die Links im Markup.
 `assets/fonts/Phosphor.woff2` enthält nur die Symbole, die die Seite nutzt (Subset, rund 3 KB).
 Wer ein neues `ph-...`-Symbol einbaut, muss es in `assets/icons.css` eintragen und die Schrift
 neu zuschneiden (`pyftsubset` aus fonttools, Quelle: npm-Paket `@phosphor-icons/web`).
+
+## Cache
+
+Nur die Schriften werden dauerhaft gecacht (`_headers`). HTML, CSS, JS und Bilder fragt der
+Browser bei jedem Besuch neu an, Änderungen sind also sofort sichtbar. Die Endung `?v=2` an
+CSS und JS in `index.html` ist nur nötig, wenn sich das Caching selbst ändert; bei normalen
+Änderungen muss man sie nicht hochzählen.

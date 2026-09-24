@@ -4,11 +4,9 @@
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
+# Fonts never change under the same name, so they may stay cached for a year.
+# Everything else (HTML, CSS, JS, screenshots) keeps the Cloudflare Pages default:
+# the browser asks on every visit whether the file changed (ETag), so an update
+# is visible at once and HTML never meets a stale stylesheet.
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
-
-/assets/*
-  Cache-Control: public, max-age=3600
-
-/screenshots/*
-  Cache-Control: public, max-age=3600
