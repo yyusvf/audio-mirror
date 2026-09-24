@@ -1,0 +1,35 @@
+/* Phosphor Icons (MIT, see fonts/Phosphor-LICENSE.txt). Subset of the classes this site uses. */
+@font-face {
+  font-family: "Phosphor";
+  src: url("/assets/fonts/Phosphor.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+.ph {
+  font-family: "Phosphor" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+.ph.ph-arrow-right:before { content: "\e06c"; }
+.ph.ph-arrows-clockwise:before { content: "\e094"; }
+.ph.ph-bluetooth:before { content: "\e0da"; }
+.ph.ph-check:before { content: "\e182"; }
+.ph.ph-check-circle:before { content: "\e184"; }
+.ph.ph-circle-half:before { content: "\e18c"; }
+.ph.ph-download-simple:before { content: "\e20c"; }
+.ph.ph-file-zip:before { content: "\e958"; }
+.ph.ph-github-logo:before { content: "\e576"; }
+.ph.ph-headphones:before { content: "\e2a6"; }
+.ph.ph-headset:before { content: "\e584"; }
+.ph.ph-keyboard:before { content: "\e2d8"; }
+.ph.ph-monitor:before { content: "\e32e"; }
+.ph.ph-plugs-connected:before { content: "\eb5a"; }
+.ph.ph-power:before { content: "\e3da"; }
+.ph.ph-shield-warning:before { content: "\e412"; }
+.ph.ph-sliders-horizontal:before { content: "\e434"; }
+.ph.ph-speaker-high:before { content: "\e44a"; }
+.ph.ph-warning:before { content: "\e4e0"; }
