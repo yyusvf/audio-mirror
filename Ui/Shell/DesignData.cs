@@ -15,10 +15,10 @@ internal static class DesignData
     {
         var model = new DevicesPageViewModel
         {
-            Status = "Spiegelung läuft auf 2 Gerät(en).",
+            Status = Strings.MirroringOnDevices(2),
         };
 
-        model.Sources.Add(new SourceItem(null, "Windows-Standardgerät (3 - XG27AQDMGR)"));
+        model.Sources.Add(new SourceItem(null, Strings.WindowsDefaultDevice("3 - XG27AQDMGR")));
         model.SelectedSource = model.Sources[0];
 
         model.Devices.Add(new DeviceViewModel("1", "3 - XG27AQDMGR (AMD High Definition Audio)",
@@ -28,12 +28,12 @@ internal static class DesignData
             Volume = 1f,
         });
 
-        var headphones = new DeviceViewModel("2", "Kopfhörer (JadeAudio JA11)",
+        var headphones = new DeviceViewModel("2", "Headphones (JadeAudio JA11)",
             AudioDeviceKind.Headphones, isSource: false)
         {
             IsEnabled = true,
             Volume = 0.8f,
-            Status = "läuft – kompletter Ton, ca. 32 ms",
+            Status = Strings.RunningApps(2, 32),
             IsExpanded = true,
         };
         headphones.Apps.Add(new AppViewModel("spotify", "Spotify") { Volume = 1f });
@@ -41,19 +41,18 @@ internal static class DesignData
         headphones.Apps.Add(new AppViewModel("discord", "Discord") { IsEnabled = false, Volume = 1f });
         model.Devices.Add(headphones);
 
-        model.Devices.Add(new DeviceViewModel("3", "Lautsprecher (Realtek(R) Audio)",
+        model.Devices.Add(new DeviceViewModel("3", "Speakers (Realtek(R) Audio)",
             AudioDeviceKind.Speakers, isSource: false)
         {
             IsEnabled = true,
             Volume = 0.45f,
-            Status = "läuft – 2 Anwendung(en), ca. 30 ms",
+            Status = Strings.RunningWholeSound(30),
         });
 
-        model.Devices.Add(new DeviceViewModel("4", "Digitalausgang (S/PDIF)",
+        model.Devices.Add(new DeviceViewModel("4", "Digital Output (S/PDIF)",
             AudioDeviceKind.Digital, isSource: false)
         {
             Volume = 1f,
-            Status = "nicht angehakt",
         });
 
         return model;

@@ -24,7 +24,13 @@ internal static class Program
         if (renderAt >= 0 && renderAt + 1 < args.Length)
         {
             AppSettings preview = AppSettings.Load();
-            Strings.Configure(preview.Language);
+
+            // Ein Sprachkürzel unter den Argumenten ("en", "de", ...) geht vor der gespeicherten
+            // Sprache - so entstehen die Bilder für die Website auf Englisch, ohne die
+            // Einstellung anzufassen.
+            string? language = args.FirstOrDefault(a =>
+                Array.IndexOf(Strings.Supported, a.ToLowerInvariant()) >= 0);
+            Strings.Configure(language ?? preview.Language);
 
             WpfHost.Ensure(preview.Theme);
 

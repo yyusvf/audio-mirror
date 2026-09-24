@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Audio Mirror - Play Windows audio on several devices at once</title>
+  <meta name="description" content="Play Windows audio on speakers, Bluetooth headphones and a USB headset at the same time. No drivers, no virtual cables. Free and open source.">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#161616" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f7f7f8" media="(prefers-color-scheme: light)">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Audio Mirror">
+  <meta property="og:description" content="Play Windows audio on several output devices at once. No drivers, no virtual cables.">
+  <meta property="og:image" content="/screenshots/devices-dark.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/assets/img/icon-64.png" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/img/icon-256.png">
+
+  <link rel="preload" href="/assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/icons.css">
+  <link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="/" aria-label="Audio Mirror home">
+      <img src="/assets/img/icon-64.png" width="24" height="24" alt="">
+      <span>Audio Mirror</span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#latency">Latency</a>
+      <a href="#streaming">Streaming</a>
+      <a href="https://github.com/yyusvf/audio-mirror" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i><span class="hide-sm">GitHub</span></a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#download">Download</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <h1 class="reveal">Play Windows audio on every device at once.</h1>
+        <p class="lead reveal" style="--d:1">Speakers, Bluetooth headphones and a USB headset, all playing together. No drivers, no virtual cables.</p>
+        <div class="cta-row reveal" style="--d:2">
+          <a class="btn btn-primary" href="#download"><i class="ph ph-download-simple" aria-hidden="true"></i>Download</a>
+          <a class="btn btn-ghost" href="https://github.com/yyusvf/audio-mirror" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i>View source</a>
+        </div>
+      </div>
+      <figure class="hero-shot reveal" style="--d:1">
+        <picture>
+          <source srcset="/screenshots/devices-light.png" media="(prefers-color-scheme: light)">
+          <img class="window" src="/screenshots/devices-dark.png" width="1080" height="840"
+               alt="The Audio Mirror window: headphones and speakers ticked as mirror targets, with Spotify and Chrome mixed on the headphones.">
+        </picture>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Flow -->
+  <section class="flow" id="how">
+    <div class="wrap">
+      <h2 class="reveal">One source. Every output.</h2>
+      <p class="sub reveal">Tick a device and mirroring starts. Untick it and it stops. There is no start button.</p>
+
+      <div class="flow-diagram reveal" aria-label="Audio from the Windows default device is copied to headphones, speakers and a USB headset.">
+        <div class="node node-source">
+          <i class="ph ph-monitor" aria-hidden="true"></i>
+          <span>Windows default device</span>
+        </div>
+        <div class="lanes" aria-hidden="true">
+          <span class="lane"><i></i></span>
+          <span class="lane"><i></i></span>
+          <span class="lane"><i></i></span>
+        </div>
+        <div class="targets">
+          <div class="node"><i class="ph ph-headphones" aria-hidden="true"></i><span>Bluetooth headphones</span><i class="ph ph-check tick" aria-hidden="true"></i></div>
+          <div class="node"><i class="ph ph-speaker-high" aria-hidden="true"></i><span>Speakers</span><i class="ph ph-check tick" aria-hidden="true"></i></div>
+          <div class="node"><i class="ph ph-headset" aria-hidden="true"></i><span>USB headset</span><i class="ph ph-check tick" aria-hidden="true"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="wrap">
+      <h2 class="reveal">Built for the way you listen.</h2>
+      <div class="bento">
+        <article class="cell cell-mixer reveal">
+          <div class="cell-text">
+            <h3>Pick the apps, not just the device.</h3>
+            <p>Expand a device to see every app playing sound, each with its own checkbox and volume. Leave Discord off your speakers and Spotify on.</p>
+          </div>
+          <div class="crop">
+            <picture>
+              <source srcset="/screenshots/devices-light.png" media="(prefers-color-scheme: light)">
+              <img src="/screenshots/devices-dark.png" width="1080" height="840" loading="lazy"
+                   alt="Expanded headphones row with Spotify, Google Chrome and Discord, each with a checkbox and volume slider.">
+            </picture>
+          </div>
+        </article>
+
+        <article class="cell cell-math reveal" style="--d:1">
+          <p class="math" aria-label="50 percent times 50 percent equals 25 percent"><span>50 %</span><span class="op">&times;</span><span>50 %</span><span class="op">=</span><span class="res">25 %</span></p>
+          <h3>Volumes multiply.</h3>
+          <p>Device volume and app volume stack, so fine balance takes one drag.</p>
+        </article>
+
+        <article class="cell cell-remember reveal" style="--d:2">
+          <i class="ph ph-plugs-connected big" aria-hidden="true"></i>
+          <h3>Unplug, replug, carry on.</h3>
+          <p>Your selection is remembered per device and restored when it comes back.</p>
+        </article>
+
+        <article class="cell cell-tray reveal" style="--d:1">
+          <i class="ph ph-keyboard big" aria-hidden="true"></i>
+          <h3>Quiet in the tray.</h3>
+          <p>Closing the window keeps it running. A global hotkey turns every mirror on or off.</p>
+        </article>
+
+        <article class="cell cell-lang reveal" style="--d:2">
+          <h3>Speaks 13 languages.</h3>
+          <p>Follows your Windows display language, or pick one in Settings.</p>
+          <div class="marquee" aria-hidden="true">
+            <div class="marquee-track">
+              <span>English</span><span>Deutsch</span><span>Français</span><span>Español</span><span>Italiano</span><span>Português</span><span>Nederlands</span><span>Polski</span><span>Русский</span><span>Українська</span><span>Türkçe</span><span>Čeština</span><span>Svenska</span>
+              <span>English</span><span>Deutsch</span><span>Français</span><span>Español</span><span>Italiano</span><span>Português</span><span>Nederlands</span><span>Polski</span><span>Русский</span><span>Українська</span><span>Türkçe</span><span>Čeština</span><span>Svenska</span>
+            </div>
+          </div>
+          <p class="sr-only">English, German, French, Spanish, Italian, Portuguese (Brazil), Dutch, Polish, Russian, Ukrainian, Turkish, Czech and Swedish.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Latency -->
+  <section class="latency" id="latency">
+    <div class="wrap latency-grid">
+      <div class="latency-copy">
+        <h2 class="reveal">About 32 ms. Measured, not promised.</h2>
+        <p class="sub reveal">USB DAC to HDMI monitor, 20 seconds per setting, no dropouts. Pick the buffer in Settings.</p>
+        <p class="note reveal"><i class="ph ph-bluetooth" aria-hidden="true"></i>Bluetooth headphones add 100 to 200 ms of their own that no software can remove.</p>
+      </div>
+
+      <figure class="chart reveal" style="--d:1">
+        <figcaption class="chart-title">Added latency by buffer setting</figcaption>
+        <div class="chart-legend" aria-hidden="true">
+          <span><i class="lg-range"></i>min to max</span>
+          <span><i class="lg-avg"></i>average</span>
+        </div>
+        <div class="chart-body" role="img" aria-label="20 ms buffer: 16 to 40 ms, average 24. 30 ms buffer, the default: 24 to 45 ms, average 32. 50 ms buffer: 41 to 62 ms, average 51.">
+          <div class="chart-row" data-min="16" data-avg="24" data-max="40" style="--min:16;--avg:24;--max:40" tabindex="0">
+            <span class="row-label">20 ms</span>
+            <span class="track"><span class="range"></span><span class="avg"></span></span>
+            <span class="row-value"><b>24</b> ms avg</span>
+          </div>
+          <div class="chart-row is-default" data-min="24" data-avg="32" data-max="45" style="--min:24;--avg:32;--max:45" tabindex="0">
+            <span class="row-label">30 ms <em>default</em></span>
+            <span class="track"><span class="range"></span><span class="avg"></span></span>
+            <span class="row-value"><b>32</b> ms avg</span>
+          </div>
+          <div class="chart-row" data-min="41" data-avg="51" data-max="62" style="--min:41;--avg:51;--max:62" tabindex="0">
+            <span class="row-label">50 ms</span>
+            <span class="track"><span class="range"></span><span class="avg"></span></span>
+            <span class="row-value"><b>51</b> ms avg</span>
+          </div>
+          <div class="axis" aria-hidden="true">
+            <span></span>
+            <span class="ticks"><span style="--x:0">0</span><span style="--x:20">20</span><span style="--x:40">40</span><span style="--x:60">60 ms</span></span>
+            <span></span>
+          </div>
+          <div class="tip" role="status" aria-live="polite"></div>
+        </div>
+        <details class="table-view">
+          <summary>Show as table</summary>
+          <table>
+            <thead><tr><th scope="col">Buffer</th><th scope="col">Min</th><th scope="col">Avg</th><th scope="col">Max</th></tr></thead>
+            <tbody>
+              <tr><td>20 ms</td><td>16 ms</td><td>24 ms</td><td>40 ms</td></tr>
+              <tr><td>30 ms (default)</td><td>24 ms</td><td>32 ms</td><td>45 ms</td></tr>
+              <tr><td>50 ms</td><td>41 ms</td><td>51 ms</td><td>62 ms</td></tr>
+            </tbody>
+          </table>
+        </details>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section class="settings">
+    <div class="wrap">
+      <h2 class="reveal">Everything else lives on one page.</h2>
+      <figure class="settings-shot reveal">
+        <picture>
+          <source srcset="/screenshots/settings-light.png" media="(prefers-color-scheme: light)">
+          <img class="window" src="/screenshots/settings-dark.png" width="1080" height="840" loading="lazy"
+               alt="The Settings tab: start with Windows, double-click action, appearance, language, updates, buffer size and the global hotkey.">
+        </picture>
+      </figure>
+      <ul class="settings-points">
+        <li class="reveal"><i class="ph ph-power" aria-hidden="true"></i><div><h3>Starts with Windows</h3><p>Straight into the notification area, mirrors restored.</p></div></li>
+        <li class="reveal" style="--d:1"><i class="ph ph-circle-half" aria-hidden="true"></i><div><h3>Light or dark</h3><p>Follows Windows and your accent colour, or pick one.</p></div></li>
+        <li class="reveal" style="--d:2"><i class="ph ph-sliders-horizontal" aria-hidden="true"></i><div><h3>Buffer from 10 to 250 ms</h3><p>Lower for sync, higher for weak USB hubs.</p></div></li>
+        <li class="reveal" style="--d:3"><i class="ph ph-arrows-clockwise" aria-hidden="true"></i><div><h3>Updates your way</h3><p>Automatic, notify only, or never.</p></div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Streaming -->
+  <section class="streaming" id="streaming">
+    <div class="wrap">
+      <h2 class="reveal">Streaming without the echo.</h2>
+      <p class="sub reveal">Audio Mirror plays sound like any other program, so a recorder may pick it up too. What we measured:</p>
+      <div class="compare">
+        <div class="case case-ok reveal">
+          <i class="ph ph-check-circle" aria-hidden="true"></i>
+          <h3>Capturing a device</h3>
+          <p>OBS "Desktop Audio" records one device. The mirror plays on a different one and never shows up.</p>
+        </div>
+        <div class="case case-warn reveal" style="--d:1">
+          <i class="ph ph-warning" aria-hidden="true"></i>
+          <h3>Capturing all applications</h3>
+          <p>Discord screen share with desktop audio catches the mirror as well. Audio arrives twice and voice chat echoes back.</p>
+        </div>
+      </div>
+      <ol class="rules reveal">
+        <li>Capture a device or a specific app, not "all applications".</li>
+        <li>Untick voice apps like Discord or TeamSpeak for the mirrored device.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Download -->
+  <section class="download" id="download">
+    <div class="wrap download-grid">
+      <div class="download-copy">
+        <h2 class="reveal">Free and open source.</h2>
+        <p class="sub reveal">Needs Windows 11, or Windows 10 build 20348 and later. Runs on x64 and ARM64.</p>
+        <p class="note reveal"><i class="ph ph-shield-warning" aria-hidden="true"></i>The files are not code-signed, so Windows may say "Windows protected your PC". Click More info, then Run anyway.</p>
+      </div>
+      <div class="options">
+        <a class="option option-main reveal" id="dl-setup" href="https://github.com/yyusvf/audio-mirror/releases/download/v1.4.0/AudioMirror-1.4.0-Setup.exe">
+          <i class="ph ph-download-simple" aria-hidden="true"></i>
+          <span class="option-text">
+            <b>Installer</b>
+            <span>Start menu entry and a normal uninstall. Fetches the .NET 8 runtime if it is missing.</span>
+          </span>
+          <span class="option-meta"><span data-version>1.4.0</span><span data-size>2.4 MB</span></span>
+        </a>
+        <a class="option reveal" style="--d:1" id="dl-portable" href="https://github.com/yyusvf/audio-mirror/releases/latest/download/AudioMirror-Portable.zip">
+          <i class="ph ph-file-zip" aria-hidden="true"></i>
+          <span class="option-text">
+            <b>Portable</b>
+            <span>Unpack and run. No installation, no runtime, no internet.</span>
+          </span>
+          <span class="option-meta"><span data-version>1.4.0</span><span data-size>112 MB</span></span>
+        </a>
+        <a class="all-releases reveal" style="--d:2" href="https://github.com/yyusvf/audio-mirror/releases">All releases and changelog <i class="ph ph-arrow-right" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <a class="brand" href="/">
+      <img src="/assets/img/icon-64.png" width="20" height="20" alt="">
+      <span>Audio Mirror</span>
+    </a>
+    <p>MIT licensed. Built with .NET 8, WPF and NAudio.</p>
+    <a href="https://github.com/yyusvf/audio-mirror" rel="noopener"><i class="ph ph-github-logo" aria-hidden="true"></i>GitHub</a>
+  </div>
+</footer>
+
+<script src="/assets/site.js" defer></script>
+</body>
+</html>
