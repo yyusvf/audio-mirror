@@ -3,6 +3,14 @@
 Play Windows audio on **several output devices at once** — speakers *and* Bluetooth headphones
 *and* a USB headset. No drivers, no virtual cables.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="website/screenshots/devices-light.png">
+    <img src="website/screenshots/devices-dark.png" width="720"
+         alt="The Audio Mirror window: headphones and speakers ticked as mirror targets, with Spotify and Chrome mixed on the headphones.">
+  </picture>
+</p>
+
 ## Download
 
 **[Get the latest release →](../../releases/latest)**
